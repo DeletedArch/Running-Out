@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
             Debug.LogError("PlayerContext is not assigned in the PlayerController.");
         }
     }
-    
+
     void Awake()
     {
         Validate();
@@ -35,25 +35,37 @@ public class PlayerController : MonoBehaviour
     {
         LimitSpeed();
         AdjustOrientation(context.moveInput.x);
+        IsGrounded();
     }
 
     public bool IsGrounded()
     {
-        Debug.DrawRay(transform.position, Vector2.down * 1.3f, Color.red);
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1.3f, context.groundLayer);
-        Debug.Log(hit);
+        Debug.DrawRay(transform.position, Vector2.down * 1.05f, Color.red);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1.05f, context.groundLayer);
+        if (hit.collider != null)
+        {
+            context.playerAnimator.SetBool("IsGrounded", true);
+        }
+        else
+        {
+            context.playerAnimator.SetBool("IsGrounded", false);
+        }
         return hit.collider != null;
     }
 
     void LimitSpeed()
     {
-        if (context.currentPlayerState == PlayerState.Dashing || context.currentPlayerState == PlayerState.SwiftDashing) return;
-        Vector2 velocity = context.playerRigidbody.linearVelocity;
-        if (Mathf.Abs(velocity.x) > context.playerMovementConfig.MaxSpeed)
+        if (!CheckAnimatorState("Dash"))
         {
-            Vector2 newVelocity = new Vector2(Mathf.Sign(velocity.x) * context.playerMovementConfig.MaxSpeed, velocity.y);
-            context.playerRigidbody.linearVelocity = newVelocity;
+            Vector2 velocity = context.playerRigidbody.linearVelocity;
+            if (Mathf.Abs(velocity.x) > context.playerMovementConfig.MaxSpeed)
+            {
+                Vector2 newVelocity = new Vector2(Mathf.Sign(velocity.x) * context.playerMovementConfig.MaxSpeed, velocity.y);
+                context.playerRigidbody.linearVelocity = newVelocity;
+            }
         }
+        context.playerAnimator.SetFloat("velocityX", Mathf.Abs(context.playerRigidbody.linearVelocity.x));
+        context.playerAnimator.SetFloat("velocityY", context.playerRigidbody.linearVelocity.y);
     }
 
     void AdjustOrientation(float moveInputX)
@@ -85,7 +97,7 @@ public class PlayerController : MonoBehaviour
     UniTask Dash()
     {
         float distancePassed = 0f;
-        context.currentPlayerState = PlayerState.Dashing;
+        context.playerAnimator.SetBool("Dash", true);
         return UniTask.WaitUntil(() =>
         {
             context.playerRigidbody.linearVelocity = new Vector2(Mathf.Sign(transform.localScale.x) * context.playerMovementConfig.DashForce, 0);
@@ -93,7 +105,7 @@ public class PlayerController : MonoBehaviour
             return distancePassed >= context.playerMovementConfig.DashDistance;
         }).ContinueWith(() =>
         {
-            context.currentPlayerState = PlayerState.Idle;
+            context.playerAnimator.SetBool("Dash", false);
         });
     }
 
@@ -104,27 +116,38 @@ public class PlayerController : MonoBehaviour
 
     void HandleJumpInput()
     {
-        if (!IsGrounded()) {Debug.Log("Player is not grounded. Cannot jump."); return;}
+        if (!IsGrounded()) { Debug.Log("Player is not grounded. Cannot jump."); return; }
         context.playerRigidbody.linearVelocity = new Vector2(context.playerRigidbody.linearVelocity.x, context.playerMovementConfig.JumpForce);
+        context.playerAnimator.SetBool("Jump", true);
+        UniTask.Delay(TimeSpan.FromSeconds(0.25f)).ContinueWith(() =>
+        {
+            context.playerAnimator.SetBool("Jump", false);
+        }).Forget();
     }
 
     void HandleDashInput()
     {
+        if (CheckAnimatorState("Dash")) return;
         Dash().Forget();
     }
 
     void HandleSwiftDashInput()
     {
-        
+
     }
 
     void HandleAttackInput()
     {
-        
+
     }
 
     void HandleBlockInput()
     {
-        
+
+    }
+
+    bool CheckAnimatorState(string stateName)
+    {
+        return context.playerAnimator.GetCurrentAnimatorStateInfo(0).IsName(stateName);
     }
 }

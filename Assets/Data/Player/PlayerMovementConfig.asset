@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovementConfig
   runSpeed: 5
   jumpForce: 20
-  dashForce: 45
-  dashDistance: 7
+  dashForce: 50
+  dashDistance: 10
   wallHopForce: 2
   maxSpeed: 7
   maxSwiftDashDistance: 15
