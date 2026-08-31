@@ -1,31 +1,39 @@
 using System;
 using UnityEngine;
 
-
-public class PlayerMovementConfig
+public enum PlayerState
 {
-    [SerializeField] internal float runSpeed = 5f;
-    [SerializeField] internal float jumpForce = 3f;
-    [SerializeField] internal float dashForce = 7f;
-    [SerializeField] internal float wallHopForce = 2f;
-    [SerializeField] internal float maxSpeed = 7f;
-    [SerializeField] internal float maxSwiftDashDistance = 15f;
+    Idle,
+    Running,
+    Jumping,
+    Falling,
+    Dashing,
+    SwiftDashing,
+    Attacking,
+    Blocking,
+    WallHopping
 }
 
-public class PlayerCombatConfig
-{
-    [SerializeField] internal float attackDuration = 0.33f;
-    [SerializeField] internal float blockDuration = 0.3f;
-    [SerializeField] internal float swiftDashDuration = 0.25f;
-    [SerializeField] internal float chargedAttackWindUpDuration = 0.5f;
-}
-
+[Serializable]
 public class PlayerContext
 {
     [Header("References")]
     [SerializeField] internal Rigidbody2D playerRigidbody;
     [SerializeField] internal Animator playerAnimator;
-    [SerializeField] internal readonly PlayerMovementConfig playerMovementConfig;
-    [SerializeField] internal readonly PlayerCombatConfig playerCombatConfig;
-    
+    [SerializeField] internal PlayerMovementConfig playerMovementConfig;
+    [SerializeField] internal PlayerCombatConfig playerCombatConfig;
+
+    [Header("Layers")]
+    [SerializeField] internal LayerMask groundLayer;
+    [SerializeField] internal LayerMask wallLayer;
+    [SerializeField] internal LayerMask wallHopLayer;
+    [SerializeField] internal LayerMask enemyLayer;
+
+    [Header("Settings")]
+    [SerializeField] internal bool useDrag;
+    [SerializeField] internal float customDrag = 1f;
+
+    [Header("State")]
+    [SerializeField] internal Vector2 moveInput;
+    [SerializeField] internal PlayerState currentPlayerState = PlayerState.Idle;
 }

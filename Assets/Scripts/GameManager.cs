@@ -8,8 +8,6 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         inputController = GetComponent<InputController>();
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
     }
     // Start is called before the first frame update
     void Start()
@@ -21,5 +19,11 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         
+    }
+
+    void LockCursor(bool lockCursor = true)
+    {
+        Cursor.visible = !lockCursor;
+        Cursor.lockState = lockCursor ? CursorLockMode.Locked : CursorLockMode.None;
     }
 }
