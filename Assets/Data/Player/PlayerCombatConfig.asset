@@ -12,3 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f04cd91ad134a170b1818690e1ec53b, type: 3}
   m_Name: PlayerCombatConfig
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombatConfig
+  attackDuration: 0.33
+  blockDuration: 0.3
+  parryTimeWindow: 0.2
+  swiftDashDuration: 0.25
+  chargedAttackWindUpDuration: 0.5
+  comboResetTime: 1
+  comboInputWindow: 0.5
+  comboAttackDuration: 0.25
+  comboAttackAnimations:
+  - {fileID: 7400000, guid: 73d9f6d4014189431bbeb948d5df9d6e, type: 2}
+  - {fileID: 7400000, guid: 73d9f6d4014189431bbeb948d5df9d6e, type: 2}
+  - {fileID: 7400000, guid: 73d9f6d4014189431bbeb948d5df9d6e, type: 2}
+  - {fileID: 7400000, guid: 73d9f6d4014189431bbeb948d5df9d6e, type: 2}
+  - {fileID: 7400000, guid: 73d9f6d4014189431bbeb948d5df9d6e, type: 2}
+  chargedAttackAnimation: {fileID: 7400000, guid: 73d9f6d4014189431bbeb948d5df9d6e, type: 2}
