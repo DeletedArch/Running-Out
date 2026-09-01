@@ -20,6 +20,7 @@ public class PlayerContext
     [Header("References")]
     [SerializeField] internal Rigidbody2D playerRigidbody;
     [SerializeField] internal Animator playerAnimator;
+    [SerializeField] internal AnimatorOverrideController overrideController;
     [SerializeField] internal PlayerMovementConfig playerMovementConfig;
     [SerializeField] internal PlayerCombatConfig playerCombatConfig;
 

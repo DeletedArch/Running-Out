@@ -5,6 +5,7 @@ using Cysharp.Threading.Tasks;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private PlayerContext context;
+    [SerializeField] private PlayerCombat playerCombat;
 
     void Validate()
     {
@@ -17,10 +18,14 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         Validate();
+        context.overrideController = new AnimatorOverrideController(context.playerAnimator.runtimeAnimatorController);
+        context.playerAnimator.runtimeAnimatorController = context.overrideController;
+        playerCombat = new PlayerCombat(context);
         InputController.OnMoveInput += HandleMoveInput;
         InputController.OnJumpStart += HandleJumpInput;
         InputController.OnDashInput += HandleDashInput;
         InputController.OnAttackStart += HandleAttackInput;
+        InputController.OnAttackEnd += HandleAttackRelease;
         InputController.OnBlockStart += HandleBlockInput;
         InputController.OnSwiftDashInput += HandleSwiftDashInput;
     }
@@ -116,10 +121,10 @@ public class PlayerController : MonoBehaviour
 
     void HandleJumpInput()
     {
-        if (!IsGrounded()) { Debug.Log("Player is not grounded. Cannot jump."); return; }
+        if (!IsGrounded() || CheckAnimatorState("Jump")) { Debug.Log("Player is not grounded. Cannot jump."); return; }
         context.playerRigidbody.linearVelocity = new Vector2(context.playerRigidbody.linearVelocity.x, context.playerMovementConfig.JumpForce);
         context.playerAnimator.SetBool("Jump", true);
-        UniTask.Delay(TimeSpan.FromSeconds(0.25f)).ContinueWith(() =>
+        UniTask.Delay(TimeSpan.FromSeconds(0.15f)).ContinueWith(() =>
         {
             context.playerAnimator.SetBool("Jump", false);
         }).Forget();
@@ -138,12 +143,17 @@ public class PlayerController : MonoBehaviour
 
     void HandleAttackInput()
     {
-
+        playerCombat.HandleAttackInput();
+    }
+    
+    private void HandleAttackRelease()
+    {
+        playerCombat.HandleAttackRelease();
     }
 
     void HandleBlockInput()
     {
-
+        playerCombat.HandleBlockInput();
     }
 
     bool CheckAnimatorState(string stateName)
