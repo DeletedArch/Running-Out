@@ -211,7 +211,7 @@ MonoBehaviour:
   isInvincible: 0
   invincibilityDuration: 0
   hasCancelWindow: 1
-  cancelWindowStart: 0.65
+  cancelWindowStart: 0.25
   cancelBoolean: 1
   booleanName: Attack
 --- !u!114 &-7706662667541733019
@@ -1087,7 +1087,7 @@ AnimatorStateMachine:
     m_Position: {x: 310, y: 250, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 6150445329629687356}
-    m_Position: {x: -30, y: -70, z: 0}
+    m_Position: {x: -530, y: -50, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions:
   - {fileID: 2677130689751672452}
@@ -1143,7 +1143,7 @@ AnimatorState:
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
   m_Mirror: 0
-  m_SpeedParameterActive: 1
+  m_SpeedParameterActive: 0
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
@@ -1272,6 +1272,9 @@ AnimatorStateTransition:
   m_Conditions:
   - m_ConditionMode: 2
     m_ConditionEvent: Attack
+    m_EventTreshold: 0
+  - m_ConditionMode: 3
+    m_ConditionEvent: velocityX
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -8808022410555407762}
