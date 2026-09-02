@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
         InputController.OnAttackStart += HandleAttackInput;
         InputController.OnAttackEnd += HandleAttackRelease;
         InputController.OnBlockStart += HandleBlockInput;
+        InputController.OnBlockEnd += HandleBlockRelease;
         InputController.OnSwiftDashInput += HandleSwiftDashInput;
         SetStateSMB.OnStateEntered += (str) => { Debug.Log("State Entered: " + str); context.currentState = str; };
         SetStateSMB.OnStateExited += (str) => { Debug.Log("State Exited: " + str); };
@@ -155,6 +156,10 @@ public class PlayerController : MonoBehaviour
     void HandleBlockInput()
     {
         playerCombat.HandleBlockInput();
+    }
+    void HandleBlockRelease()
+    {
+        playerCombat.HandleBlockRelease();
     }
 
     public void SetMovement(bool canMove)

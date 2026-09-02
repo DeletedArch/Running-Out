@@ -77,10 +77,11 @@ public class PlayerCombat
     public void HandleBlockInput()
     {
         context.playerAnimator.SetBool("Block", true);
-        UniTask.Delay(TimeSpan.FromSeconds(config.BlockDuration)).ContinueWith(() =>
-        {
-            context.playerAnimator.SetBool("Block", false);
-        }).Forget();
+    }
+
+    public void HandleBlockRelease()
+    {
+        context.playerAnimator.SetBool("Block", false);
     }
 
     public void HandleGettingHit()
@@ -88,14 +89,14 @@ public class PlayerCombat
         var animatorState = context.playerAnimator.GetCurrentAnimatorStateInfo(0);
         if (animatorState.IsName("Block") && animatorState.normalizedTime < config.ParryTimeWindow)
         {
-            // Player is blocking, reduce damage or negate it
+            // Restore time and negate damage
+            context.playerAnimator.SetTrigger("Parry");
             Debug.Log("Player parried the attack!");
         }
         else
         {
-            // Player takes full damage
-            Debug.Log("Player got hit!");
-            // context.playerAnimator.SetTrigger("Hit");
+            // Negate damage but no timer restoration
+            Debug.Log("Player blocked the attack!");
         }
     }
 
@@ -144,16 +145,4 @@ public class PlayerCombat
         }
         SetDetectedEnemy();
     }
-
-    void GotoEnemy()
-    {
-        // Implement logic to move the player towards the enemy
-    }
-
-    void FindNearestEnemy(Vector2 moveInput)
-    {
-        // Implement logic to find the nearest enemy
-    }
-
-
 }
