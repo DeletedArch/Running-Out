@@ -6,7 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private PlayerContext context;
     [SerializeField] private PlayerCombat playerCombat;
-
+    public PlayerContext Context => context;
     void Validate()
     {
         if (context == null)
@@ -28,6 +28,8 @@ public class PlayerController : MonoBehaviour
         InputController.OnAttackEnd += HandleAttackRelease;
         InputController.OnBlockStart += HandleBlockInput;
         InputController.OnSwiftDashInput += HandleSwiftDashInput;
+        SetStateSMB.OnStateEntered += (str) => { Debug.Log("State Entered: " + str); context.currentState = str; };
+        SetStateSMB.OnStateExited += (str) => { Debug.Log("State Exited: " + str); };
     }
 
     void FixedUpdate()
@@ -60,7 +62,7 @@ public class PlayerController : MonoBehaviour
 
     void LimitSpeed()
     {
-        if (!CheckAnimatorState("Dash"))
+        if (context.currentState != "Dash")
         {
             Vector2 velocity = context.playerRigidbody.linearVelocity;
             if (Mathf.Abs(velocity.x) > context.playerMovementConfig.MaxSpeed)
@@ -93,25 +95,10 @@ public class PlayerController : MonoBehaviour
 
     void MovePlayer(Vector2 moveInput)
     {
-        if (moveInput.x == 0 || moveInput == Vector2.zero) return;
+        if ((moveInput.x == 0 || moveInput == Vector2.zero) && context.canMove) return;
         Vector2 velocity = context.playerRigidbody.linearVelocity;
         Vector2 newVelocity = new Vector2(velocity.x + moveInput.x * context.playerMovementConfig.RunSpeed, velocity.y);
         context.playerRigidbody.linearVelocity = newVelocity;
-    }
-
-    UniTask Dash()
-    {
-        float distancePassed = 0f;
-        context.playerAnimator.SetBool("Dash", true);
-        return UniTask.WaitUntil(() =>
-        {
-            context.playerRigidbody.linearVelocity = new Vector2(Mathf.Sign(transform.localScale.x) * context.playerMovementConfig.DashForce, 0);
-            distancePassed += context.playerRigidbody.linearVelocity.magnitude * Time.fixedDeltaTime;
-            return distancePassed >= context.playerMovementConfig.DashDistance;
-        }).ContinueWith(() =>
-        {
-            context.playerAnimator.SetBool("Dash", false);
-        });
     }
 
     void HandleMoveInput(Vector2 moveInput)
@@ -121,24 +108,23 @@ public class PlayerController : MonoBehaviour
 
     void HandleJumpInput()
     {
-        if (!IsGrounded() || CheckAnimatorState("Jump")) { Debug.Log("Player is not grounded. Cannot jump."); return; }
-        context.playerRigidbody.linearVelocity = new Vector2(context.playerRigidbody.linearVelocity.x, context.playerMovementConfig.JumpForce);
+        if (!IsGrounded() || context.currentState == "Jump") { Debug.Log("Player is not grounded. Cannot jump."); return; }
         context.playerAnimator.SetBool("Jump", true);
-        UniTask.Delay(TimeSpan.FromSeconds(0.15f)).ContinueWith(() =>
-        {
-            context.playerAnimator.SetBool("Jump", false);
-        }).Forget();
     }
 
     void HandleDashInput()
     {
-        if (CheckAnimatorState("Dash")) return;
-        Dash().Forget();
+        if (context.currentState == "Dash") return;
+        context.playerAnimator.SetBool("Dash", true);
+        if (context.canCancel)
+        {
+            context.playerAnimator.Play("Dash", 0, 0f);
+        }
     }
 
     void HandleSwiftDashInput()
     {
-
+        
     }
 
     void HandleAttackInput()
@@ -156,8 +142,18 @@ public class PlayerController : MonoBehaviour
         playerCombat.HandleBlockInput();
     }
 
-    bool CheckAnimatorState(string stateName)
+    public void SetMovement(bool canMove)
     {
-        return context.playerAnimator.GetCurrentAnimatorStateInfo(0).IsName(stateName);
+        context.canMove = canMove;
+    }
+
+    public void SetInvincible(bool isInvincible)
+    {
+        context.isInvincible = isInvincible;
+    }
+
+    public void SetCanCancel(bool canCancel)
+    {
+        context.canCancel = canCancel;
     }
 }
