@@ -138,9 +138,9 @@ MonoBehaviour:
   lockMovement: 1
   isInvincible: 1
   invincibilityDuration: 0.2
-  hasCancelWindow: 1
+  hasCancelWindow: 0
   cancelWindowStart: 0.5
-  cancelBoolean: 1
+  cancelBoolean: 0
   booleanName: Block
 --- !u!1101 &-8390018228680125254
 AnimatorStateTransition:
@@ -422,6 +422,7 @@ AnimatorState:
   m_StateMachineBehaviours:
   - {fileID: -3760513541092929830}
   - {fileID: 4713790252710192965}
+  - {fileID: 6963598843553636599}
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
@@ -1176,7 +1177,7 @@ AnimatorStateMachine:
     m_Position: {x: -530, y: -50, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7196334450622960727}
-    m_Position: {x: 450, y: 420, z: 0}
+    m_Position: {x: 480, y: 450, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions:
   - {fileID: 2677130689751672452}
@@ -1298,6 +1299,25 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!114 &6963598843553636599
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 087d864e1b80b82a8bc6ed4026288c85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ActionStateSMB
+  lockMovement: 1
+  isInvincible: 1
+  invincibilityDuration: 0.9
+  hasCancelWindow: 1
+  cancelWindowStart: 0.9
+  cancelBoolean: 1
+  booleanName: Dash
 --- !u!1102 &7196334450622960727
 AnimatorState:
   serializedVersion: 6

@@ -56,7 +56,7 @@ public class PlayerCombat
         }
         else
         {
-            if (context.playerAnimator.GetBool("Attack") && context.canCancel)
+            if (context.canCancel)
             {
                 AdvanceCombo();
                 context.playerAnimator.Play("Attack", 0, 0f);
