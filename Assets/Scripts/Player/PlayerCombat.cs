@@ -35,7 +35,12 @@ public class PlayerCombat
 
         if (currentComboCount < config.MaxComboCount)
         {
-            context.overrideController["Attack"] = config.ComboAttackAnimations[currentComboCount];
+            var targetClip = config.ComboAttackAnimations[currentComboCount];
+            if (targetClip != null && context.overrideController["Attack"] != targetClip)
+            {
+                context.overrideController["Attack"] = targetClip;
+            }
+
             context.playerAnimator.SetInteger("Combo", currentComboCount);
             context.playerAnimator.SetBool("Attack", true);
 
@@ -56,14 +61,14 @@ public class PlayerCombat
         }
         else
         {
-            if (context.canCancel)
+            bool isAttacking = context.playerAnimator.GetBool("Attack");
+            if (context.canCancel || !isAttacking)
             {
                 AdvanceCombo();
-                context.playerAnimator.Play("Attack", 0, 0f);
-            }
-            else if (!context.playerAnimator.GetBool("Attack"))
-            {
-                AdvanceCombo();
+                if (isAttacking)
+                {
+                    context.playerAnimator.Play("Attack", 0, 0f);
+                }
             }
         }
         attackHoldTime = 0f;
