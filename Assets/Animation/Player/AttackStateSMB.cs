@@ -51,8 +51,24 @@ public class AttackImpulseSMB : StateMachineBehaviour
                 rb.linearVelocity = Vector2.zero;
             }
 
-            Vector2 directionToEnemy = (targetedEnemyPosition.Value - playerRb.position).normalized;
-            Vector2 adjustedTargetPosition = targetedEnemyPosition.Value + new Vector2(-Mathf.Sign(directionToEnemy.x), 0f);
+            float enemyX = targetedEnemyPosition.Value.x;                                                                
+            float playerX = player.transform.position.x;                                                                 
+            float diffX = enemyX - playerX;                                                                              
+                                                                                                                         
+            // 1. ALWAYS face the enemy directly (only if not on the exact same X)                                       
+            if (Mathf.Abs(diffX) > 0.05f)                                                                                
+            {                                                                                                            
+                float facingDir = Mathf.Sign(diffX);                                                                     
+                player.transform.localScale = new Vector3(                                                               
+                    facingDir * Mathf.Abs(player.transform.localScale.x),                                                
+                    player.transform.localScale.y,                                                                       
+                    player.transform.localScale.z                                                                        
+                );                                                                                                       
+            }                                                                                                            
+            float currentDistance = Mathf.Abs(diffX);                                                                    
+            float stoppingGap = Mathf.Min(1.0f, currentDistance * 0.5f);    
+            float targetX = enemyX - (Mathf.Sign(diffX) * stoppingGap);                                                  
+            Vector2 adjustedTargetPosition = new Vector2(targetX, targetedEnemyPosition.Value.y);
             ApplyAlphaImpulse(playerRb, player.transform, adjustedTargetPosition, lungeDuration).Forget();
         }
     }
@@ -60,17 +76,6 @@ public class AttackImpulseSMB : StateMachineBehaviour
     private UniTask ApplyAlphaImpulse(Rigidbody2D targetRb, Transform playerTransform, Vector2 endPosition, float duration)
     {
         Vector2 startPosition = playerTransform.position;
-        float deltaX = endPosition.x - startPosition.x;
-
-        if (Mathf.Abs(deltaX) > 0.05f)
-        {
-            float facingDir = Mathf.Sign(deltaX);
-            playerTransform.localScale = new Vector3(
-                facingDir * Mathf.Abs(playerTransform.localScale.x),
-                playerTransform.localScale.y,
-                playerTransform.localScale.z
-            );
-        }
         float elapsedTime = 0f;
 
         return UniTask.WaitUntil(() =>
@@ -80,17 +85,6 @@ public class AttackImpulseSMB : StateMachineBehaviour
             Vector2 newPosition = Vector2.Lerp(startPosition, endPosition, t);
             targetRb.MovePosition(newPosition);
             return elapsedTime >= duration;
-        }).ContinueWith(() =>
-        {
-            // Check Orientation after lunge
-            float finalDeltaX = endPosition.x - playerTransform.position.x;
-
-                float facingDir = Mathf.Sign(finalDeltaX);
-                playerTransform.localScale = new Vector3(
-                    facingDir * Mathf.Abs(playerTransform.localScale.x),
-                    playerTransform.localScale.y,
-                    playerTransform.localScale.z
-                );
         });
     }
 
