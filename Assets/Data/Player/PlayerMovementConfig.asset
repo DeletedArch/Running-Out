@@ -15,7 +15,7 @@ MonoBehaviour:
   runSpeed: 5
   jumpForce: 20
   dashForce: 50
-  dashDistance: 10
+  dashDistance: 7
   wallHopForce: 2
   maxSpeed: 7
   maxSwiftDashDistance: 15

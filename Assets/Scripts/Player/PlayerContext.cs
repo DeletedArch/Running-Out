@@ -29,4 +29,8 @@ public class PlayerContext
     [Header("State")]
     [SerializeField] internal string currentState;
     [SerializeField] internal Vector2 moveInput;
+
+    [Header("Enemy Detection")]
+    [SerializeField] internal GameObject detectedEnemy;
+    [SerializeField] internal GameObject detectedEnemy2; // Second priority if direction check fails
 }

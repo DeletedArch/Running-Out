@@ -11,6 +11,8 @@ public class ActionStateSMB : StateMachineBehaviour
     [SerializeField] private bool hasCancelWindow = false;
     [Range(0f, 1f)]
     [SerializeField] private float cancelWindowStart = 0.5f;
+    [SerializeField] private bool cancelBoolean = false;
+    [SerializeField] private string booleanName = "";
 
     private PlayerController player;
 
@@ -19,7 +21,7 @@ public class ActionStateSMB : StateMachineBehaviour
         if (player == null) player = animator.GetComponent<PlayerController>();
         if (player == null) return;
 
-        if (lockMovement) player.SetMovement(true);
+        if (lockMovement) player.SetMovement(false);
         if (isInvincible) player.SetInvincible(true);
         if (hasCancelWindow) player.SetCanCancel(false);
     }
@@ -43,8 +45,12 @@ public class ActionStateSMB : StateMachineBehaviour
     {
         if (player == null) return;
 
-        if (lockMovement) player.SetMovement(false);
-        if (isInvincible) player.SetInvincible(false);
-        if (hasCancelWindow) player.SetCanCancel(false);
+        player.SetMovement(true);
+        player.SetInvincible(false);
+        player.SetCanCancel(false);
+        if (cancelBoolean && !string.IsNullOrEmpty(booleanName) && stateInfo.normalizedTime >= cancelWindowStart)
+        {
+            animator.SetBool(booleanName, false);
+        }
     }
 }

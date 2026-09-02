@@ -1,11 +1,13 @@
 using UnityEngine;
 using System;
 using Cysharp.Threading.Tasks;
+using Unity.VisualScripting;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private PlayerContext context;
     [SerializeField] private PlayerCombat playerCombat;
+    private RangeDetectionHelper rangeDetectionHelper;
     public PlayerContext Context => context;
     void Validate()
     {
@@ -18,9 +20,13 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         Validate();
+        rangeDetectionHelper = GetComponent<RangeDetectionHelper>();
         context.overrideController = new AnimatorOverrideController(context.playerAnimator.runtimeAnimatorController);
         context.playerAnimator.runtimeAnimatorController = context.overrideController;
-        playerCombat = new PlayerCombat(context);
+        playerCombat = new PlayerCombat(context, rangeDetectionHelper)
+        {
+            GetPlayerDirection = GetPlayerDirection
+        };
         InputController.OnMoveInput += HandleMoveInput;
         InputController.OnJumpStart += HandleJumpInput;
         InputController.OnDashInput += HandleDashInput;
@@ -77,6 +83,7 @@ public class PlayerController : MonoBehaviour
 
     void AdjustOrientation(float moveInputX)
     {
+        if (moveInputX == 0 || !context.canMove) return;
         transform.localScale = new Vector3(Mathf.Sign(moveInputX) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
     }
 
@@ -95,7 +102,7 @@ public class PlayerController : MonoBehaviour
 
     void MovePlayer(Vector2 moveInput)
     {
-        if ((moveInput.x == 0 || moveInput == Vector2.zero) && context.canMove) return;
+        if (moveInput.x == 0 || moveInput == Vector2.zero || !context.canMove) return;
         Vector2 velocity = context.playerRigidbody.linearVelocity;
         Vector2 newVelocity = new Vector2(velocity.x + moveInput.x * context.playerMovementConfig.RunSpeed, velocity.y);
         context.playerRigidbody.linearVelocity = newVelocity;
@@ -110,6 +117,10 @@ public class PlayerController : MonoBehaviour
     {
         if (!IsGrounded() || context.currentState == "Jump") { Debug.Log("Player is not grounded. Cannot jump."); return; }
         context.playerAnimator.SetBool("Jump", true);
+        if (context.canCancel)
+        {
+            context.playerAnimator.Play("Jump", 0, 0f);
+        }
     }
 
     void HandleDashInput()
@@ -145,6 +156,9 @@ public class PlayerController : MonoBehaviour
     public void SetMovement(bool canMove)
     {
         context.canMove = canMove;
+        if (canMove) {
+            context.playerRigidbody.WakeUp();
+        }
     }
 
     public void SetInvincible(bool isInvincible)
@@ -155,5 +169,17 @@ public class PlayerController : MonoBehaviour
     public void SetCanCancel(bool canCancel)
     {
         context.canCancel = canCancel;
+    }
+
+    public Vector2 GetPlayerDirection()
+    {
+        if (context.moveInput != Vector2.zero)
+        {
+            return new Vector2(Mathf.Sign(context.moveInput.x), Mathf.Sign(context.moveInput.y));
+        }
+        else
+        {
+            return new Vector2(Mathf.Sign(transform.localScale.x), 0); 
+        }
     }
 }
