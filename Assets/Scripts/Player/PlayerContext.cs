@@ -1,19 +1,6 @@
 using System;
 using UnityEngine;
 
-public enum PlayerState
-{
-    Idle,
-    Running,
-    Jumping,
-    Falling,
-    Dashing,
-    SwiftDashing,
-    Attacking,
-    Blocking,
-    WallHopping
-}
-
 [Serializable]
 public class PlayerContext
 {
@@ -33,8 +20,17 @@ public class PlayerContext
     [Header("Settings")]
     [SerializeField] internal bool useDrag;
     [SerializeField] internal float customDrag = 1f;
+    
+    [Header("Runtime Settings")]
+    [SerializeField] internal bool canMove = true;
+    [SerializeField] internal bool isInvincible = false;
+    [SerializeField] internal bool canCancel = true;
 
     [Header("State")]
+    [SerializeField] internal string currentState;
     [SerializeField] internal Vector2 moveInput;
-    [SerializeField] internal PlayerState currentPlayerState = PlayerState.Idle;
+
+    [Header("Enemy Detection")]
+    [SerializeField] internal GameObject detectedEnemy;
+    [SerializeField] internal GameObject detectedEnemy2; // Second priority if direction check fails
 }
