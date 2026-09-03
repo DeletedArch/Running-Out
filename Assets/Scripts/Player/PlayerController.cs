@@ -50,6 +50,7 @@ public class PlayerController : MonoBehaviour
         LimitSpeed();
         AdjustOrientation(context.moveInput.x);
         IsGrounded();
+        playerCombat?.Update();
     }
 
     public bool IsGrounded()
@@ -90,7 +91,7 @@ public class PlayerController : MonoBehaviour
 
     void ApplyCustomDrag()
     {
-        if (!context.useDrag) return;
+        if (!context.useDrag || !IsGrounded()) return;
         if (Math.Abs(context.playerRigidbody.linearVelocity.x) < 0.1f)
         {
             context.playerRigidbody.linearVelocity = new Vector2(0, context.playerRigidbody.linearVelocity.y);
@@ -144,7 +145,7 @@ public class PlayerController : MonoBehaviour
         context.playerAnimator.SetBool("SDash", true);
         if (context.canCancel)
         {
-            context.playerAnimator.Play("SDash", 0, 0f);
+            context.playerAnimator.Play("SwiftDash", 0, 0f);
         }
     }
 
@@ -189,7 +190,7 @@ public class PlayerController : MonoBehaviour
     {
         if (context.moveInput != Vector2.zero)
         {
-            return new Vector2(Mathf.Sign(context.moveInput.x), Mathf.Sign(context.moveInput.y));
+            return new Vector2(context.moveInput.x, context.moveInput.y);
         }
         else
         {

@@ -987,11 +987,11 @@ MonoBehaviour:
     customDrag: 0.1
     canMove: 1
     isInvincible: 0
-    canCancel: 1
+    canCancel: 0
     currentState: 
     moveInput: {x: 0, y: 0}
-    detectedEnemy: []
-    detectedEnemySwiftDash: []
+    attackChannel: {fileID: 11400000, guid: 8fec81f173080644fabf2b1a7694471d, type: 2}
+    swiftDashChannel: {fileID: 11400000, guid: 45f35a5120b6ed6cd9ccb1f3ffb783fe, type: 2}
   rangeDetectionHelper:
   - {fileID: 1927504042}
   - {fileID: 1843467186}
@@ -1267,6 +1267,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   colliderName: SwiftDashRange
+  channel: {fileID: 11400000, guid: 45f35a5120b6ed6cd9ccb1f3ffb783fe, type: 2}
 --- !u!58 &1843467187
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1353,6 +1354,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   colliderName: AttackRange
+  channel: {fileID: 11400000, guid: 8fec81f173080644fabf2b1a7694471d, type: 2}
 --- !u!58 &1927504043
 CircleCollider2D:
   m_ObjectHideFlags: 0

@@ -7,6 +7,10 @@ public class RangeDetectionHelper : MonoBehaviour
     [SerializeField] private float detectionRadius = 5f;
     [SerializeField] private LayerMask detectionLayer;
     [SerializeField] private string colliderName = "AttackRange";
+    [SerializeField] private TargetDetectionChannel channel;
+
+    public TargetDetectionChannel Channel { get => channel; set => channel = value; }
+    public string ColliderName => colliderName;
 
     public event Action<Collider2D, string> OnObjectDetected;
     public event Action<Collider2D, string> OnObjectExited;
@@ -25,6 +29,7 @@ public class RangeDetectionHelper : MonoBehaviour
     {
         if (((1 << other.gameObject.layer) & detectionLayer) != 0)
         {
+            channel?.Add(other.gameObject);
             OnObjectDetected?.Invoke(other, colliderName);
         }
     }
@@ -33,6 +38,7 @@ public class RangeDetectionHelper : MonoBehaviour
     {
         if (((1 << other.gameObject.layer) & detectionLayer) != 0)
         {
+            channel?.Remove(other.gameObject);
             OnObjectExited?.Invoke(other, colliderName);
         }
     }
