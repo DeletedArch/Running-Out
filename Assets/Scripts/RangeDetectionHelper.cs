@@ -6,9 +6,10 @@ public class RangeDetectionHelper : MonoBehaviour
 {
     [SerializeField] private float detectionRadius = 5f;
     [SerializeField] private LayerMask detectionLayer;
+    [SerializeField] private string colliderName = "AttackRange";
 
-    public event Action<Collider2D> OnObjectDetected;
-    public event Action<Collider2D> OnObjectExited;
+    public event Action<Collider2D, string> OnObjectDetected;
+    public event Action<Collider2D, string> OnObjectExited;
 
     void Awake()
     {
@@ -20,16 +21,11 @@ public class RangeDetectionHelper : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        
-    }
-
     public void OnTriggerEnter2D(Collider2D other)
     {
         if (((1 << other.gameObject.layer) & detectionLayer) != 0)
         {
-            OnObjectDetected?.Invoke(other);
+            OnObjectDetected?.Invoke(other, colliderName);
         }
     }
 
@@ -37,7 +33,7 @@ public class RangeDetectionHelper : MonoBehaviour
     {
         if (((1 << other.gameObject.layer) & detectionLayer) != 0)
         {
-            OnObjectExited?.Invoke(other);
+            OnObjectExited?.Invoke(other, colliderName);
         }
     }
 

@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private PlayerContext context;
     [SerializeField] private PlayerCombat playerCombat;
-    private RangeDetectionHelper rangeDetectionHelper;
+    [SerializeField] private RangeDetectionHelper[] rangeDetectionHelper;
     public PlayerContext Context => context;
     void Validate()
     {
@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         Validate();
-        rangeDetectionHelper = GetComponent<RangeDetectionHelper>();
+        // rangeDetectionHelper = GetComponents<RangeDetectionHelper>();
         context.overrideController = new AnimatorOverrideController(context.playerAnimator.runtimeAnimatorController);
         context.playerAnimator.runtimeAnimatorController = context.overrideController;
         playerCombat = new PlayerCombat(context, rangeDetectionHelper)
@@ -140,7 +140,12 @@ public class PlayerController : MonoBehaviour
 
     void HandleSwiftDashInput()
     {
-        
+        if (context.currentState == "SDash") return;
+        context.playerAnimator.SetBool("SDash", true);
+        if (context.canCancel)
+        {
+            context.playerAnimator.Play("SDash", 0, 0f);
+        }
     }
 
     void HandleAttackInput()

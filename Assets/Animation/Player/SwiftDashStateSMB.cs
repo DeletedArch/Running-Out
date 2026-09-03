@@ -1,43 +1,75 @@
-using System.Collections.Generic;
-using Cysharp.Threading.Tasks;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 
-public class AttackImpulseSMB : StateMachineBehaviour
+public class SwiftDashSMB : StateMachineBehaviour
 {
+    [SerializeField] private float wallCheckDistance = 0.5f;
+    [SerializeField] private LayerMask wallMask;
     [SerializeField] private float maxLungeDistance = 3f;
-    [SerializeField] private float lungeDuration = 0.2f;
+    [SerializeField] private float lungeDuration = 15f;
 
+
+
+    private Vector2 startPosition;
     private Rigidbody2D rb;
+    private Collider2D playerCollider;
+    private PlayerMovementConfig movementConfig;
+    private float dashDirection;
+    private float elapsedTime;
+    private float maxDashDuration;
     private float originalGravityScale = 1f;
     private bool isSuspended = false;
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        animator.SetBool("Attack", true); // Ensure the Attack boolean is set to true when entering the state
-        PlayerController player = animator.GetComponent<PlayerController>();
+        var player = animator.GetComponent<PlayerController>();
         if (player == null) return;
 
         rb = player.Context.playerRigidbody;
-        if (rb != null)
-        {
-            originalGravityScale = rb.gravityScale;
-        }
+        playerCollider = player.GetComponent<Collider2D>();
+        movementConfig = player.Context.playerMovementConfig;
+
+        elapsedTime = 0f;
+
+        maxDashDuration = (movementConfig.DashDistance / movementConfig.DashForce) + 0.1f;
+        originalGravityScale = rb.gravityScale;
         isSuspended = false;
-        
         ApplyTargetedImpulse(player);
     }
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        if (rb == null || movementConfig == null) return;
+
         if (isSuspended && rb != null)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
         }
 
-        if (stateInfo.normalizedTime >= 1f && !animator.IsInTransition(layerIndex))
+        elapsedTime += Time.deltaTime;
+
+        Vector2 checkOrigin = playerCollider != null ? (Vector2)playerCollider.bounds.center : rb.position;
+        Vector2 checkDirection = new Vector2(dashDirection, 0f);
+
+        RaycastHit2D wallHit = Physics2D.Raycast(checkOrigin, checkDirection, wallCheckDistance, wallMask);
+
+        Debug.DrawRay(checkOrigin, checkDirection * wallCheckDistance, Color.darkOrange);
+
+        if (wallHit.collider != null)
         {
-            animator.SetBool("Attack", false);
+            animator.SetBool("Dash", false);
+            return;
         }
+
+        float distanceTraveled = Vector2.Distance(startPosition, rb.position);
+        if (distanceTraveled >= movementConfig.DashDistance || elapsedTime >= maxDashDuration)
+        {
+            animator.SetBool("Dash", false);
+            return;
+        }
+
+        rb.linearVelocity = new Vector2(dashDirection * movementConfig.DashForce, 0);
     }
 
     private void ApplyTargetedImpulse(PlayerController player)
@@ -87,6 +119,14 @@ public class AttackImpulseSMB : StateMachineBehaviour
             Vector2 newPosition = Vector2.Lerp(startPosition, endPosition, t);
             targetRb.MovePosition(newPosition);
             return elapsedTime >= duration;
+        }).ContinueWith(() =>
+        {
+            var enemy = playerTransform.GetComponent<PlayerController>().Context.detectedEnemySwiftDash[0];
+            if (enemy != null)
+            {
+                Destroy(enemy);
+                playerTransform.GetComponent<PlayerController>().Context.detectedEnemySwiftDash.Remove(enemy);
+            }
         });
     }
 
@@ -101,12 +141,12 @@ public class AttackImpulseSMB : StateMachineBehaviour
 
     private Vector2? GetTargetedEnemy(PlayerController player)
     {
-        List<GameObject> detectedEnemies = player.Context.detectedEnemy;
+        List<GameObject> detectedEnemies = player.Context.detectedEnemySwiftDash;
         if (detectedEnemies == null || detectedEnemies.Count == 0)
         {
             return null;
         }
-        GameObject targetEnemy = player.Context.detectedEnemy[0];
+        GameObject targetEnemy = player.Context.detectedEnemySwiftDash[0];
         if (targetEnemy == null)
         {
             return null;
