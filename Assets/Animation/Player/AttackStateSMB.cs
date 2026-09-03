@@ -6,6 +6,7 @@ public class AttackImpulseSMB : StateMachineBehaviour
 {
     [SerializeField] private float maxLungeDistance = 3f;
     [SerializeField] private float lungeDuration = 0.2f;
+    [SerializeField] private TargetDetectionChannel channel;
 
     private Rigidbody2D rb;
     private float originalGravityScale = 1f;
@@ -101,21 +102,16 @@ public class AttackImpulseSMB : StateMachineBehaviour
 
     private Vector2? GetTargetedEnemy(PlayerController player)
     {
-        List<GameObject> detectedEnemies = player.Context.detectedEnemy;
-        if (detectedEnemies == null || detectedEnemies.Count == 0)
+        var targetCh = channel != null ? channel : player.Context.attackChannel;
+        if (targetCh != null)
         {
+            var best = targetCh.GetBestTarget(0.3f, maxLungeDistance);
+            if (best != null && best.Object != null)
+            {
+                return (Vector2)best.Object.transform.position;
+            }
             return null;
         }
-        GameObject targetEnemy = player.Context.detectedEnemy[0];
-        if (targetEnemy == null)
-        {
-            return null;
-        }
-        float distanceToEnemy = Vector2.Distance(player.transform.position, targetEnemy.transform.position);
-        if (distanceToEnemy > maxLungeDistance)
-        {
-            return null;
-        }
-        return (Vector2)targetEnemy.transform.position;
+        return null;
     }
 }

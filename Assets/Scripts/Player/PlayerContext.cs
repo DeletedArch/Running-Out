@@ -31,7 +31,7 @@ public class PlayerContext
     [SerializeField] internal string currentState;
     [SerializeField] internal Vector2 moveInput;
 
-    [Header("Enemy Detection")]
-    [SerializeField] internal List<GameObject> detectedEnemy;
-    [SerializeField] internal List<GameObject> detectedEnemySwiftDash;
+    [Header("Enemy Detection Channels")]
+    [SerializeField] internal TargetDetectionChannel attackChannel;
+    [SerializeField] internal TargetDetectionChannel swiftDashChannel;
 }
