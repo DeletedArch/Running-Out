@@ -10,7 +10,7 @@ public class PlayerMovementConfig : ScriptableObject
     [SerializeField] private float wallHopForce = 2f;
     [SerializeField] private float maxSpeed = 7f;
     [SerializeField] private float maxSwiftDashDistance = 15f;
-
+    [SerializeField] private Vector2 wallHopMaxDistance = new Vector2(1f, 1f);
     public float RunSpeed { get { return runSpeed; } }
     public float JumpForce { get { return jumpForce; } }
     public float DashForce { get { return dashForce; } }
@@ -18,4 +18,5 @@ public class PlayerMovementConfig : ScriptableObject
     public float WallHopForce { get { return wallHopForce; } }
     public float MaxSpeed { get { return maxSpeed; } }
     public float MaxSwiftDashDistance { get { return maxSwiftDashDistance; } }
+    public Vector2 WallHopMaxDistance { get { return wallHopMaxDistance; } }
 }

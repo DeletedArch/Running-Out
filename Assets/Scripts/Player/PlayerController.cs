@@ -3,12 +3,13 @@ using System;
 using Cysharp.Threading.Tasks;
 using Unity.VisualScripting;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IEntity
 {
     [SerializeField] private PlayerContext context;
     [SerializeField] private PlayerCombat playerCombat;
     [SerializeField] private RangeDetectionHelper[] rangeDetectionHelper;
     public PlayerContext Context => context;
+    public float Health => new float(); // TODO: Add timer and include it as health property
     void Validate()
     {
         if (context == null)
@@ -20,7 +21,6 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         Validate();
-        // rangeDetectionHelper = GetComponents<RangeDetectionHelper>();
         context.overrideController = new AnimatorOverrideController(context.playerAnimator.runtimeAnimatorController);
         context.playerAnimator.runtimeAnimatorController = context.overrideController;
         playerCombat = new PlayerCombat(context, rangeDetectionHelper)
@@ -51,6 +51,7 @@ public class PlayerController : MonoBehaviour
         AdjustOrientation(context.moveInput.x);
         IsGrounded();
         playerCombat?.Update();
+        IsTouchingWall();
     }
 
     public bool IsGrounded()
@@ -65,6 +66,13 @@ public class PlayerController : MonoBehaviour
         {
             context.playerAnimator.SetBool("IsGrounded", false);
         }
+        return hit.collider != null;
+    }
+
+    public bool IsTouchingWall()
+    {
+        Debug.DrawRay(transform.position, Mathf.Sign(transform.localScale.x) * transform.right * 0.75f, Color.blue);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Mathf.Sign(transform.localScale.x) * transform.right, 0.6f, context.wallLayer);
         return hit.collider != null;
     }
 
@@ -85,7 +93,7 @@ public class PlayerController : MonoBehaviour
 
     void AdjustOrientation(float moveInputX)
     {
-        if (moveInputX == 0 || !context.canMove) return;
+        if (moveInputX == 0 || !context.canMove || context.currentState == "WallHop") return;
         transform.localScale = new Vector3(Mathf.Sign(moveInputX) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
     }
 
@@ -121,6 +129,20 @@ public class PlayerController : MonoBehaviour
 
     void HandleJumpInput()
     {
+        if (IsTouchingWall())
+        {
+            context.playerAnimator.SetBool("WallHopping", true);
+            context.playerAnimator.SetTrigger("WallHop");
+            if (context.canCancel && context.currentState == "WallHop")
+            {
+                context.playerAnimator.Play("WallHop", 0, 0f);
+            }
+            return;
+        } else
+        {
+            Debug.Log("Player is not touching a wall. Cannot perform wall hop.");
+            Debug.Log(context.currentState);
+        }
         if (!IsGrounded() || context.currentState == "Jump") { Debug.Log("Player is not grounded. Cannot jump."); return; }
         context.playerAnimator.SetBool("Jump", true);
         if (context.canCancel)
@@ -141,7 +163,7 @@ public class PlayerController : MonoBehaviour
 
     void HandleSwiftDashInput()
     {
-        if (context.currentState == "SDash") return;
+        if (context.currentState == "SwiftDash") return;
         context.playerAnimator.SetBool("SDash", true);
         if (context.canCancel)
         {
@@ -153,7 +175,7 @@ public class PlayerController : MonoBehaviour
     {
         playerCombat.HandleAttackInput();
     }
-    
+
     private void HandleAttackRelease()
     {
         playerCombat.HandleAttackRelease();
@@ -171,7 +193,8 @@ public class PlayerController : MonoBehaviour
     public void SetMovement(bool canMove)
     {
         context.canMove = canMove;
-        if (canMove) {
+        if (canMove)
+        {
             context.playerRigidbody.WakeUp();
         }
     }
@@ -194,7 +217,20 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            return new Vector2(Mathf.Sign(transform.localScale.x), 0); 
+            return new Vector2(Mathf.Sign(transform.localScale.x), 0);
         }
+    }
+
+    public void TakeDamage(float amount)
+    {
+        if (context.isInvincible) return;
+        // Implement damage logic here
+        Debug.Log($"Player took {amount} damage.");
+    }
+
+    public void Die()
+    {
+        // Implement death logic here
+        Debug.Log("Player died.");
     }
 }
