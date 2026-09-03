@@ -1,12 +1,14 @@
 using UnityEngine;
 using System;
 using Cysharp.Threading.Tasks;
+using Unity.VisualScripting;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private PlayerContext context;
     [SerializeField] private PlayerCombat playerCombat;
-
+    [SerializeField] private RangeDetectionHelper[] rangeDetectionHelper;
+    public PlayerContext Context => context;
     void Validate()
     {
         if (context == null)
@@ -18,16 +20,23 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         Validate();
+        // rangeDetectionHelper = GetComponents<RangeDetectionHelper>();
         context.overrideController = new AnimatorOverrideController(context.playerAnimator.runtimeAnimatorController);
         context.playerAnimator.runtimeAnimatorController = context.overrideController;
-        playerCombat = new PlayerCombat(context);
+        playerCombat = new PlayerCombat(context, rangeDetectionHelper)
+        {
+            GetPlayerDirection = GetPlayerDirection
+        };
         InputController.OnMoveInput += HandleMoveInput;
         InputController.OnJumpStart += HandleJumpInput;
         InputController.OnDashInput += HandleDashInput;
         InputController.OnAttackStart += HandleAttackInput;
         InputController.OnAttackEnd += HandleAttackRelease;
         InputController.OnBlockStart += HandleBlockInput;
+        InputController.OnBlockEnd += HandleBlockRelease;
         InputController.OnSwiftDashInput += HandleSwiftDashInput;
+        SetStateSMB.OnStateEntered += (str) => { Debug.Log("State Entered: " + str); context.currentState = str; };
+        SetStateSMB.OnStateExited += (str) => { Debug.Log("State Exited: " + str); };
     }
 
     void FixedUpdate()
@@ -60,7 +69,7 @@ public class PlayerController : MonoBehaviour
 
     void LimitSpeed()
     {
-        if (!CheckAnimatorState("Dash"))
+        if (context.currentState != "Dash")
         {
             Vector2 velocity = context.playerRigidbody.linearVelocity;
             if (Mathf.Abs(velocity.x) > context.playerMovementConfig.MaxSpeed)
@@ -75,6 +84,7 @@ public class PlayerController : MonoBehaviour
 
     void AdjustOrientation(float moveInputX)
     {
+        if (moveInputX == 0 || !context.canMove) return;
         transform.localScale = new Vector3(Mathf.Sign(moveInputX) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
     }
 
@@ -93,25 +103,14 @@ public class PlayerController : MonoBehaviour
 
     void MovePlayer(Vector2 moveInput)
     {
-        if (moveInput.x == 0 || moveInput == Vector2.zero) return;
+        if (moveInput.x == 0 || moveInput == Vector2.zero || !context.canMove && !context.canCancel) return;
+        if (context.canCancel)
+        {
+            context.playerAnimator.Play("Run", 0, 0f);
+        }
         Vector2 velocity = context.playerRigidbody.linearVelocity;
         Vector2 newVelocity = new Vector2(velocity.x + moveInput.x * context.playerMovementConfig.RunSpeed, velocity.y);
         context.playerRigidbody.linearVelocity = newVelocity;
-    }
-
-    UniTask Dash()
-    {
-        float distancePassed = 0f;
-        context.playerAnimator.SetBool("Dash", true);
-        return UniTask.WaitUntil(() =>
-        {
-            context.playerRigidbody.linearVelocity = new Vector2(Mathf.Sign(transform.localScale.x) * context.playerMovementConfig.DashForce, 0);
-            distancePassed += context.playerRigidbody.linearVelocity.magnitude * Time.fixedDeltaTime;
-            return distancePassed >= context.playerMovementConfig.DashDistance;
-        }).ContinueWith(() =>
-        {
-            context.playerAnimator.SetBool("Dash", false);
-        });
     }
 
     void HandleMoveInput(Vector2 moveInput)
@@ -121,24 +120,32 @@ public class PlayerController : MonoBehaviour
 
     void HandleJumpInput()
     {
-        if (!IsGrounded() || CheckAnimatorState("Jump")) { Debug.Log("Player is not grounded. Cannot jump."); return; }
-        context.playerRigidbody.linearVelocity = new Vector2(context.playerRigidbody.linearVelocity.x, context.playerMovementConfig.JumpForce);
+        if (!IsGrounded() || context.currentState == "Jump") { Debug.Log("Player is not grounded. Cannot jump."); return; }
         context.playerAnimator.SetBool("Jump", true);
-        UniTask.Delay(TimeSpan.FromSeconds(0.15f)).ContinueWith(() =>
+        if (context.canCancel)
         {
-            context.playerAnimator.SetBool("Jump", false);
-        }).Forget();
+            context.playerAnimator.Play("Jump", 0, 0f);
+        }
     }
 
     void HandleDashInput()
     {
-        if (CheckAnimatorState("Dash")) return;
-        Dash().Forget();
+        if (context.currentState == "Dash") return;
+        context.playerAnimator.SetBool("Dash", true);
+        if (context.canCancel)
+        {
+            context.playerAnimator.Play("Dash", 0, 0f);
+        }
     }
 
     void HandleSwiftDashInput()
     {
-
+        if (context.currentState == "SDash") return;
+        context.playerAnimator.SetBool("SDash", true);
+        if (context.canCancel)
+        {
+            context.playerAnimator.Play("SDash", 0, 0f);
+        }
     }
 
     void HandleAttackInput()
@@ -155,9 +162,38 @@ public class PlayerController : MonoBehaviour
     {
         playerCombat.HandleBlockInput();
     }
-
-    bool CheckAnimatorState(string stateName)
+    void HandleBlockRelease()
     {
-        return context.playerAnimator.GetCurrentAnimatorStateInfo(0).IsName(stateName);
+        playerCombat.HandleBlockRelease();
+    }
+
+    public void SetMovement(bool canMove)
+    {
+        context.canMove = canMove;
+        if (canMove) {
+            context.playerRigidbody.WakeUp();
+        }
+    }
+
+    public void SetInvincible(bool isInvincible)
+    {
+        context.isInvincible = isInvincible;
+    }
+
+    public void SetCanCancel(bool canCancel)
+    {
+        context.canCancel = canCancel;
+    }
+
+    public Vector2 GetPlayerDirection()
+    {
+        if (context.moveInput != Vector2.zero)
+        {
+            return new Vector2(Mathf.Sign(context.moveInput.x), Mathf.Sign(context.moveInput.y));
+        }
+        else
+        {
+            return new Vector2(Mathf.Sign(transform.localScale.x), 0); 
+        }
     }
 }

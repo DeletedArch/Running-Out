@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 
 public class PlayerCombat
 {
@@ -10,11 +11,22 @@ public class PlayerCombat
     private int currentComboCount = 0;
     private float lastAttackTime = 0f;
     private float attackHoldTime = 0f;
+    private RangeDetectionHelper[] rangeDetectionHelper;
+    private Dictionary<string, List<GameObject>> enemiesInRange = new Dictionary<string, List<GameObject>>();
 
-    public PlayerCombat(PlayerContext context)
+    public delegate Vector2 GetPlayerDirectionDelegate();
+    public GetPlayerDirectionDelegate GetPlayerDirection;
+
+    public PlayerCombat(PlayerContext context, RangeDetectionHelper[] rangeDetectionHelper)
     {
         this.config = context.playerCombatConfig;
         this.context = context;
+        this.rangeDetectionHelper = rangeDetectionHelper;
+        foreach (var helper in rangeDetectionHelper)
+        {
+            helper.OnObjectDetected += HandleRangeDetection;
+            helper.OnObjectExited += HandleRangeExit;
+        }
     }
 
     public void AdvanceCombo()
@@ -26,12 +38,15 @@ public class PlayerCombat
 
         if (currentComboCount < config.MaxComboCount)
         {
-            context.overrideController["Attack"] = config.ComboAttackAnimations[currentComboCount];
-            context.playerAnimator.SetBool("Attack", true);
-            UniTask.Delay(TimeSpan.FromSeconds(config.ComboAttackDuration)).ContinueWith(() =>
+            var targetClip = config.ComboAttackAnimations[currentComboCount];
+            if (targetClip != null && context.overrideController["Attack"] != targetClip)
             {
-                context.playerAnimator.SetBool("Attack", false);
-            }).Forget();
+                context.overrideController["Attack"] = targetClip;
+            }
+
+            context.playerAnimator.SetInteger("Combo", currentComboCount);
+            context.playerAnimator.SetBool("Attack", true);
+
             currentComboCount++;
             lastAttackTime = Time.time;
         }
@@ -44,14 +59,21 @@ public class PlayerCombat
         {
             context.overrideController["Attack"] = config.ChargedAttackAnimation;
             context.playerAnimator.SetBool("Attack", true);
-            UniTask.Delay(TimeSpan.FromSeconds(config.ComboAttackDuration)).ContinueWith(() =>
-            {
-                context.playerAnimator.SetBool("Attack", false);
-            }).Forget();
+            context.playerAnimator.SetInteger("Combo", 0); // Reset combo count for charged attack
+            currentComboCount = 0; // Reset combo count after charged attack
         }
         else
         {
-            AdvanceCombo();
+            bool isAttacking = context.playerAnimator.GetBool("Attack");
+            if (context.canCancel || !isAttacking)
+            {
+                AdvanceCombo();
+                if (isAttacking)
+                {
+                    Debug.Log("Attack input received during an ongoing attack. Triggering AttackTransition.");
+                    context.playerAnimator.SetTrigger("AttackTransition");
+                }
+            }
         }
         attackHoldTime = 0f;
     }
@@ -64,10 +86,11 @@ public class PlayerCombat
     public void HandleBlockInput()
     {
         context.playerAnimator.SetBool("Block", true);
-        UniTask.Delay(TimeSpan.FromSeconds(config.BlockDuration)).ContinueWith(() =>
-        {
-            context.playerAnimator.SetBool("Block", false);
-        }).Forget();
+    }
+
+    public void HandleBlockRelease()
+    {
+        context.playerAnimator.SetBool("Block", false);
     }
 
     public void HandleGettingHit()
@@ -75,26 +98,104 @@ public class PlayerCombat
         var animatorState = context.playerAnimator.GetCurrentAnimatorStateInfo(0);
         if (animatorState.IsName("Block") && animatorState.normalizedTime < config.ParryTimeWindow)
         {
-            // Player is blocking, reduce damage or negate it
+            // Restore time and negate damage
+            context.playerAnimator.SetTrigger("Parry");
             Debug.Log("Player parried the attack!");
         }
         else
         {
-            // Player takes full damage
-            Debug.Log("Player got hit!");
-            // context.playerAnimator.SetTrigger("Hit");
+            // Negate damage but no timer restoration
+            Debug.Log("Player blocked the attack!");
         }
     }
 
-    void GotoEnemy()
+    void HandleRangeDetection(Collider2D detectedObject, string colliderName)
     {
-        // Implement logic to move the player towards the enemy
+        if (detectedObject == null) return;
+        GameObject enemyGo = detectedObject.gameObject;
+
+        if (!enemiesInRange.ContainsKey(colliderName))
+        {
+            enemiesInRange[colliderName] = new List<GameObject>();
+        }
+
+        if (!enemiesInRange[colliderName].Contains(enemyGo))
+        {
+            enemiesInRange[colliderName].Add(enemyGo);
+        }
+
+        SetDetectedEnemy(colliderName);
     }
 
-    void FindNearestEnemy(Vector2 moveInput)
+    void HandleRangeExit(Collider2D exitedObject, string colliderName)
     {
-        // Implement logic to find the nearest enemy
+        if (exitedObject == null) return;
+        GameObject enemyGo = exitedObject.gameObject;
+
+        if (enemiesInRange.ContainsKey(colliderName))
+        {
+            enemiesInRange[colliderName].Remove(enemyGo);
+        }
+
+        SetDetectedEnemy(colliderName);
     }
 
+    void SetDetectedEnemy(string colliderName)
+    {
+        if (context.detectedEnemy == null) context.detectedEnemy = new List<GameObject>();
+        if (context.detectedEnemySwiftDash == null) context.detectedEnemySwiftDash = new List<GameObject>();
 
+        if (!enemiesInRange.ContainsKey(colliderName)) return;
+
+        List<GameObject> targetList;
+        float minDotProduct;
+
+        if (colliderName == "AttackRange")
+        {
+            targetList = context.detectedEnemy;
+            minDotProduct = 0.5f;                                                                 
+        }
+        else if (colliderName == "SwiftDashRange")
+        {
+            targetList = context.detectedEnemySwiftDash;
+            minDotProduct = 0f;                                                                  
+        }
+        else
+        {
+            return;
+        }
+
+        targetList.Clear();
+
+        List<GameObject> enemies = enemiesInRange[colliderName];
+
+        enemies.RemoveAll(e => e == null);
+
+        Vector2 playerPos = context.playerRigidbody.position;
+
+        Vector2 playerDirection = GetPlayerDirection();
+
+        var validEnemies = new List<(GameObject enemy, float distance)>();
+
+        foreach (var enemy in enemies)
+        {
+            Vector2 toEnemy = (Vector2)enemy.transform.position - playerPos;
+            float distance = toEnemy.magnitude;
+            Vector2 directionToEnemy = toEnemy / (distance > 0.0001f ? distance : 1f);
+
+            float dotProduct = Vector2.Dot(directionToEnemy, playerDirection);
+
+            if (dotProduct > minDotProduct)
+            {
+                validEnemies.Add((enemy, distance));
+            }
+        }
+
+        validEnemies.Sort((a, b) => a.distance.CompareTo(b.distance));
+
+        foreach (var item in validEnemies)
+        {
+            targetList.Add(item.enemy);
+        }
+    }
 }

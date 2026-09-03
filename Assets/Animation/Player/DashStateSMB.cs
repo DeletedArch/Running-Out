@@ -1,0 +1,70 @@
+using UnityEngine;
+
+public class DashStateSMB : StateMachineBehaviour
+{
+    [SerializeField] private float wallCheckDistance = 0.5f;
+    [SerializeField] private LayerMask wallMask;
+
+    private Vector2 startPosition;
+    private Rigidbody2D rb;
+    private Collider2D playerCollider;
+    private PlayerMovementConfig movementConfig;
+    private float dashDirection;
+    private float elapsedTime;
+    private float maxDashDuration;
+
+    override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        var player = animator.GetComponent<PlayerController>();
+        if (player == null) return;
+
+        rb = player.Context.playerRigidbody;
+        playerCollider = player.GetComponent<Collider2D>();
+        movementConfig = player.Context.playerMovementConfig;
+
+        startPosition = rb.position;
+        dashDirection = Mathf.Sign(player.transform.localScale.x);
+        elapsedTime = 0f;
+
+        maxDashDuration = (movementConfig.DashDistance / movementConfig.DashForce) + 0.1f;
+
+        rb.linearVelocity = new Vector2(dashDirection * movementConfig.DashForce, 0);
+    }
+
+    override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        if (rb == null || movementConfig == null) return;
+
+        elapsedTime += Time.deltaTime;
+
+        Vector2 checkOrigin = playerCollider != null ? (Vector2)playerCollider.bounds.center : rb.position;
+        Vector2 checkDirection = new Vector2(dashDirection, 0f);
+
+        RaycastHit2D wallHit = Physics2D.Raycast(checkOrigin, checkDirection, wallCheckDistance, wallMask);
+
+        Debug.DrawRay(checkOrigin, checkDirection * wallCheckDistance, Color.darkOrange);
+
+        if (wallHit.collider != null)
+        {
+            animator.SetBool("Dash", false);
+            return;
+        }
+
+        float distanceTraveled = Vector2.Distance(startPosition, rb.position);
+        if (distanceTraveled >= movementConfig.DashDistance || elapsedTime >= maxDashDuration)
+        {
+            animator.SetBool("Dash", false);
+            return;
+        }
+
+        rb.linearVelocity = new Vector2(dashDirection * movementConfig.DashForce, 0);
+    }
+
+    override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        if (rb != null)
+        {
+            rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+        }
+    }
+}
