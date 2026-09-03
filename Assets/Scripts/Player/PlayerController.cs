@@ -3,12 +3,13 @@ using System;
 using Cysharp.Threading.Tasks;
 using Unity.VisualScripting;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IEntity
 {
     [SerializeField] private PlayerContext context;
     [SerializeField] private PlayerCombat playerCombat;
     [SerializeField] private RangeDetectionHelper[] rangeDetectionHelper;
     public PlayerContext Context => context;
+    public float Health => new float (); // TODO: Add timer and include it as health property
     void Validate()
     {
         if (context == null)
@@ -20,7 +21,6 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         Validate();
-        // rangeDetectionHelper = GetComponents<RangeDetectionHelper>();
         context.overrideController = new AnimatorOverrideController(context.playerAnimator.runtimeAnimatorController);
         context.playerAnimator.runtimeAnimatorController = context.overrideController;
         playerCombat = new PlayerCombat(context, rangeDetectionHelper)
@@ -196,5 +196,18 @@ public class PlayerController : MonoBehaviour
         {
             return new Vector2(Mathf.Sign(transform.localScale.x), 0); 
         }
+    }
+
+    public void TakeDamage(float amount)
+    {
+        if (context.isInvincible) return;
+        // Implement damage logic here
+        Debug.Log($"Player took {amount} damage.");
+    }
+
+    public void Die()
+    {
+        // Implement death logic here
+        Debug.Log("Player died.");
     }
 }
