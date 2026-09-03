@@ -23,7 +23,9 @@ public class DashStateSMB : StateMachineBehaviour
         movementConfig = player.Context.playerMovementConfig;
 
         startPosition = rb.position;
-        dashDirection = Mathf.Sign(player.transform.localScale.x);
+        Vector2 direction = player.GetPlayerDirection();
+        dashDirection = direction.x != 0 ? Mathf.Sign(direction.x) : Mathf.Sign(player.transform.localScale.x);
+        player.transform.localScale = new Vector3(Mathf.Sign(dashDirection) * Mathf.Abs(player.transform.localScale.x), player.transform.localScale.y, player.transform.localScale.z);
         elapsedTime = 0f;
 
         maxDashDuration = (movementConfig.DashDistance / movementConfig.DashForce) + 0.1f;

@@ -112,11 +112,7 @@ public class PlayerController : MonoBehaviour, IEntity
 
     void MovePlayer(Vector2 moveInput)
     {
-        if (moveInput.x == 0 || moveInput == Vector2.zero || !context.canMove && !context.canCancel) return;
-        if (context.canCancel)
-        {
-            context.playerAnimator.Play("Run", 0, 0f);
-        }
+        if (moveInput.x == 0 || moveInput == Vector2.zero || !context.canMove) return;
         Vector2 velocity = context.playerRigidbody.linearVelocity;
         Vector2 newVelocity = new Vector2(velocity.x + moveInput.x * context.playerMovementConfig.RunSpeed, velocity.y);
         context.playerRigidbody.linearVelocity = newVelocity;
