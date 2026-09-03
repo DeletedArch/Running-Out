@@ -12,6 +12,7 @@ public class AttackImpulseSMB : StateMachineBehaviour
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        animator.SetBool("Attack", true); // Ensure the Attack boolean is set to true when entering the state
         PlayerController player = animator.GetComponent<PlayerController>();
         if (player == null) return;
 
@@ -21,7 +22,7 @@ public class AttackImpulseSMB : StateMachineBehaviour
             originalGravityScale = rb.gravityScale;
         }
         isSuspended = false;
-
+        
         ApplyTargetedImpulse(player);
     }
 
@@ -32,7 +33,7 @@ public class AttackImpulseSMB : StateMachineBehaviour
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
         }
 
-        if (stateInfo.normalizedTime >= 1f)
+        if (stateInfo.normalizedTime >= 1f && !animator.IsInTransition(layerIndex))
         {
             animator.SetBool("Attack", false);
         }

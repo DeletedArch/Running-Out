@@ -67,7 +67,8 @@ public class PlayerCombat
                 AdvanceCombo();
                 if (isAttacking)
                 {
-                    context.playerAnimator.Play("Attack", 0, 0f);
+                    Debug.Log("Attack input received during an ongoing attack. Triggering AttackTransition.");
+                    context.playerAnimator.SetTrigger("AttackTransition");
                 }
             }
         }
