@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour, IEntity
     [SerializeField] private PlayerCombat playerCombat;
     [SerializeField] private RangeDetectionHelper[] rangeDetectionHelper;
     public PlayerContext Context => context;
-    public float Health => new float (); // TODO: Add timer and include it as health property
+    public float Health => new float(); // TODO: Add timer and include it as health property
     void Validate()
     {
         if (context == null)
@@ -51,6 +51,7 @@ public class PlayerController : MonoBehaviour, IEntity
         AdjustOrientation(context.moveInput.x);
         IsGrounded();
         playerCombat?.Update();
+        IsTouchingWall();
     }
 
     public bool IsGrounded()
@@ -65,6 +66,13 @@ public class PlayerController : MonoBehaviour, IEntity
         {
             context.playerAnimator.SetBool("IsGrounded", false);
         }
+        return hit.collider != null;
+    }
+
+    public bool IsTouchingWall()
+    {
+        Debug.DrawRay(transform.position, Mathf.Sign(transform.localScale.x) * transform.right * 0.75f, Color.blue);
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Mathf.Sign(transform.localScale.x) * transform.right, 0.6f, context.wallLayer);
         return hit.collider != null;
     }
 
@@ -85,7 +93,7 @@ public class PlayerController : MonoBehaviour, IEntity
 
     void AdjustOrientation(float moveInputX)
     {
-        if (moveInputX == 0 || !context.canMove) return;
+        if (moveInputX == 0 || !context.canMove || context.currentState == "WallHop") return;
         transform.localScale = new Vector3(Mathf.Sign(moveInputX) * Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z);
     }
 
@@ -121,6 +129,20 @@ public class PlayerController : MonoBehaviour, IEntity
 
     void HandleJumpInput()
     {
+        if (IsTouchingWall())
+        {
+            context.playerAnimator.SetBool("WallHopping", true);
+            context.playerAnimator.SetTrigger("WallHop");
+            if (context.canCancel && context.currentState == "WallHop")
+            {
+                context.playerAnimator.Play("WallHop", 0, 0f);
+            }
+            return;
+        } else
+        {
+            Debug.Log("Player is not touching a wall. Cannot perform wall hop.");
+            Debug.Log(context.currentState);
+        }
         if (!IsGrounded() || context.currentState == "Jump") { Debug.Log("Player is not grounded. Cannot jump."); return; }
         context.playerAnimator.SetBool("Jump", true);
         if (context.canCancel)
@@ -141,7 +163,7 @@ public class PlayerController : MonoBehaviour, IEntity
 
     void HandleSwiftDashInput()
     {
-        if (context.currentState == "SDash") return;
+        if (context.currentState == "SwiftDash") return;
         context.playerAnimator.SetBool("SDash", true);
         if (context.canCancel)
         {
@@ -153,7 +175,7 @@ public class PlayerController : MonoBehaviour, IEntity
     {
         playerCombat.HandleAttackInput();
     }
-    
+
     private void HandleAttackRelease()
     {
         playerCombat.HandleAttackRelease();
@@ -171,7 +193,8 @@ public class PlayerController : MonoBehaviour, IEntity
     public void SetMovement(bool canMove)
     {
         context.canMove = canMove;
-        if (canMove) {
+        if (canMove)
+        {
             context.playerRigidbody.WakeUp();
         }
     }
@@ -194,7 +217,7 @@ public class PlayerController : MonoBehaviour, IEntity
         }
         else
         {
-            return new Vector2(Mathf.Sign(transform.localScale.x), 0); 
+            return new Vector2(Mathf.Sign(transform.localScale.x), 0);
         }
     }
 
