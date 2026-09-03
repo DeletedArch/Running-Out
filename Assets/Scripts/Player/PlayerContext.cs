@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
@@ -31,6 +32,6 @@ public class PlayerContext
     [SerializeField] internal Vector2 moveInput;
 
     [Header("Enemy Detection")]
-    [SerializeField] internal GameObject detectedEnemy;
-    [SerializeField] internal GameObject detectedEnemy2; // Second priority if direction check fails
+    [SerializeField] internal List<GameObject> detectedEnemy;
+    [SerializeField] internal List<GameObject> detectedEnemySwiftDash;
 }

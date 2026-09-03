@@ -1,12 +1,17 @@
 using UnityEngine;
-using System;
 
 public class DashStateSMB : StateMachineBehaviour
 {
+    [SerializeField] private float wallCheckDistance = 0.5f;
+    [SerializeField] private LayerMask wallMask;
+
     private Vector2 startPosition;
     private Rigidbody2D rb;
+    private Collider2D playerCollider;
     private PlayerMovementConfig movementConfig;
     private float dashDirection;
+    private float elapsedTime;
+    private float maxDashDuration;
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
@@ -14,9 +19,14 @@ public class DashStateSMB : StateMachineBehaviour
         if (player == null) return;
 
         rb = player.Context.playerRigidbody;
+        playerCollider = player.GetComponent<Collider2D>();
         movementConfig = player.Context.playerMovementConfig;
+
         startPosition = rb.position;
         dashDirection = Mathf.Sign(player.transform.localScale.x);
+        elapsedTime = 0f;
+
+        maxDashDuration = (movementConfig.DashDistance / movementConfig.DashForce) + 0.1f;
 
         rb.linearVelocity = new Vector2(dashDirection * movementConfig.DashForce, 0);
     }
@@ -25,12 +35,29 @@ public class DashStateSMB : StateMachineBehaviour
     {
         if (rb == null || movementConfig == null) return;
 
-        rb.linearVelocity = new Vector2(dashDirection * movementConfig.DashForce, 0);
-        float distanceTraveled = Vector2.Distance(startPosition, rb.position);
-        if (distanceTraveled >= movementConfig.DashDistance)
+        elapsedTime += Time.deltaTime;
+
+        Vector2 checkOrigin = playerCollider != null ? (Vector2)playerCollider.bounds.center : rb.position;
+        Vector2 checkDirection = new Vector2(dashDirection, 0f);
+
+        RaycastHit2D wallHit = Physics2D.Raycast(checkOrigin, checkDirection, wallCheckDistance, wallMask);
+
+        Debug.DrawRay(checkOrigin, checkDirection * wallCheckDistance, Color.darkOrange);
+
+        if (wallHit.collider != null)
         {
             animator.SetBool("Dash", false);
+            return;
         }
+
+        float distanceTraveled = Vector2.Distance(startPosition, rb.position);
+        if (distanceTraveled >= movementConfig.DashDistance || elapsedTime >= maxDashDuration)
+        {
+            animator.SetBool("Dash", false);
+            return;
+        }
+
+        rb.linearVelocity = new Vector2(dashDirection * movementConfig.DashForce, 0);
     }
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

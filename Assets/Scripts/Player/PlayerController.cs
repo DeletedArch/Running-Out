@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private PlayerContext context;
     [SerializeField] private PlayerCombat playerCombat;
-    private RangeDetectionHelper rangeDetectionHelper;
+    [SerializeField] private RangeDetectionHelper[] rangeDetectionHelper;
     public PlayerContext Context => context;
     void Validate()
     {
@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         Validate();
-        rangeDetectionHelper = GetComponent<RangeDetectionHelper>();
+        // rangeDetectionHelper = GetComponents<RangeDetectionHelper>();
         context.overrideController = new AnimatorOverrideController(context.playerAnimator.runtimeAnimatorController);
         context.playerAnimator.runtimeAnimatorController = context.overrideController;
         playerCombat = new PlayerCombat(context, rangeDetectionHelper)
@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
         InputController.OnAttackStart += HandleAttackInput;
         InputController.OnAttackEnd += HandleAttackRelease;
         InputController.OnBlockStart += HandleBlockInput;
+        InputController.OnBlockEnd += HandleBlockRelease;
         InputController.OnSwiftDashInput += HandleSwiftDashInput;
         SetStateSMB.OnStateEntered += (str) => { Debug.Log("State Entered: " + str); context.currentState = str; };
         SetStateSMB.OnStateExited += (str) => { Debug.Log("State Exited: " + str); };
@@ -102,7 +103,11 @@ public class PlayerController : MonoBehaviour
 
     void MovePlayer(Vector2 moveInput)
     {
-        if (moveInput.x == 0 || moveInput == Vector2.zero || !context.canMove) return;
+        if (moveInput.x == 0 || moveInput == Vector2.zero || !context.canMove && !context.canCancel) return;
+        if (context.canCancel)
+        {
+            context.playerAnimator.Play("Run", 0, 0f);
+        }
         Vector2 velocity = context.playerRigidbody.linearVelocity;
         Vector2 newVelocity = new Vector2(velocity.x + moveInput.x * context.playerMovementConfig.RunSpeed, velocity.y);
         context.playerRigidbody.linearVelocity = newVelocity;
@@ -135,7 +140,12 @@ public class PlayerController : MonoBehaviour
 
     void HandleSwiftDashInput()
     {
-        
+        if (context.currentState == "SDash") return;
+        context.playerAnimator.SetBool("SDash", true);
+        if (context.canCancel)
+        {
+            context.playerAnimator.Play("SDash", 0, 0f);
+        }
     }
 
     void HandleAttackInput()
@@ -151,6 +161,10 @@ public class PlayerController : MonoBehaviour
     void HandleBlockInput()
     {
         playerCombat.HandleBlockInput();
+    }
+    void HandleBlockRelease()
+    {
+        playerCombat.HandleBlockRelease();
     }
 
     public void SetMovement(bool canMove)

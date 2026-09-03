@@ -48,7 +48,7 @@ public class ActionStateSMB : StateMachineBehaviour
         player.SetMovement(true);
         player.SetInvincible(false);
         player.SetCanCancel(false);
-        if (cancelBoolean && !string.IsNullOrEmpty(booleanName) && stateInfo.normalizedTime >= cancelWindowStart)
+        if (cancelBoolean && !string.IsNullOrEmpty(booleanName))
         {
             animator.SetBool(booleanName, false);
         }

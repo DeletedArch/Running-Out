@@ -357,7 +357,7 @@ public partial class @InputSystem: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""e3fae6b8-8640-428f-95af-dc3c527fc875"",
-                    ""path"": """",
+                    ""path"": ""<Keyboard>/q"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
