@@ -2,12 +2,14 @@ using UnityEngine;
 using System;
 using Cysharp.Threading.Tasks;
 using Unity.VisualScripting;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour, IEntity
 {
     [SerializeField] private PlayerContext context;
     [SerializeField] private PlayerCombat playerCombat;
     [SerializeField] private RangeDetectionHelper[] rangeDetectionHelper;
+    [SerializeField] private TimerSystem timerSystem;
     public PlayerContext Context => context;
     public float Health => new float(); // TODO: Add timer and include it as health property
     void Validate()
@@ -24,10 +26,6 @@ public class PlayerController : MonoBehaviour, IEntity
         {
             Debug.LogError("Player Animator is not assigned in the PlayerContext."); 
         }
-        if (playerCombat == null)
-        {
-            Debug.LogError("PlayerCombat is not assigned in the PlayerController.");
-        }
     }
 
     void Awake()
@@ -39,6 +37,7 @@ public class PlayerController : MonoBehaviour, IEntity
         {
             GetPlayerDirection = GetPlayerDirection
         };
+        timerSystem = new TimerSystem(context.playerAnimator, 20f);
     }
 
     void OnEnable()
@@ -93,6 +92,7 @@ public class PlayerController : MonoBehaviour, IEntity
         IsGrounded();
         playerCombat?.Update();
         IsTouchingWall();
+        timerSystem?.Update(Time.deltaTime);
         // SetTimer(); -- Debug Only
     }
 
@@ -120,8 +120,9 @@ public class PlayerController : MonoBehaviour, IEntity
 
     public bool IsGrounded()
     {
-        Debug.DrawRay(transform.position, Vector2.down * 1.05f, Color.red);
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1.05f, context.groundLayer);
+        // Debug.DrawRay(transform.position, Vector2.down * 1.05f, Color.red);
+        RaycastHit2D hit = Physics2D.BoxCast(transform.position, 
+        new Vector2(Mathf.Abs(transform.localScale.x) - 0.1f, transform.localScale.y * 0.5f), 0f, Vector2.down, transform.localScale.y, context.groundLayer);
         if (hit.collider != null)
         {
             context.playerAnimator.SetBool("IsGrounded", true);
@@ -145,9 +146,9 @@ public class PlayerController : MonoBehaviour, IEntity
         if (context.currentState != "Dash")
         {
             Vector2 velocity = context.playerRigidbody.linearVelocity;
-            if (Mathf.Abs(velocity.x) > context.playerMovementConfig.MaxSpeed)
+            if (Mathf.Abs(velocity.x) > context.playerMovementConfig.MaxSpeed * timerSystem.NormalizedTimer)
             {
-                Vector2 newVelocity = new Vector2(Mathf.Sign(velocity.x) * context.playerMovementConfig.MaxSpeed, velocity.y);
+                Vector2 newVelocity = new Vector2(Mathf.Sign(velocity.x) * context.playerMovementConfig.MaxSpeed * timerSystem.NormalizedTimer, velocity.y);
                 context.playerRigidbody.linearVelocity = newVelocity;
             }
         }
@@ -178,7 +179,7 @@ public class PlayerController : MonoBehaviour, IEntity
     {
         if (moveInput.x == 0 || moveInput == Vector2.zero || !context.canMove) return;
         Vector2 velocity = context.playerRigidbody.linearVelocity;
-        Vector2 newVelocity = new Vector2(velocity.x + moveInput.x * context.playerMovementConfig.RunSpeed, velocity.y);
+        Vector2 newVelocity = new Vector2(velocity.x + moveInput.x * context.playerMovementConfig.RunSpeed * timerSystem.NormalizedTimer, velocity.y);
         context.playerRigidbody.linearVelocity = newVelocity;
     }
 
@@ -224,6 +225,7 @@ public class PlayerController : MonoBehaviour, IEntity
     void HandleSwiftDashInput()
     {
         if (context.currentState == "SwiftDash") return;
+        if (context.swiftDashChannel.GetBestTarget() == null) return;
         context.playerAnimator.SetBool("SDash", true);
         if (context.canCancel)
         {
@@ -283,7 +285,17 @@ public class PlayerController : MonoBehaviour, IEntity
 
     public void TakeDamage(float amount)
     {
-        if (context.isInvincible) return;
+        if (context.isInvincible) {
+            if (context.currentState == "Block")
+            {
+                timerSystem?.ReplenishTimer(2f);
+            }
+            else if (context.currentState == "Dash")
+            {
+                timerSystem?.ReplenishTimer(3f);
+            }
+            return;
+        };
         // Implement damage logic here
         Debug.Log($"Player took {amount} damage.");
     }
@@ -292,5 +304,11 @@ public class PlayerController : MonoBehaviour, IEntity
     {
         // Implement death logic here
         Debug.Log("Player died.");
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(transform.position - Vector3.up * transform.localScale.y, transform.localScale - Vector3.up * 0.5f * transform.localScale.y - Vector3.right * 0.1f);
     }
 }

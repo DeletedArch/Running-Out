@@ -1,9 +1,14 @@
 using UnityEngine;
 
-public class DashStateSMB : StateMachineBehaviour
+public class DashStateSMB : StateMachineBehaviour, ITimerAccess
 {
     [SerializeField] private float wallCheckDistance = 0.5f;
     [SerializeField] private LayerMask wallMask;
+    [SerializeField] private float timerUsage = 1f;
+    [SerializeField] private float timerRestoration = 2f;
+
+    public float TimerUsage => timerUsage;
+    public float TimerRestoration => timerRestoration;
 
     private Vector2 startPosition;
     private Rigidbody2D rb;
@@ -30,6 +35,7 @@ public class DashStateSMB : StateMachineBehaviour
 
         maxDashDuration = (movementConfig.DashDistance / movementConfig.DashForce) + 0.1f;
 
+        ITimerAccess.ModifyTimer(-timerUsage); // Deduct timer usage when the dash starts
         rb.linearVelocity = new Vector2(dashDirection * movementConfig.DashForce * animator.GetFloat("Timer"), 0);
     }
 
