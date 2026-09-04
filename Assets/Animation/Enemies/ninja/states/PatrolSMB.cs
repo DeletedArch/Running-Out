@@ -11,8 +11,8 @@ public class PatrolSMB : EnemyStateBehaviour
     }
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        //if (Context == null)
-            //return;
+        if (Context == null)
+            return;
         // Look for player
         if (Context.channel.GetBestTarget(0f)!=null)
         {
