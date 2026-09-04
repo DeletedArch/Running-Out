@@ -61,25 +61,26 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
             }
 
             Vector2 targetedEnemyPosition = (Vector2)targetData.Object.transform.position;
-            float enemyX = targetedEnemyPosition.x;                                                                
-            float playerX = player.transform.position.x;                                                                 
-            float diffX = enemyX - playerX;                                                                              
-                                                                                                                         
-            if (Mathf.Abs(diffX) > 0.05f)                                                                                
-            {                                                                                                            
-                float facingDir = Mathf.Sign(diffX);                                                                     
-                player.transform.localScale = new Vector3(                                                               
-                    facingDir * Mathf.Abs(player.transform.localScale.x),                                                
-                    player.transform.localScale.y,                                                                       
-                    player.transform.localScale.z                                                                        
-                );                                                                                                       
-            }                                                                                                            
-            float currentDistance = Mathf.Abs(diffX);                                                                    
-            float stoppingGap = Mathf.Min(1.0f, currentDistance * 0.5f);    
-            float targetX = enemyX - (Mathf.Sign(diffX) * stoppingGap);                                                  
+            float enemyX = targetedEnemyPosition.x;
+            float playerX = player.transform.position.x;
+            float diffX = enemyX - playerX;
+
+            if (Mathf.Abs(diffX) > 0.05f)
+            {
+                float facingDir = Mathf.Sign(diffX);
+                player.transform.localScale = new Vector3(
+                    facingDir * Mathf.Abs(player.transform.localScale.x),
+                    player.transform.localScale.y,
+                    player.transform.localScale.z
+                );
+            }
+            float currentDistance = Mathf.Abs(diffX);
+            float stoppingGap = Mathf.Min(1.0f, currentDistance * 0.5f);
+            float targetX = enemyX - (Mathf.Sign(diffX) * stoppingGap);
             Vector2 adjustedTargetPosition = new Vector2(targetX, targetedEnemyPosition.y);
             ApplyAlphaImpulse(playerRb, player.transform, adjustedTargetPosition, lungeDuration, animator, targetData.Object, stateCts.Token).Forget();
-        } else
+        }
+        else
         {
             animator.SetBool("SDash", false);
         }
@@ -121,6 +122,18 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
         catch (System.OperationCanceledException)
         {
             // Interrupted early (e.g. damaged, staggered, or transitioned out)
+            if (Vector2.Distance(playerTransform.position, endPosition) < 0.5f)
+            {
+                if (targetedEnemy != null)
+                {
+                    var damageable = targetedEnemy.GetComponent<IEntity>();
+                    if (damageable != null)
+                    {
+                        damageable.TakeDamage(player.Context.playerCombatConfig.SwiftDashDamage);
+                        ITimerAccess.ModifyTimer(timerRestoration);
+                    }
+                }
+            }
         }
     }
 

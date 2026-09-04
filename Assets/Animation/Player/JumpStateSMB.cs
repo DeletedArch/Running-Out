@@ -18,8 +18,7 @@ public class JumpStateSMB : StateMachineBehaviour
         movementConfig = player.Context.playerMovementConfig;
         originalGravityScale = rb.gravityScale;
         startPosition = rb.position;
-        rb.gravityScale *= animator.GetFloat("Timer");
-        if (animator.GetBool("IsGrounded"))
+        if (animator.GetBool("IsGrounded") && animator.GetBool("Jump"))
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, movementConfig.JumpForce);
         }

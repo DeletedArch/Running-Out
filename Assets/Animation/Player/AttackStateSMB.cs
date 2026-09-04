@@ -84,11 +84,12 @@ public class AttackImpulseSMB : StateMachineBehaviour, ITimerAccess
             float stoppingGap = Mathf.Min(1.0f, currentDistance * 0.5f);    
             float targetX = enemyX - (Mathf.Sign(diffX) * stoppingGap);                                                  
             Vector2 adjustedTargetPosition = new Vector2(targetX, targetedEnemyPosition.Value.y);
-            ApplyAlphaImpulse(playerRb, player.transform, adjustedTargetPosition, lungeDuration, player.Context.playerAnimator, player, stateCts.Token).Forget();
+            GameObject targetedEnemy = GetTargetedEnemyObject(player);
+            ApplyAlphaImpulse(playerRb, player.transform, adjustedTargetPosition, lungeDuration, player.Context.playerAnimator, player, stateCts.Token, targetedEnemy).Forget();
         }
     }
 
-    private async UniTaskVoid ApplyAlphaImpulse(Rigidbody2D targetRb, Transform playerTransform, Vector2 endPosition, float duration, Animator animator, PlayerController player, CancellationToken ct)
+    private async UniTaskVoid ApplyAlphaImpulse(Rigidbody2D targetRb, Transform playerTransform, Vector2 endPosition, float duration, Animator animator, PlayerController player, CancellationToken ct, GameObject targetedEnemy)
     {
         Vector2 startPosition = playerTransform.position;
         float elapsedTime = 0f;
@@ -106,7 +107,6 @@ public class AttackImpulseSMB : StateMachineBehaviour, ITimerAccess
             }, PlayerLoopTiming.FixedUpdate, ct);
 
             // Damage the enemy
-            GameObject targetedEnemy = GetTargetedEnemyObject(player);
             if (targetedEnemy != null)
             {
                 var damageable = targetedEnemy.GetComponent<IEntity>();
@@ -119,7 +119,18 @@ public class AttackImpulseSMB : StateMachineBehaviour, ITimerAccess
         }
         catch (OperationCanceledException)
         {
-            // Interrupted early (e.g. damaged, staggered, or transitioned out)
+            if (Vector2.Distance(playerTransform.position, endPosition) < 0.5f)
+            {
+                if (targetedEnemy != null)
+                {
+                    var damageable = targetedEnemy.GetComponent<IEntity>();
+                    if (damageable != null)
+                    {
+                        damageable.TakeDamage(player.Context.playerCombatConfig.SwiftDashDamage);
+                        ITimerAccess.ModifyTimer(timerRestoration);
+                    }
+                }
+            }
         }
     }
 

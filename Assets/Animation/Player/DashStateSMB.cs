@@ -6,6 +6,7 @@ public class DashStateSMB : StateMachineBehaviour, ITimerAccess
     [SerializeField] private LayerMask wallMask;
     [SerializeField] private float timerUsage = 1f;
     [SerializeField] private float timerRestoration = 2f;
+    [SerializeField] private float maxDashDuration = 0.5f;
 
     public float TimerUsage => timerUsage;
     public float TimerRestoration => timerRestoration;
@@ -16,7 +17,6 @@ public class DashStateSMB : StateMachineBehaviour, ITimerAccess
     private PlayerMovementConfig movementConfig;
     private float dashDirection;
     private float elapsedTime;
-    private float maxDashDuration;
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
@@ -33,7 +33,7 @@ public class DashStateSMB : StateMachineBehaviour, ITimerAccess
         player.transform.localScale = new Vector3(Mathf.Sign(dashDirection) * Mathf.Abs(player.transform.localScale.x), player.transform.localScale.y, player.transform.localScale.z);
         elapsedTime = 0f;
 
-        maxDashDuration = (movementConfig.DashDistance / movementConfig.DashForce) + 0.1f;
+        // maxDashDuration = (movementConfig.DashDistance / movementConfig.DashForce) + 0.1f;
 
         ITimerAccess.ModifyTimer(-timerUsage); // Deduct timer usage when the dash starts
         rb.linearVelocity = new Vector2(dashDirection * movementConfig.DashForce * animator.GetFloat("Timer"), 0);
@@ -54,13 +54,16 @@ public class DashStateSMB : StateMachineBehaviour, ITimerAccess
 
         if (wallHit.collider != null)
         {
+            Debug.Log("Dash interrupted by wall collision.");
             animator.SetBool("Dash", false);
             return;
         }
 
         float distanceTraveled = Vector2.Distance(startPosition, rb.position);
-        if (distanceTraveled >= movementConfig.DashDistance || elapsedTime >= maxDashDuration / animator.GetFloat("Timer"))
+        if (distanceTraveled >= movementConfig.DashDistance || elapsedTime >= maxDashDuration)
         {
+            Debug.Log("Dash duration exceeded: " + elapsedTime);
+            Debug.Log("Distance traveled: " + distanceTraveled);
             animator.SetBool("Dash", false);
             return;
         }

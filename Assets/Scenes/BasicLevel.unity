@@ -2132,6 +2132,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player & Camera
       objectReference: {fileID: 0}
+    - target: {fileID: 1468087833360254074, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1468087833360254074, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 3932231225770395283, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5858320025881666643, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 9.49253
@@ -2172,9 +2184,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6983513700529433199, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
-      propertyPath: timerSystem.depletionRate
-      value: 1
+    - target: {fileID: 8115722753443112024, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
