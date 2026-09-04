@@ -2,12 +2,14 @@ using UnityEngine;
 using System;
 using Cysharp.Threading.Tasks;
 using Unity.VisualScripting;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour, IEntity
 {
     [SerializeField] private PlayerContext context;
     [SerializeField] private PlayerCombat playerCombat;
     [SerializeField] private RangeDetectionHelper[] rangeDetectionHelper;
+    [SerializeField] private TimerSystem timerSystem;
     public PlayerContext Context => context;
     public float Health => new float(); // TODO: Add timer and include it as health property
     void Validate()
@@ -35,6 +37,7 @@ public class PlayerController : MonoBehaviour, IEntity
         {
             GetPlayerDirection = GetPlayerDirection
         };
+        timerSystem = new TimerSystem(context.playerAnimator, 20f);
     }
 
     void OnEnable()
@@ -89,6 +92,7 @@ public class PlayerController : MonoBehaviour, IEntity
         IsGrounded();
         playerCombat?.Update();
         IsTouchingWall();
+        timerSystem?.Update(Time.deltaTime);
         // SetTimer(); -- Debug Only
     }
 
@@ -142,9 +146,9 @@ public class PlayerController : MonoBehaviour, IEntity
         if (context.currentState != "Dash")
         {
             Vector2 velocity = context.playerRigidbody.linearVelocity;
-            if (Mathf.Abs(velocity.x) > context.playerMovementConfig.MaxSpeed)
+            if (Mathf.Abs(velocity.x) > context.playerMovementConfig.MaxSpeed * timerSystem.NormalizedTimer)
             {
-                Vector2 newVelocity = new Vector2(Mathf.Sign(velocity.x) * context.playerMovementConfig.MaxSpeed, velocity.y);
+                Vector2 newVelocity = new Vector2(Mathf.Sign(velocity.x) * context.playerMovementConfig.MaxSpeed * timerSystem.NormalizedTimer, velocity.y);
                 context.playerRigidbody.linearVelocity = newVelocity;
             }
         }
@@ -175,7 +179,7 @@ public class PlayerController : MonoBehaviour, IEntity
     {
         if (moveInput.x == 0 || moveInput == Vector2.zero || !context.canMove) return;
         Vector2 velocity = context.playerRigidbody.linearVelocity;
-        Vector2 newVelocity = new Vector2(velocity.x + moveInput.x * context.playerMovementConfig.RunSpeed, velocity.y);
+        Vector2 newVelocity = new Vector2(velocity.x + moveInput.x * context.playerMovementConfig.RunSpeed * timerSystem.NormalizedTimer, velocity.y);
         context.playerRigidbody.linearVelocity = newVelocity;
     }
 
