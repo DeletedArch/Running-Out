@@ -17,6 +17,11 @@ public class RangeDetectionHelper : MonoBehaviour
 
     void Awake()
     {
+        if (channel == null)
+        {
+            channel = new TargetDetectionChannel();
+        }
+
         CircleCollider2D circleCollider = GetComponent<CircleCollider2D>();
         if (circleCollider != null)
         {
