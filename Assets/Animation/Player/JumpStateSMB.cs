@@ -7,6 +7,7 @@ public class JumpStateSMB : StateMachineBehaviour
     private Vector2 startPosition;
     private Rigidbody2D rb;
     private PlayerMovementConfig movementConfig;
+    private float originalGravityScale = 1f;
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
@@ -15,7 +16,9 @@ public class JumpStateSMB : StateMachineBehaviour
 
         rb = player.Context.playerRigidbody;
         movementConfig = player.Context.playerMovementConfig;
+        originalGravityScale = rb.gravityScale;
         startPosition = rb.position;
+        rb.gravityScale *= animator.GetFloat("Timer");
         if (animator.GetBool("IsGrounded"))
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, movementConfig.JumpForce * animator.GetFloat("Timer"));
@@ -31,6 +34,9 @@ public class JumpStateSMB : StateMachineBehaviour
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-       
+        if (rb != null)
+        {
+            rb.gravityScale = originalGravityScale;
+        }
     }
 }
