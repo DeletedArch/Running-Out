@@ -3,25 +3,32 @@ using UnityEngine;
 public class PatrolSMB : EnemyStateBehaviour
 {
     [SerializeField] private float patrolSpeed = 2f;
+    [SerializeField] private EnemyController controller;
+    public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        base.OnStateEnter(animator, stateInfo, layerIndex);
+        controller = animator.GetComponent<EnemyController>();
+    }
     public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (Context == null) 
+        //if (Context == null)
+            //return;
+        // Look for player
+        if (Context.channel.GetBestTarget(0f)!=null)
+        {
+            animator.SetBool("PlayerSpotted", true);
             return;
-
-        // check for ledge / edge of platform
+        }
+        // Check for ledge / edge of platform
         if (!Context.perception.HasGroundAhead())
         {
-            Context.edgeResponse.OnEdgeDetected();
+            if (Context.edgeResponse != null)
+            {
+                Context.edgeResponse.OnEdgeDetected();
+            }
+            return;
         }
-
-        // look for the player
-        if (Context.perception.TryFindPlayer(out Transform playerTransform))
-        {
-            //enter another state(chase /or attack)
-            animator.SetBool("PlayerSpotted", true);
-        }
-
-        //move forward
+   
         Context.enemyMovement.Move(patrolSpeed);
     }
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

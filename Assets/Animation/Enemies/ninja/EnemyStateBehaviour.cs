@@ -1,11 +1,15 @@
 using UnityEngine;
-
 public abstract class EnemyStateBehaviour : StateMachineBehaviour
 {
-    protected EnemyContext Context { get; private set; }
+    protected EnemyController Controller { get; private set; }
+
+    protected EnemyContext Context => Controller != null ? Controller.Context : null;
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if(Context == null)
-            Context = animator.GetComponent<EnemyContext>();
+    
+        if (Controller == null)
+        {
+            Controller = animator.GetComponent<EnemyController>();
+        }
     }
 }

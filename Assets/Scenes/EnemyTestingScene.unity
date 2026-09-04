@@ -131,11 +131,11 @@ GameObject:
   - component: {fileID: 12071125}
   - component: {fileID: 12071124}
   - component: {fileID: 12071123}
-  - component: {fileID: 12071122}
-  - component: {fileID: 12071127}
   - component: {fileID: 12071129}
-  - component: {fileID: 12071130}
+  - component: {fileID: 12071132}
   - component: {fileID: 12071128}
+  - component: {fileID: 12071131}
+  - component: {fileID: 12071133}
   m_Layer: 9
   m_Name: Enemy Ninja
   m_TagString: Enemy
@@ -143,28 +143,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!95 &12071122
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 12071120}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: b60cafea0e6b11248b31c34aa76d13b4, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!50 &12071123
 Rigidbody2D:
   serializedVersion: 5
@@ -312,30 +290,9 @@ Transform:
   m_Children:
   - {fileID: 1494286994}
   - {fileID: 483491817}
+  - {fileID: 471041355}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &12071127
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 12071120}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: afb57a22b27e5db47bd30ed0fa49ec89, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyPerception
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  edgeCheckForwardOffset: 0.8
-  edgeCheckDownOffset: 0.3
-  edgeCheckDistance: 0.3
-  detectionRadius: 3.56
 --- !u!114 &12071128
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -358,21 +315,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 12071120}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82735090dad8cef48af63c646e1dad4b, type: 3}
+  m_Script: {fileID: 11500000, guid: 4aded58a8b748be49b96b2beac8b7f1e, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyContext
-  rb: {fileID: 12071123}
-  animator: {fileID: 12071122}
-  perception: {fileID: 12071127}
-  enemyMovement: {fileID: 12071128}
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  edgeResponseBehaviour: {fileID: 12071130}
---- !u!114 &12071130
+  m_EditorClassIdentifier: Assembly-CSharp::OnEdgeResponse
+  animator: {fileID: 12071133}
+--- !u!114 &12071131
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -381,10 +328,67 @@ MonoBehaviour:
   m_GameObject: {fileID: 12071120}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4aded58a8b748be49b96b2beac8b7f1e, type: 3}
+  m_Script: {fileID: 11500000, guid: 1ef5c39a30067084ca7c685510234ddb, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OnEdgeResponse
-  enemyMovement: {fileID: 12071128}
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyController
+  context:
+    rb: {fileID: 12071123}
+    animator: {fileID: 12071133}
+    channel: {fileID: 11400000, guid: d21fb6073e299b34ab9e4a85f949e3e3, type: 2}
+    perception: {fileID: 12071132}
+    enemyMovement: {fileID: 12071128}
+    playerLayer:
+      serializedVersion: 2
+      m_Bits: 8
+    groundLayer:
+      serializedVersion: 2
+      m_Bits: 64
+    edgeResponseBehaviour: {fileID: 12071129}
+  maxHealth: 70
+--- !u!114 &12071132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 12071120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: afb57a22b27e5db47bd30ed0fa49ec89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyPerception
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  edgeCheckForwardOffset: 0.3
+  edgeCheckDownOffset: 0.3
+  edgeCheckDistance: 0.3
+  detectionRadius: 4
+--- !u!95 &12071133
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 12071120}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: b60cafea0e6b11248b31c34aa76d13b4, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &465621315
 GameObject:
   m_ObjectHideFlags: 0
@@ -523,6 +527,93 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1456717192}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &471041354
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 471041355}
+  - component: {fileID: 471041357}
+  - component: {fileID: 471041356}
+  m_Layer: 9
+  m_Name: detection
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &471041355
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 471041354}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 12071126}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &471041356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 471041354}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6728e35d6fbbb1d6a80de0bcb0ef317, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RangeDetectionHelper
+  detectionRadius: 5
+  detectionLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  colliderName: chaseRange
+  channel: {fileID: 11400000, guid: d21fb6073e299b34ab9e4a85f949e3e3, type: 2}
+--- !u!58 &471041357
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 471041354}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Radius: 0.5
 --- !u!1 &483491816
 GameObject:
   m_ObjectHideFlags: 0
@@ -1572,8 +1663,8 @@ MonoBehaviour:
     canCancel: 1
     currentState: 
     moveInput: {x: 0, y: 0}
-    detectedEnemy: []
-    detectedEnemySwiftDash: []
+    attackChannel: {fileID: 0}
+    swiftDashChannel: {fileID: 0}
   rangeDetectionHelper: []
 --- !u!212 &2131186062
 SpriteRenderer:
