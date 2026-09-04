@@ -49,9 +49,9 @@ GameObject:
   - component: {fileID: 1934990625514394782}
   - component: {fileID: 6933980337102640787}
   - component: {fileID: 3541264775458267347}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -496,7 +496,7 @@ GameObject:
   - component: {fileID: 1595187081536571431}
   - component: {fileID: 6289295397097201267}
   - component: {fileID: 6964587028707841411}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: SwiftDashRange
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -781,7 +781,7 @@ GameObject:
   - component: {fileID: 6188152395424386831}
   - component: {fileID: 4008423474319957921}
   - component: {fileID: 4666714677151795174}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: AttackRange
   m_TagString: Untagged
   m_Icon: {fileID: 0}
