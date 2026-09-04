@@ -12,7 +12,6 @@ public class PlayerCombat
     private float lastAttackTime = 0f;
     private float attackHoldTime = 0f;
     private RangeDetectionHelper[] rangeDetectionHelper;
-    private Dictionary<string, List<GameObject>> enemiesInRange = new Dictionary<string, List<GameObject>>();
 
     public delegate Vector2 GetPlayerDirectionDelegate();
     public GetPlayerDirectionDelegate GetPlayerDirection;
@@ -22,10 +21,18 @@ public class PlayerCombat
         this.config = context.playerCombatConfig;
         this.context = context;
         this.rangeDetectionHelper = rangeDetectionHelper;
-        foreach (var helper in rangeDetectionHelper)
+
+        if (rangeDetectionHelper != null)
         {
-            helper.OnObjectDetected += HandleRangeDetection;
-            helper.OnObjectExited += HandleRangeExit;
+            foreach (var helper in rangeDetectionHelper)
+            {
+                if (helper == null) continue;
+                if (helper.Channel == null)
+                {
+                    if (helper.ColliderName == "AttackRange") helper.Channel = context.attackChannel;
+                    else if (helper.ColliderName == "SwiftDashRange") helper.Channel = context.swiftDashChannel;
+                }
+            }
         }
     }
 
@@ -96,7 +103,8 @@ public class PlayerCombat
     public void HandleGettingHit()
     {
         var animatorState = context.playerAnimator.GetCurrentAnimatorStateInfo(0);
-        if (animatorState.IsName("Block") && animatorState.normalizedTime < config.ParryTimeWindow)
+        float elapsedBlockTime = animatorState.normalizedTime * animatorState.length;
+        if (animatorState.IsName("Block") && elapsedBlockTime <= config.ParryTimeWindow)
         {
             // Restore time and negate damage
             context.playerAnimator.SetTrigger("Parry");
@@ -109,93 +117,22 @@ public class PlayerCombat
         }
     }
 
-    void HandleRangeDetection(Collider2D detectedObject, string colliderName)
+    public void Update()
     {
-        if (detectedObject == null) return;
-        GameObject enemyGo = detectedObject.gameObject;
+        Vector2 playerPos = context.playerRigidbody != null
+            ? context.playerRigidbody.position
+            : (Vector2)context.playerAnimator.transform.position;
 
-        if (!enemiesInRange.ContainsKey(colliderName))
+        Vector2 playerDirection = GetPlayerDirection != null ? GetPlayerDirection() : Vector2.right;
+
+        if (context.attackChannel != null)
         {
-            enemiesInRange[colliderName] = new List<GameObject>();
+            context.attackChannel.UpdateTargets(playerPos, playerDirection);
         }
 
-        if (!enemiesInRange[colliderName].Contains(enemyGo))
+        if (context.swiftDashChannel != null)
         {
-            enemiesInRange[colliderName].Add(enemyGo);
-        }
-
-        SetDetectedEnemy(colliderName);
-    }
-
-    void HandleRangeExit(Collider2D exitedObject, string colliderName)
-    {
-        if (exitedObject == null) return;
-        GameObject enemyGo = exitedObject.gameObject;
-
-        if (enemiesInRange.ContainsKey(colliderName))
-        {
-            enemiesInRange[colliderName].Remove(enemyGo);
-        }
-
-        SetDetectedEnemy(colliderName);
-    }
-
-    void SetDetectedEnemy(string colliderName)
-    {
-        if (context.detectedEnemy == null) context.detectedEnemy = new List<GameObject>();
-        if (context.detectedEnemySwiftDash == null) context.detectedEnemySwiftDash = new List<GameObject>();
-
-        if (!enemiesInRange.ContainsKey(colliderName)) return;
-
-        List<GameObject> targetList;
-        float minDotProduct;
-
-        if (colliderName == "AttackRange")
-        {
-            targetList = context.detectedEnemy;
-            minDotProduct = 0.5f;                                                                 
-        }
-        else if (colliderName == "SwiftDashRange")
-        {
-            targetList = context.detectedEnemySwiftDash;
-            minDotProduct = 0f;                                                                  
-        }
-        else
-        {
-            return;
-        }
-
-        targetList.Clear();
-
-        List<GameObject> enemies = enemiesInRange[colliderName];
-
-        enemies.RemoveAll(e => e == null);
-
-        Vector2 playerPos = context.playerRigidbody.position;
-
-        Vector2 playerDirection = GetPlayerDirection();
-
-        var validEnemies = new List<(GameObject enemy, float distance)>();
-
-        foreach (var enemy in enemies)
-        {
-            Vector2 toEnemy = (Vector2)enemy.transform.position - playerPos;
-            float distance = toEnemy.magnitude;
-            Vector2 directionToEnemy = toEnemy / (distance > 0.0001f ? distance : 1f);
-
-            float dotProduct = Vector2.Dot(directionToEnemy, playerDirection);
-
-            if (dotProduct > minDotProduct)
-            {
-                validEnemies.Add((enemy, distance));
-            }
-        }
-
-        validEnemies.Sort((a, b) => a.distance.CompareTo(b.distance));
-
-        foreach (var item in validEnemies)
-        {
-            targetList.Add(item.enemy);
+            context.swiftDashChannel.UpdateTargets(playerPos, playerDirection);
         }
     }
 }

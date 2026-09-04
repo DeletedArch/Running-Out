@@ -6,6 +6,7 @@ public class AttackImpulseSMB : StateMachineBehaviour
 {
     [SerializeField] private float maxLungeDistance = 3f;
     [SerializeField] private float lungeDuration = 0.2f;
+    [SerializeField] private TargetDetectionChannel channel;
 
     private Rigidbody2D rb;
     private float originalGravityScale = 1f;
@@ -71,22 +72,35 @@ public class AttackImpulseSMB : StateMachineBehaviour
             float stoppingGap = Mathf.Min(1.0f, currentDistance * 0.5f);    
             float targetX = enemyX - (Mathf.Sign(diffX) * stoppingGap);                                                  
             Vector2 adjustedTargetPosition = new Vector2(targetX, targetedEnemyPosition.Value.y);
-            ApplyAlphaImpulse(playerRb, player.transform, adjustedTargetPosition, lungeDuration).Forget();
+            ApplyAlphaImpulse(playerRb, player.transform, adjustedTargetPosition, lungeDuration, player.Context.playerAnimator, player).Forget();
         }
     }
 
-    private UniTask ApplyAlphaImpulse(Rigidbody2D targetRb, Transform playerTransform, Vector2 endPosition, float duration)
+    private UniTask ApplyAlphaImpulse(Rigidbody2D targetRb, Transform playerTransform, Vector2 endPosition, float duration, Animator animator, PlayerController player)
     {
         Vector2 startPosition = playerTransform.position;
         float elapsedTime = 0f;
 
         return UniTask.WaitUntil(() =>
         {
-            elapsedTime += Time.deltaTime;
+            duration = lungeDuration / animator.GetFloat("Timer");
+            elapsedTime += Time.fixedDeltaTime;
             float t = Mathf.Clamp01(elapsedTime / duration);
             Vector2 newPosition = Vector2.Lerp(startPosition, endPosition, t);
             targetRb.MovePosition(newPosition);
             return elapsedTime >= duration;
+        }).ContinueWith(() =>
+        {
+            // Damage the enemy
+            GameObject targetedEnemy = GetTargetedEnemyObject(player);
+            if (targetedEnemy != null)
+            {
+                var damageable = targetedEnemy.GetComponent<IEntity>();
+                if (damageable != null)
+                {
+                    damageable.TakeDamage(player.Context.playerCombatConfig.AttackDamage);
+                }
+            }
         });
     }
 
@@ -101,21 +115,31 @@ public class AttackImpulseSMB : StateMachineBehaviour
 
     private Vector2? GetTargetedEnemy(PlayerController player)
     {
-        List<GameObject> detectedEnemies = player.Context.detectedEnemy;
-        if (detectedEnemies == null || detectedEnemies.Count == 0)
+        var targetCh = channel != null ? channel : player.Context.attackChannel;
+        if (targetCh != null)
         {
+            var best = targetCh.GetBestTarget(0.3f, maxLungeDistance);
+            if (best != null && best.Object != null)
+            {
+                return (Vector2)best.Object.transform.position;
+            }
             return null;
         }
-        GameObject targetEnemy = player.Context.detectedEnemy[0];
-        if (targetEnemy == null)
+        return null;
+    }
+
+    private GameObject GetTargetedEnemyObject(PlayerController player)
+    {
+        var targetCh = channel != null ? channel : player.Context.attackChannel;
+        if (targetCh != null)
         {
+            var best = targetCh.GetBestTarget(0.3f, maxLungeDistance);
+            if (best != null && best.Object != null)
+            {
+                return best.Object;
+            }
             return null;
         }
-        float distanceToEnemy = Vector2.Distance(player.transform.position, targetEnemy.transform.position);
-        if (distanceToEnemy > maxLungeDistance)
-        {
-            return null;
-        }
-        return (Vector2)targetEnemy.transform.position;
+        return null;
     }
 }

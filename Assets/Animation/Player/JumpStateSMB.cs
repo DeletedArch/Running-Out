@@ -18,7 +18,7 @@ public class JumpStateSMB : StateMachineBehaviour
         startPosition = rb.position;
         if (animator.GetBool("IsGrounded"))
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, movementConfig.JumpForce);
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, movementConfig.JumpForce * animator.GetFloat("Timer"));
         }
         UniTask.WaitUntil(() =>
         {
@@ -31,9 +31,6 @@ public class JumpStateSMB : StateMachineBehaviour
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if (rb != null)
-        {
-            rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
-        }
+       
     }
 }

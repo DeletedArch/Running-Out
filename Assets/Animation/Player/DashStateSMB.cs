@@ -23,19 +23,21 @@ public class DashStateSMB : StateMachineBehaviour
         movementConfig = player.Context.playerMovementConfig;
 
         startPosition = rb.position;
-        dashDirection = Mathf.Sign(player.transform.localScale.x);
+        Vector2 direction = player.GetPlayerDirection();
+        dashDirection = direction.x != 0 ? Mathf.Sign(direction.x) : Mathf.Sign(player.transform.localScale.x);
+        player.transform.localScale = new Vector3(Mathf.Sign(dashDirection) * Mathf.Abs(player.transform.localScale.x), player.transform.localScale.y, player.transform.localScale.z);
         elapsedTime = 0f;
 
         maxDashDuration = (movementConfig.DashDistance / movementConfig.DashForce) + 0.1f;
 
-        rb.linearVelocity = new Vector2(dashDirection * movementConfig.DashForce, 0);
+        rb.linearVelocity = new Vector2(dashDirection * movementConfig.DashForce * animator.GetFloat("Timer"), 0);
     }
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         if (rb == null || movementConfig == null) return;
 
-        elapsedTime += Time.deltaTime;
+        elapsedTime += Time.fixedDeltaTime;
 
         Vector2 checkOrigin = playerCollider != null ? (Vector2)playerCollider.bounds.center : rb.position;
         Vector2 checkDirection = new Vector2(dashDirection, 0f);
@@ -51,13 +53,13 @@ public class DashStateSMB : StateMachineBehaviour
         }
 
         float distanceTraveled = Vector2.Distance(startPosition, rb.position);
-        if (distanceTraveled >= movementConfig.DashDistance || elapsedTime >= maxDashDuration)
+        if (distanceTraveled >= movementConfig.DashDistance || elapsedTime >= maxDashDuration / animator.GetFloat("Timer"))
         {
             animator.SetBool("Dash", false);
             return;
         }
 
-        rb.linearVelocity = new Vector2(dashDirection * movementConfig.DashForce, 0);
+        rb.linearVelocity = new Vector2(dashDirection * movementConfig.DashForce * animator.GetFloat("Timer"), 0);
     }
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
