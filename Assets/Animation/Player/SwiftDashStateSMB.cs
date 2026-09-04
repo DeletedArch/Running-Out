@@ -105,8 +105,8 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
             }, PlayerLoopTiming.FixedUpdate, ct);
 
             // Ensure the final position is set to the exact end position
-            targetRb.MovePosition(endPosition);
-            playerTransform.position = endPosition;
+            // targetRb.MovePosition(endPosition);
+            // playerTransform.position = endPosition;
 
             if (targetedEnemy != null)
             {

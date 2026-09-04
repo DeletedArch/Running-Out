@@ -18,7 +18,7 @@ public class DieSMB : EnemyStateBehaviour
             Collider2D[] colliders = animator.GetComponentsInChildren<Collider2D>();
             foreach (var col in colliders) col.enabled = false;
             // 3. Disappear after death animation
-            Destroy(animator.gameObject, 2.5f);
+            Destroy(animator.gameObject, 0.25f);
         }
     }
 }

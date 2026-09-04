@@ -18,6 +18,7 @@ public class TimerSystem
     public float NormalizedTimer => Math.Clamp(timer, lowSoftCap, highSoftCap) * normalizationRatio;
 
     public static event Action<float> OnTimerUpdated;
+    public static event Action OnTimerDepleted;
 
     public TimerSystem(Animator animator, float initialTime = 20f)
     {
@@ -31,6 +32,10 @@ public class TimerSystem
         DepleteTimer(depletionRate * deltaTime);
         timer = Mathf.Clamp(timer, minTime, maxTime);
         animator.SetFloat("Timer", NormalizedTimer);
+        if (timer <= 0)
+        {
+            OnTimerDepleted?.Invoke();
+        }
         OnTimerUpdated?.Invoke(timer/maxTime);
         // timerUI.UpdateUI(timer/maxTime);
     }

@@ -40,6 +40,7 @@ public class EnemyController : MonoBehaviour, IEntity
 
     public void Die()
     {
-        animator.SetBool("isDied", true);
+        animator.SetBool("isDead", true);
+        animator.Play("Die", 0, 0f);
     }
 }

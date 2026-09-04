@@ -1308,7 +1308,7 @@ MonoBehaviour:
   lungeDuration: 0.05
   channel: {fileID: 11400000, guid: 8fec81f173080644fabf2b1a7694471d, type: 2}
   timerUsage: 0.5
-  timerRestoration: 0.75
+  timerRestoration: 5
 --- !u!1101 &503821251308552006
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -1849,7 +1849,7 @@ MonoBehaviour:
   lungeDuration: 0.1
   channel: {fileID: 11400000, guid: 45f35a5120b6ed6cd9ccb1f3ffb783fe, type: 2}
   timerUsage: 1
-  timerRestoration: 2
+  timerRestoration: 5
 --- !u!114 &6963598843553636599
 MonoBehaviour:
   m_ObjectHideFlags: 1

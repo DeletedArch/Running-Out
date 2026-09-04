@@ -106,12 +106,16 @@ public class AttackImpulseSMB : StateMachineBehaviour, ITimerAccess
                 return elapsedTime >= duration;
             }, PlayerLoopTiming.FixedUpdate, ct);
 
+            Debug.Log("AttackImpulseSMB: Player reached the target position.");
+
             // Damage the enemy
             if (targetedEnemy != null)
             {
+                Debug.Log("AttackImpulseSMB: Attempting to damage the enemy.");
                 var damageable = targetedEnemy.GetComponent<IEntity>();
                 if (damageable != null)
                 {
+                    Debug.Log("AttackImpulseSMB: Damaging the enemy.");
                     damageable.TakeDamage(player.Context.playerCombatConfig.AttackDamage);
                     ITimerAccess.ModifyTimer(timerRestoration);
                 }
@@ -121,11 +125,14 @@ public class AttackImpulseSMB : StateMachineBehaviour, ITimerAccess
         {
             if (Vector2.Distance(playerTransform.position, endPosition) < 0.5f)
             {
+                Debug.Log("AttackImpulseSMB: Player reached the target position before cancellation.");
                 if (targetedEnemy != null)
                 {
+                    Debug.Log("AttackImpulseSMB: Attempting to damage the enemy after cancellation.");
                     var damageable = targetedEnemy.GetComponent<IEntity>();
                     if (damageable != null)
                     {
+                        Debug.Log("AttackImpulseSMB: Damaging the enemy after cancellation.");
                         damageable.TakeDamage(player.Context.playerCombatConfig.SwiftDashDamage);
                         ITimerAccess.ModifyTimer(timerRestoration);
                     }
