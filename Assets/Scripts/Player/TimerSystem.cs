@@ -40,7 +40,7 @@ public class TimerSystem
         // timerUI.UpdateUI(timer/maxTime);
     }
 
-    private void DepleteTimer(float amount)
+    public void DepleteTimer(float amount)
     {
         timer -= amount;
     }

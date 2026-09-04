@@ -296,6 +296,8 @@ public class PlayerController : MonoBehaviour, IEntity
             }
             return;
         };
+        timerSystem?.DepleteTimer(amount);
+        context.playerAnimator.SetTrigger("Hit");
         // Implement damage logic here
         Debug.Log($"Player took {amount} damage.");
     }
