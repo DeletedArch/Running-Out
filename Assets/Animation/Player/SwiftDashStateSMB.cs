@@ -1,6 +1,7 @@
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading;
 
 public class SwiftDashSMB : StateMachineBehaviour
 {
@@ -11,6 +12,7 @@ public class SwiftDashSMB : StateMachineBehaviour
     [SerializeField] private TargetDetectionChannel channel;
 
 
+    private CancellationTokenSource stateCts;
     private PlayerController player;
     private Vector2 startPosition;
     private Rigidbody2D rb;
@@ -24,6 +26,10 @@ public class SwiftDashSMB : StateMachineBehaviour
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        stateCts?.Cancel();
+        stateCts?.Dispose();
+        stateCts = new CancellationTokenSource();
+
         var player = animator.GetComponent<PlayerController>();
         if (player == null) return;
         this.player = player;
@@ -101,28 +107,30 @@ public class SwiftDashSMB : StateMachineBehaviour
             float stoppingGap = Mathf.Min(1.0f, currentDistance * 0.5f);    
             float targetX = enemyX - (Mathf.Sign(diffX) * stoppingGap);                                                  
             Vector2 adjustedTargetPosition = new Vector2(targetX, targetedEnemyPosition.Value.y);
-            ApplyAlphaImpulse(playerRb, player.transform, adjustedTargetPosition, lungeDuration, animator).Forget();
+            ApplyAlphaImpulse(playerRb, player.transform, adjustedTargetPosition, lungeDuration, animator, stateCts.Token).Forget();
         } else
         {
             animator.SetBool("SDash", false);
         }
     }
 
-    private UniTask ApplyAlphaImpulse(Rigidbody2D targetRb, Transform playerTransform, Vector2 endPosition, float duration, Animator animator)
+    private async UniTaskVoid ApplyAlphaImpulse(Rigidbody2D targetRb, Transform playerTransform, Vector2 endPosition, float duration, Animator animator, CancellationToken ct)
     {
         Vector2 startPosition = playerTransform.position;
         float elapsedTime = 0f;
 
-        return UniTask.WaitUntil(() =>
+        try
         {
-            duration = lungeDuration / animator.GetFloat("Timer");
-            elapsedTime += Time.fixedDeltaTime;
-            float t = Mathf.Clamp01(elapsedTime / duration);
-            Vector2 newPosition = Vector2.Lerp(startPosition, endPosition, t);
-            targetRb.MovePosition(newPosition);
-            return elapsedTime >= duration;
-        }).ContinueWith(() =>
-        {
+            await UniTask.WaitUntil(() =>
+            {
+                duration = lungeDuration / animator.GetFloat("Timer");
+                elapsedTime += Time.fixedDeltaTime;
+                float t = Mathf.Clamp01(elapsedTime / duration);
+                Vector2 newPosition = Vector2.Lerp(startPosition, endPosition, t);
+                targetRb.MovePosition(newPosition);
+                return elapsedTime >= duration;
+            }, PlayerLoopTiming.FixedUpdate, ct);
+
             GameObject targetedEnemy = GetTargetedEnemyObject(player);
             if (targetedEnemy != null)
             {
@@ -133,11 +141,19 @@ public class SwiftDashSMB : StateMachineBehaviour
                 }
             }
             animator.SetBool("SDash", false);
-        });
+        }
+        catch (System.OperationCanceledException)
+        {
+            // Interrupted early (e.g. damaged, staggered, or transitioned out)
+        }
     }
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        stateCts?.Cancel();
+        stateCts?.Dispose();
+        stateCts = null;
+
         if (isSuspended && rb != null)
         {
             rb.gravityScale = originalGravityScale;

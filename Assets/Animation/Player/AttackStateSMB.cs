@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -8,12 +9,17 @@ public class AttackImpulseSMB : StateMachineBehaviour
     [SerializeField] private float lungeDuration = 0.2f;
     [SerializeField] private TargetDetectionChannel channel;
 
+    private CancellationTokenSource stateCts;
     private Rigidbody2D rb;
     private float originalGravityScale = 1f;
     private bool isSuspended = false;
 
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        stateCts?.Cancel();
+        stateCts?.Dispose();
+        stateCts = new CancellationTokenSource();
+
         animator.SetBool("Attack", true); // Ensure the Attack boolean is set to true when entering the state
         PlayerController player = animator.GetComponent<PlayerController>();
         if (player == null) return;
@@ -72,25 +78,27 @@ public class AttackImpulseSMB : StateMachineBehaviour
             float stoppingGap = Mathf.Min(1.0f, currentDistance * 0.5f);    
             float targetX = enemyX - (Mathf.Sign(diffX) * stoppingGap);                                                  
             Vector2 adjustedTargetPosition = new Vector2(targetX, targetedEnemyPosition.Value.y);
-            ApplyAlphaImpulse(playerRb, player.transform, adjustedTargetPosition, lungeDuration, player.Context.playerAnimator, player).Forget();
+            ApplyAlphaImpulse(playerRb, player.transform, adjustedTargetPosition, lungeDuration, player.Context.playerAnimator, player, stateCts.Token).Forget();
         }
     }
 
-    private UniTask ApplyAlphaImpulse(Rigidbody2D targetRb, Transform playerTransform, Vector2 endPosition, float duration, Animator animator, PlayerController player)
+    private async UniTaskVoid ApplyAlphaImpulse(Rigidbody2D targetRb, Transform playerTransform, Vector2 endPosition, float duration, Animator animator, PlayerController player, CancellationToken ct)
     {
         Vector2 startPosition = playerTransform.position;
         float elapsedTime = 0f;
 
-        return UniTask.WaitUntil(() =>
+        try
         {
-            duration = lungeDuration / animator.GetFloat("Timer");
-            elapsedTime += Time.fixedDeltaTime;
-            float t = Mathf.Clamp01(elapsedTime / duration);
-            Vector2 newPosition = Vector2.Lerp(startPosition, endPosition, t);
-            targetRb.MovePosition(newPosition);
-            return elapsedTime >= duration;
-        }).ContinueWith(() =>
-        {
+            await UniTask.WaitUntil(() =>
+            {
+                duration = lungeDuration / animator.GetFloat("Timer");
+                elapsedTime += Time.fixedDeltaTime;
+                float t = Mathf.Clamp01(elapsedTime / duration);
+                Vector2 newPosition = Vector2.Lerp(startPosition, endPosition, t);
+                targetRb.MovePosition(newPosition);
+                return elapsedTime >= duration;
+            }, PlayerLoopTiming.FixedUpdate, ct);
+
             // Damage the enemy
             GameObject targetedEnemy = GetTargetedEnemyObject(player);
             if (targetedEnemy != null)
@@ -101,11 +109,19 @@ public class AttackImpulseSMB : StateMachineBehaviour
                     damageable.TakeDamage(player.Context.playerCombatConfig.AttackDamage);
                 }
             }
-        });
+        }
+        catch (System.OperationCanceledException)
+        {
+            // Interrupted early (e.g. damaged, staggered, or transitioned out)
+        }
     }
 
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        stateCts?.Cancel();
+        stateCts?.Dispose();
+        stateCts = null;
+
         if (isSuspended && rb != null)
         {
             rb.gravityScale = originalGravityScale;
