@@ -24,10 +24,6 @@ public class PlayerController : MonoBehaviour, IEntity
         {
             Debug.LogError("Player Animator is not assigned in the PlayerContext."); 
         }
-        if (playerCombat == null)
-        {
-            Debug.LogError("PlayerCombat is not assigned in the PlayerController.");
-        }
     }
 
     void Awake()
@@ -120,8 +116,9 @@ public class PlayerController : MonoBehaviour, IEntity
 
     public bool IsGrounded()
     {
-        Debug.DrawRay(transform.position, Vector2.down * 1.05f, Color.red);
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 1.05f, context.groundLayer);
+        // Debug.DrawRay(transform.position, Vector2.down * 1.05f, Color.red);
+        RaycastHit2D hit = Physics2D.BoxCast(transform.position, 
+        new Vector2(Mathf.Abs(transform.localScale.x) - 0.1f, transform.localScale.y * 0.5f), 0f, Vector2.down, transform.localScale.y, context.groundLayer);
         if (hit.collider != null)
         {
             context.playerAnimator.SetBool("IsGrounded", true);
@@ -224,6 +221,7 @@ public class PlayerController : MonoBehaviour, IEntity
     void HandleSwiftDashInput()
     {
         if (context.currentState == "SwiftDash") return;
+        if (context.swiftDashChannel.GetBestTarget() == null) return;
         context.playerAnimator.SetBool("SDash", true);
         if (context.canCancel)
         {
@@ -292,5 +290,11 @@ public class PlayerController : MonoBehaviour, IEntity
     {
         // Implement death logic here
         Debug.Log("Player died.");
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(transform.position - Vector3.up * transform.localScale.y, transform.localScale - Vector3.up * 0.5f * transform.localScale.y - Vector3.right * 0.1f);
     }
 }
