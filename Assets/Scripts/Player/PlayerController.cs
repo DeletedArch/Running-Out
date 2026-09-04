@@ -16,6 +16,18 @@ public class PlayerController : MonoBehaviour, IEntity
         {
             Debug.LogError("PlayerContext is not assigned in the PlayerController.");
         }
+        if (context.playerRigidbody == null)
+        {
+            Debug.LogError("Player Rigidbody2D is not assigned in the PlayerContext.");
+        }
+        if (context.playerAnimator == null)
+        {
+            Debug.LogError("Player Animator is not assigned in the PlayerContext."); 
+        }
+        if (playerCombat == null)
+        {
+            Debug.LogError("PlayerCombat is not assigned in the PlayerController.");
+        }
     }
 
     void Awake()
