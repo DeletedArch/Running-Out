@@ -14,7 +14,6 @@ public class AttackImpulseSMB : StateMachineBehaviour, ITimerAccess
 
     public float TimerUsage => timerUsage;
     public float TimerRestoration => timerRestoration;
-    public static event Action<float> OnTimerChange;
 
     private CancellationTokenSource stateCts;
     private Rigidbody2D rb;

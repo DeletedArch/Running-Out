@@ -1239,13 +1239,13 @@ MonoBehaviour:
   - {fileID: 1927504042}
   - {fileID: 1843467186}
   timerSystem:
-    timer: 0
-    normalizationRatio: 0
-    maxTime: 0
+    timer: 20
+    normalizationRatio: 0.05
+    maxTime: 35
     minTime: 0
-    highSoftCap: 0
-    lowSoftCap: 0
-    depletionRate: 0
+    highSoftCap: 30
+    lowSoftCap: 5
+    depletionRate: 1
 --- !u!212 &1663022154
 SpriteRenderer:
   serializedVersion: 2

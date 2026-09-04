@@ -9,7 +9,6 @@ public class DashStateSMB : StateMachineBehaviour, ITimerAccess
 
     public float TimerUsage => timerUsage;
     public float TimerRestoration => timerRestoration;
-    public static event System.Action<float> OnTimerChange;
 
     private Vector2 startPosition;
     private Rigidbody2D rb;

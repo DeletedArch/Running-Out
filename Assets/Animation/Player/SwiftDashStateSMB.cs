@@ -13,7 +13,6 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
 
     public float TimerUsage => timerUsage;
     public float TimerRestoration => timerRestoration;
-    public static event System.Action<float> OnTimerChange;
 
     private CancellationTokenSource stateCts;
     private PlayerController player;
