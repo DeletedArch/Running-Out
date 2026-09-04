@@ -1,20 +1,20 @@
 using System;
 using UnityEngine;
 
-public enum EnemyState
-{
-    Idle,
-    patrol,
-    chase,
-    Aim,
-    Shoot,
-    Evade,
-    Run,
-    Attack,
-    Deflect,
-    Stun
-    //gonna add more in the future for the boss fight
-}
+//public enum EnemyState
+//{
+    //Idle,
+    //patrol,
+    //chase,
+    //Aim,
+    //Shoot,
+    //Evade,
+    //Run,
+    //Attack,
+    //Deflect,
+    //Stun
+    ////gonna add more in the future for the boss fight
+//}
 
 [Serializable]
 public class EnemyContext : MonoBehaviour
@@ -29,6 +29,10 @@ public class EnemyContext : MonoBehaviour
     [SerializeField] internal LayerMask playerLayer;
     [SerializeField] internal LayerMask groundLayer;
 
-    [Header("enemy state")]
-    [SerializeField] internal EnemyState currentPlayerState = EnemyState.Idle;
+    //[Header("enemy state")]
+    //[SerializeField] internal EnemyState currentPlayerState = EnemyState.Idle;
+
+    [Header("for different cases")]
+    [SerializeField] internal MonoBehaviour edgeResponseBehaviour;
+    internal IEdgeResponse edgeResponse => edgeResponseBehaviour as IEdgeResponse;
 }

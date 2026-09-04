@@ -35,8 +35,6 @@ public class EnemyPerception : MonoBehaviour
         return hit.collider != null;
     }
 
-
-
     public bool TryFindPlayer(out Transform playerTransform)
     {
         playerTransform = null;
@@ -60,11 +58,7 @@ public class EnemyPerception : MonoBehaviour
         currentTarget = playerCollider.transform;
         return true;
     }
-    //private void Update()
-    //{
-    //    isPlayerInRange = TryFindPlayer(out Transform playerTransform);
-    //    HasGroundAhead();
-    //}
+
     private void OnDrawGizmosSelected()
     {
         Vector3 enemyDetection = this.transform.position;
@@ -76,7 +70,7 @@ public class EnemyPerception : MonoBehaviour
         {
             Gizmos.color = Color.yellow;
         }
-        Gizmos.DrawWireSphere(enemyDetection, detectionRadius);
 
+        Gizmos.DrawWireSphere(enemyDetection, detectionRadius);
     }
 }
