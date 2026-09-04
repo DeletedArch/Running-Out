@@ -72,18 +72,19 @@ public class AttackImpulseSMB : StateMachineBehaviour
             float stoppingGap = Mathf.Min(1.0f, currentDistance * 0.5f);    
             float targetX = enemyX - (Mathf.Sign(diffX) * stoppingGap);                                                  
             Vector2 adjustedTargetPosition = new Vector2(targetX, targetedEnemyPosition.Value.y);
-            ApplyAlphaImpulse(playerRb, player.transform, adjustedTargetPosition, lungeDuration).Forget();
+            ApplyAlphaImpulse(playerRb, player.transform, adjustedTargetPosition, lungeDuration, player.Context.playerAnimator).Forget();
         }
     }
 
-    private UniTask ApplyAlphaImpulse(Rigidbody2D targetRb, Transform playerTransform, Vector2 endPosition, float duration)
+    private UniTask ApplyAlphaImpulse(Rigidbody2D targetRb, Transform playerTransform, Vector2 endPosition, float duration, Animator animator)
     {
         Vector2 startPosition = playerTransform.position;
         float elapsedTime = 0f;
 
         return UniTask.WaitUntil(() =>
         {
-            elapsedTime += Time.deltaTime;
+            duration = lungeDuration / animator.GetFloat("Timer");
+            elapsedTime += Time.fixedDeltaTime;
             float t = Mathf.Clamp01(elapsedTime / duration);
             Vector2 newPosition = Vector2.Lerp(startPosition, endPosition, t);
             targetRb.MovePosition(newPosition);

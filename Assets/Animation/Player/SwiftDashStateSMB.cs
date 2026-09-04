@@ -6,8 +6,8 @@ public class SwiftDashSMB : StateMachineBehaviour
 {
     [SerializeField] private float wallCheckDistance = 0.5f;
     [SerializeField] private LayerMask wallMask;
-    [SerializeField] private float maxLungeDistance = 3f;
-    [SerializeField] private float lungeDuration = 15f;
+    [SerializeField] private float maxLungeDistance = 15f;
+    [SerializeField] private float lungeDuration = 0.25f;
     [SerializeField] private TargetDetectionChannel channel;
 
 
@@ -48,10 +48,10 @@ public class SwiftDashSMB : StateMachineBehaviour
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
         }
 
-        elapsedTime += Time.deltaTime;
+        elapsedTime += Time.fixedDeltaTime;
 
         Vector2 checkOrigin = playerCollider != null ? (Vector2)playerCollider.bounds.center : rb.position;
-        Vector2 checkDirection = playerCollider.transform.forward;
+        Vector2 checkDirection = new Vector2(Mathf.Sign(rb.transform.localScale.x), 0f);
 
         RaycastHit2D wallHit = Physics2D.Raycast(checkOrigin, checkDirection, wallCheckDistance, wallMask);
 
@@ -115,7 +115,8 @@ public class SwiftDashSMB : StateMachineBehaviour
 
         return UniTask.WaitUntil(() =>
         {
-            elapsedTime += Time.deltaTime;
+            duration = lungeDuration / animator.GetFloat("Timer");
+            elapsedTime += Time.fixedDeltaTime;
             float t = Mathf.Clamp01(elapsedTime / duration);
             Vector2 newPosition = Vector2.Lerp(startPosition, endPosition, t);
             targetRb.MovePosition(newPosition);

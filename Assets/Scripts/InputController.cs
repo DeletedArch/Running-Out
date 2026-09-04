@@ -30,22 +30,28 @@ public class InputController : MonoBehaviour
 
     void OnEnable()
     {
-        controls.Movement.Enable();
-        controls.Combat.Enable();
+        controls?.Movement.Enable();
+        controls?.Combat.Enable();
         if (enableDebugInputs)
         {
-           controls.Debug.Enable();
+            controls?.Debug.Enable();
         }
     }
 
     void OnDisable()
     {
-        controls.Movement.Disable();
-        controls.Combat.Disable();
+        controls?.Movement.Disable();
+        controls?.Combat.Disable();
         if (enableDebugInputs)
         {
-            controls.Debug.Disable();
+            controls?.Debug.Disable();
         }
+    }
+
+    void OnDestroy()
+    {
+        controls?.Dispose();
+        controls = null;
     }
 
     void Awake()
@@ -56,7 +62,6 @@ public class InputController : MonoBehaviour
         controls.Movement.Move.performed += ctx => OnMoveInput?.Invoke(ctx.ReadValue<Vector2>());
         controls.Movement.Move.canceled += ctx => OnMoveInput?.Invoke(Vector2.zero);
         controls.Movement.Dash.performed += ctx => OnDashInput?.Invoke();
-        controls.Movement.Dash.canceled += ctx => OnDashInput?.Invoke();
         // Combat
         controls.Combat.SwiftDash.performed += ctx => OnSwiftDashInput?.Invoke();
         controls.Combat.Attack.performed += ctx => OnAttackStart?.Invoke();
