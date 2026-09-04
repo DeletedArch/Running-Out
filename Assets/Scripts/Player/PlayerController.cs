@@ -16,6 +16,18 @@ public class PlayerController : MonoBehaviour, IEntity
         {
             Debug.LogError("PlayerContext is not assigned in the PlayerController.");
         }
+        if (context.playerRigidbody == null)
+        {
+            Debug.LogError("Player Rigidbody2D is not assigned in the PlayerContext.");
+        }
+        if (context.playerAnimator == null)
+        {
+            Debug.LogError("Player Animator is not assigned in the PlayerContext."); 
+        }
+        if (playerCombat == null)
+        {
+            Debug.LogError("PlayerCombat is not assigned in the PlayerController.");
+        }
     }
 
     void Awake()
@@ -27,6 +39,10 @@ public class PlayerController : MonoBehaviour, IEntity
         {
             GetPlayerDirection = GetPlayerDirection
         };
+    }
+
+    void OnEnable()
+    {
         InputController.OnMoveInput += HandleMoveInput;
         InputController.OnJumpStart += HandleJumpInput;
         InputController.OnDashInput += HandleDashInput;
@@ -35,23 +51,71 @@ public class PlayerController : MonoBehaviour, IEntity
         InputController.OnBlockStart += HandleBlockInput;
         InputController.OnBlockEnd += HandleBlockRelease;
         InputController.OnSwiftDashInput += HandleSwiftDashInput;
-        SetStateSMB.OnStateEntered += (str) => { Debug.Log("State Entered: " + str); context.currentState = str; };
-        SetStateSMB.OnStateExited += (str) => { Debug.Log("State Exited: " + str); };
+        SetStateSMB.OnStateEntered += HandleStateEntered;
+        SetStateSMB.OnStateExited += HandleStateExited;
+    }
+
+    void OnDisable()
+    {
+        InputController.OnMoveInput -= HandleMoveInput;
+        InputController.OnJumpStart -= HandleJumpInput;
+        InputController.OnDashInput -= HandleDashInput;
+        InputController.OnAttackStart -= HandleAttackInput;
+        InputController.OnAttackEnd -= HandleAttackRelease;
+        InputController.OnBlockStart -= HandleBlockInput;
+        InputController.OnBlockEnd -= HandleBlockRelease;
+        InputController.OnSwiftDashInput -= HandleSwiftDashInput;
+        SetStateSMB.OnStateEntered -= HandleStateEntered;
+        SetStateSMB.OnStateExited -= HandleStateExited;
+    }
+
+    private void HandleStateEntered(string stateTag)
+    {
+        Debug.Log("State Entered: " + stateTag);
+        context.currentState = stateTag;
+    }
+
+    private void HandleStateExited(string stateTag)
+    {
+        Debug.Log("State Exited: " + stateTag);
     }
 
     void FixedUpdate()
     {
         MovePlayer(context.moveInput);
+        LimitSpeed();
         ApplyCustomDrag();
     }
 
     void Update()
     {
-        LimitSpeed();
         AdjustOrientation(context.moveInput.x);
         IsGrounded();
         playerCombat?.Update();
         IsTouchingWall();
+        // SetTimer(); -- Debug Only
+    }
+
+    bool flip = false;
+    void SetTimer()
+    {
+        float currentTimer = context.playerAnimator.GetFloat("Timer");
+        if (flip)
+        {
+            context.playerAnimator.SetFloat("Timer", currentTimer + Time.deltaTime);
+            if (currentTimer >= 1.5f)
+            {
+                flip = false;
+            }
+        }
+        else
+        {
+            context.playerAnimator.SetFloat("Timer", currentTimer - Time.deltaTime);
+            if (currentTimer <= 0.5f)
+            {
+                flip = true;
+            }
+        }
     }
 
     public bool IsGrounded()

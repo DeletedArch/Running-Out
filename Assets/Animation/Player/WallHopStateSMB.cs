@@ -55,11 +55,13 @@ public class WallHopStateSMB : StateMachineBehaviour
         rb.transform.localScale = new Vector3(-rb.transform.localScale.x, rb.transform.localScale.y, rb.transform.localScale.z);
         Vector2 startPosition = rb.position;
         float elapsedTime = 0f;
+        float newWallHopDuration = wallHopDuration * context.playerAnimator.GetFloat("Timer");
         return UniTask.WaitUntil(() =>
         {
-            elapsedTime += Time.deltaTime;
-            rb.MovePosition(Vector2.Lerp(startPosition, wallHopPosition, elapsedTime / wallHopDuration));
-            return elapsedTime >= wallHopDuration;
+
+            elapsedTime += Time.fixedDeltaTime;
+            rb.MovePosition(Vector2.Lerp(startPosition, wallHopPosition, elapsedTime / newWallHopDuration));
+            return elapsedTime >= newWallHopDuration;
         }).ContinueWith(() =>
         {
             rb.gravityScale = originalGravityScale;
@@ -69,8 +71,8 @@ public class WallHopStateSMB : StateMachineBehaviour
 
     Vector2? FindNextWall(Vector2 direction)
     {
-        RaycastHit2D hit = Physics2D.Raycast(rb.position * Vector2.up * context.playerMovementConfig.WallHopMaxDistance.y, direction, context.playerMovementConfig.WallHopMaxDistance.x, context.wallLayer);
-        Debug.DrawRay(rb.position * Vector2.up * context.playerMovementConfig.WallHopMaxDistance.y, direction * context.playerMovementConfig.WallHopMaxDistance.x, Color.red);
+        RaycastHit2D hit = Physics2D.Raycast(rb.position + Vector2.up * context.playerMovementConfig.WallHopMaxDistance.y, direction, context.playerMovementConfig.WallHopMaxDistance.x, context.wallLayer);
+        Debug.DrawRay(rb.position + Vector2.up * context.playerMovementConfig.WallHopMaxDistance.y, direction * context.playerMovementConfig.WallHopMaxDistance.x, Color.red);
         if (hit.collider != null)
         {
             return hit.point;

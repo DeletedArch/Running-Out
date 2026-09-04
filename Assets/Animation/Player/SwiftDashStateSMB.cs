@@ -6,12 +6,12 @@ public class SwiftDashSMB : StateMachineBehaviour
 {
     [SerializeField] private float wallCheckDistance = 0.5f;
     [SerializeField] private LayerMask wallMask;
-    [SerializeField] private float maxLungeDistance = 3f;
-    [SerializeField] private float lungeDuration = 15f;
+    [SerializeField] private float maxLungeDistance = 15f;
+    [SerializeField] private float lungeDuration = 0.25f;
     [SerializeField] private TargetDetectionChannel channel;
 
 
-
+    private PlayerController player;
     private Vector2 startPosition;
     private Rigidbody2D rb;
     private Collider2D playerCollider;
@@ -26,7 +26,7 @@ public class SwiftDashSMB : StateMachineBehaviour
     {
         var player = animator.GetComponent<PlayerController>();
         if (player == null) return;
-
+        this.player = player;
         rb = player.Context.playerRigidbody;
         playerCollider = player.GetComponent<Collider2D>();
         movementConfig = player.Context.playerMovementConfig;
@@ -48,10 +48,10 @@ public class SwiftDashSMB : StateMachineBehaviour
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
         }
 
-        elapsedTime += Time.deltaTime;
+        elapsedTime += Time.fixedDeltaTime;
 
         Vector2 checkOrigin = playerCollider != null ? (Vector2)playerCollider.bounds.center : rb.position;
-        Vector2 checkDirection = playerCollider.transform.forward;
+        Vector2 checkDirection = new Vector2(Mathf.Sign(rb.transform.localScale.x), 0f);
 
         RaycastHit2D wallHit = Physics2D.Raycast(checkOrigin, checkDirection, wallCheckDistance, wallMask);
 
@@ -115,23 +115,21 @@ public class SwiftDashSMB : StateMachineBehaviour
 
         return UniTask.WaitUntil(() =>
         {
-            elapsedTime += Time.deltaTime;
+            duration = lungeDuration / animator.GetFloat("Timer");
+            elapsedTime += Time.fixedDeltaTime;
             float t = Mathf.Clamp01(elapsedTime / duration);
             Vector2 newPosition = Vector2.Lerp(startPosition, endPosition, t);
             targetRb.MovePosition(newPosition);
             return elapsedTime >= duration;
         }).ContinueWith(() =>
         {
-            var pc = playerTransform.GetComponent<PlayerController>();
-            var targetCh = channel != null ? channel : pc?.Context.swiftDashChannel;
-            if (targetCh != null)
+            GameObject targetedEnemy = GetTargetedEnemyObject(player);
+            if (targetedEnemy != null)
             {
-                var best = targetCh.GetBestTarget(0f, maxLungeDistance);
-                if (best != null && best.Object != null)
+                var damageable = targetedEnemy.GetComponent<IEntity>();
+                if (damageable != null)
                 {
-                    GameObject enemy = best.Object;
-                    targetCh.Remove(enemy);
-                    Destroy(enemy);
+                    damageable.TakeDamage(player.Context.playerCombatConfig.SwiftDashDamage);
                 }
             }
             animator.SetBool("SDash", false);
@@ -156,6 +154,21 @@ public class SwiftDashSMB : StateMachineBehaviour
             if (best != null && best.Object != null)
             {
                 return (Vector2)best.Object.transform.position;
+            }
+            return null;
+        }
+        return null;
+    }
+
+        private GameObject GetTargetedEnemyObject(PlayerController player)
+    {
+        var targetCh = channel != null ? channel : player.Context.attackChannel;
+        if (targetCh != null)
+        {
+            var best = targetCh.GetBestTarget(0.3f, maxLungeDistance);
+            if (best != null && best.Object != null)
+            {
+                return best.Object;
             }
             return null;
         }

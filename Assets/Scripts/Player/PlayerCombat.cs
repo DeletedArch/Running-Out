@@ -103,7 +103,8 @@ public class PlayerCombat
     public void HandleGettingHit()
     {
         var animatorState = context.playerAnimator.GetCurrentAnimatorStateInfo(0);
-        if (animatorState.IsName("Block") && animatorState.normalizedTime < config.ParryTimeWindow)
+        float elapsedBlockTime = animatorState.normalizedTime * animatorState.length;
+        if (animatorState.IsName("Block") && elapsedBlockTime <= config.ParryTimeWindow)
         {
             // Restore time and negate damage
             context.playerAnimator.SetTrigger("Parry");
@@ -118,8 +119,8 @@ public class PlayerCombat
 
     public void Update()
     {
-        Vector2 playerPos = context.playerRigidbody != null 
-            ? context.playerRigidbody.position 
+        Vector2 playerPos = context.playerRigidbody != null
+            ? context.playerRigidbody.position
             : (Vector2)context.playerAnimator.transform.position;
 
         Vector2 playerDirection = GetPlayerDirection != null ? GetPlayerDirection() : Vector2.right;

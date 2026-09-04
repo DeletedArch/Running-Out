@@ -1643,13 +1643,13 @@ AnimatorState:
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
   m_Mirror: 0
-  m_SpeedParameterActive: 0
+  m_SpeedParameterActive: 1
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
   m_Motion: {fileID: 7400000, guid: db5694c1a6ef0774596ff109cf2ca55c, type: 2}
   m_Tag: 
-  m_SpeedParameter: 
+  m_SpeedParameter: Timer
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
@@ -1768,7 +1768,7 @@ AnimatorState:
   m_TimeParameterActive: 0
   m_Motion: {fileID: 7400000, guid: 3ab9b717baa688ad29fb48fc4804884e, type: 2}
   m_Tag: 
-  m_SpeedParameter: 
+  m_SpeedParameter: Timer
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 

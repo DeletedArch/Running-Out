@@ -9,6 +9,9 @@ public class PlayerCombatConfig : ScriptableObject
     [SerializeField] private float parryTimeWindow = 0.2f;
     [SerializeField] private float swiftDashDuration = 0.25f;
     [SerializeField] private float chargedAttackWindUpDuration = 0.5f;
+    [SerializeField] private float attackDamage = 30f;
+    [SerializeField] private float chargedAttackDamage = 150f;
+    [SerializeField] private float swiftDashDamage = 70f;
 
     [Header("Combo Settings")]
     [SerializeField] private float comboResetTime = 1.0f;
@@ -21,6 +24,9 @@ public class PlayerCombatConfig : ScriptableObject
     public float BlockDuration { get { return blockDuration; } }
     public float SwiftDashDuration { get { return swiftDashDuration; } }
     public float ChargedAttackWindUpDuration { get { return chargedAttackWindUpDuration; } }
+    public float AttackDamage { get { return attackDamage; } }
+    public float ChargedAttackDamage { get { return chargedAttackDamage; } }
+    public float SwiftDashDamage { get { return swiftDashDamage; } }
     public float ParryTimeWindow { get { return parryTimeWindow; } }
     public int MaxComboCount { get { return comboAttackAnimations.Length; } }
     public float ComboResetTime { get { return comboResetTime; } }
