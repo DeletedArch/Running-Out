@@ -19,4 +19,4 @@ MonoBehaviour:
   wallHopForce: 2
   maxSpeed: 15
   maxSwiftDashDistance: 15
-  wallHopMaxDistance: {x: 2.5, y: 2.5}
+  wallHopMaxDistance: {x: 5, y: 2}

@@ -90,7 +90,7 @@ public class WallHopStateSMB : StateMachineBehaviour
         Debug.DrawRay(rb.position + Vector2.up * context.playerMovementConfig.WallHopMaxDistance.y, direction * context.playerMovementConfig.WallHopMaxDistance.x, Color.red);
         if (hit.collider != null)
         {
-            return hit.point;
+            return hit.point + Vector2.right * (direction.x > 0 ? 0.4f : -0.4f); // Offset to stick to the wall slightly
         }
         return null;
     }

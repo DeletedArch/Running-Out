@@ -21,7 +21,7 @@ public class JumpStateSMB : StateMachineBehaviour
         rb.gravityScale *= animator.GetFloat("Timer");
         if (animator.GetBool("IsGrounded"))
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, movementConfig.JumpForce * animator.GetFloat("Timer"));
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, movementConfig.JumpForce);
         }
         UniTask.WaitUntil(() =>
         {
