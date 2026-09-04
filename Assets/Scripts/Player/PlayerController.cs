@@ -285,7 +285,17 @@ public class PlayerController : MonoBehaviour, IEntity
 
     public void TakeDamage(float amount)
     {
-        if (context.isInvincible) return;
+        if (context.isInvincible) {
+            if (context.currentState == "Block")
+            {
+                timerSystem?.ReplenishTimer(2f);
+            }
+            else if (context.currentState == "Dash")
+            {
+                timerSystem?.ReplenishTimer(3f);
+            }
+            return;
+        };
         // Implement damage logic here
         Debug.Log($"Player took {amount} damage.");
     }

@@ -23,6 +23,7 @@ public class TimerSystem
     {
         this.animator = animator;
         timer = initialTime;
+        ITimerAccess.OnTimerChange += HandleTimerChange;
     }
 
     public void Update(float deltaTime)
@@ -42,6 +43,12 @@ public class TimerSystem
     public void ReplenishTimer(float amount)
     {
         timer += amount;
+    }
+
+    private void HandleTimerChange(float changeAmount)
+    {
+        Debug.Log($"Timer change event received: {changeAmount}");
+        ReplenishTimer(changeAmount);
     }
 }
 

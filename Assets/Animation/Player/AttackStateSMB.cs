@@ -2,12 +2,19 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
+using System;
 
-public class AttackImpulseSMB : StateMachineBehaviour
+public class AttackImpulseSMB : StateMachineBehaviour, ITimerAccess
 {
     [SerializeField] private float maxLungeDistance = 3f;
     [SerializeField] private float lungeDuration = 0.2f;
     [SerializeField] private TargetDetectionChannel channel;
+    [SerializeField] private float timerUsage = 0.5f;
+    [SerializeField] private float timerRestoration = 0.75f;
+
+    public float TimerUsage => timerUsage;
+    public float TimerRestoration => timerRestoration;
+    public static event Action<float> OnTimerChange;
 
     private CancellationTokenSource stateCts;
     private Rigidbody2D rb;
@@ -30,7 +37,7 @@ public class AttackImpulseSMB : StateMachineBehaviour
             originalGravityScale = rb.gravityScale;
         }
         isSuspended = false;
-        
+        ITimerAccess.ModifyTimer(-timerUsage);
         ApplyTargetedImpulse(player);
     }
 
@@ -107,10 +114,11 @@ public class AttackImpulseSMB : StateMachineBehaviour
                 if (damageable != null)
                 {
                     damageable.TakeDamage(player.Context.playerCombatConfig.AttackDamage);
+                    ITimerAccess.ModifyTimer(timerRestoration);
                 }
             }
         }
-        catch (System.OperationCanceledException)
+        catch (OperationCanceledException)
         {
             // Interrupted early (e.g. damaged, staggered, or transitioned out)
         }

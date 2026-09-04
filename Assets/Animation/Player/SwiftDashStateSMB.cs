@@ -3,11 +3,17 @@ using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
 
-public class SwiftDashSMB : StateMachineBehaviour
+public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
 {
     [SerializeField] private float maxLungeDistance = 15f;
     [SerializeField] private float lungeDuration = 0.25f;
     [SerializeField] private TargetDetectionChannel channel;
+    [SerializeField] private float timerUsage = 1f;
+    [SerializeField] private float timerRestoration = 2f;
+
+    public float TimerUsage => timerUsage;
+    public float TimerRestoration => timerRestoration;
+    public static event System.Action<float> OnTimerChange;
 
     private CancellationTokenSource stateCts;
     private PlayerController player;
@@ -28,6 +34,7 @@ public class SwiftDashSMB : StateMachineBehaviour
 
         originalGravityScale = rb.gravityScale;
         isSuspended = false;
+        ITimerAccess.ModifyTimer(-timerUsage); // Deduct timer usage when the dash starts
         ApplyTargetedImpulse(player, animator);
     }
 
@@ -107,6 +114,7 @@ public class SwiftDashSMB : StateMachineBehaviour
                 if (damageable != null)
                 {
                     damageable.TakeDamage(player.Context.playerCombatConfig.SwiftDashDamage);
+                    ITimerAccess.ModifyTimer(timerRestoration);
                 }
             }
             animator.SetBool("SDash", false);
