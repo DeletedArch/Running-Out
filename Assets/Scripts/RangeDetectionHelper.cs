@@ -19,7 +19,7 @@ public class RangeDetectionHelper : MonoBehaviour
     {
         if (channel == null)
         {
-            channel = new TargetDetectionChannel();
+            channel = ScriptableObject.CreateInstance<TargetDetectionChannel>();
         }
 
         CircleCollider2D circleCollider = GetComponent<CircleCollider2D>();

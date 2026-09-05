@@ -36,7 +36,7 @@ public class EnemyController : MonoBehaviour, IEntity
         }
         else
         {
-            animator.SetBool("isHit", true);
+            animator.SetTrigger("isHit");
         }
     }
 
