@@ -9,6 +9,7 @@ public class WallHopStateSMB : StateMachineBehaviour
     private CancellationTokenSource stateCts;
     private Rigidbody2D rb;
     private PlayerContext context;
+    private PlayerController playerController;
     private float originalGravityScale = 1f;
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -17,25 +18,34 @@ public class WallHopStateSMB : StateMachineBehaviour
         stateCts?.Dispose();
         stateCts = new CancellationTokenSource();
 
-        PlayerContext context = animator.GetComponent<PlayerController>().Context;
+        playerController = animator.GetComponent<PlayerController>();
+        PlayerContext context = playerController.Context;
         if (context != null)
         {
-            Vector2 wallHopDirection = animator.transform.localScale.x > 0 ? Vector2.left : Vector2.right;
+            Vector2 wallHopDirection = playerController.GetWallTouchDirection() == WallTouchDirection.Left ? Vector2.right : Vector2.left;
             this.context = context;
             rb = context.playerRigidbody;
             originalGravityScale = rb.gravityScale;
             rb.gravityScale = 0f;
-
-            Vector2? nextWallPosition = FindNextWall(wallHopDirection);
+            Vector2? nextWallPosition;
+            if (animator.GetBool("IsGrounded"))
+            {
+                nextWallPosition = FindFirstWall(wallHopDirection);
+                nextWallPosition += Vector2.up * context.playerMovementConfig.WallHopMaxDistance.y / 1.5f; // Add vertical offset to hop up
+            } else
+            {
+                nextWallPosition = FindNextWall(wallHopDirection);
+            }
             Vector2 finalHopPosition;
             if (nextWallPosition.HasValue)
             {
-                finalHopPosition = nextWallPosition.Value + Vector2.up * context.playerMovementConfig.WallHopMaxDistance.y;
+                finalHopPosition = nextWallPosition.Value;
             }
             else
             {
                 finalHopPosition = rb.position + wallHopDirection * context.playerMovementConfig.WallHopMaxDistance.x + Vector2.up * context.playerMovementConfig.WallHopMaxDistance.y * 1.5f;
             }
+
             ApplyWallHop(rb, finalHopPosition, stateCts.Token).Forget();
         }
     }
@@ -62,7 +72,8 @@ public class WallHopStateSMB : StateMachineBehaviour
 
     async UniTaskVoid ApplyWallHop(Rigidbody2D rb, Vector2 wallHopPosition, CancellationToken ct)
     {
-        rb.transform.localScale = new Vector3(-rb.transform.localScale.x, rb.transform.localScale.y, rb.transform.localScale.z);
+        int direction = (int)playerController.GetWallTouchDirection();
+        rb.transform.localScale = new Vector3(direction * rb.transform.localScale.x, rb.transform.localScale.y, rb.transform.localScale.z);
         Vector2 startPosition = rb.position;
         float elapsedTime = 0f;
         float newWallHopDuration = wallHopDuration * context.playerAnimator.GetFloat("Timer");
@@ -86,11 +97,25 @@ public class WallHopStateSMB : StateMachineBehaviour
 
     Vector2? FindNextWall(Vector2 direction)
     {
-        RaycastHit2D hit = Physics2D.Raycast(rb.position + Vector2.up * context.playerMovementConfig.WallHopMaxDistance.y, direction, context.playerMovementConfig.WallHopMaxDistance.x, context.wallLayer);
-        Debug.DrawRay(rb.position + Vector2.up * context.playerMovementConfig.WallHopMaxDistance.y, direction * context.playerMovementConfig.WallHopMaxDistance.x, Color.red);
+        Vector2 rayOrigin = rb.position + Vector2.up * context.playerMovementConfig.WallHopMaxDistance.y + direction * 0.1f;
+        RaycastHit2D hit = Physics2D.Raycast(rayOrigin, direction, context.playerMovementConfig.WallHopMaxDistance.x, context.wallLayer);
+        Debug.DrawRay(rayOrigin, direction * context.playerMovementConfig.WallHopMaxDistance.x, Color.red);
         if (hit.collider != null)
         {
-            return hit.point + Vector2.right * (direction.x > 0 ? 0.4f : -0.4f); // Offset to stick to the wall slightly
+            return hit.point + (Vector2)hit.normal * 0.4f; // Offset to stick to the wall slightly
+        }
+        return null;
+    }
+
+    Vector2? FindFirstWall(Vector2 direction)
+    {
+        Vector2 wallDirection = -direction;
+        Vector2 rayOrigin = rb.position + Vector2.up * context.playerMovementConfig.WallHopMaxDistance.y - wallDirection * 0.1f;
+        RaycastHit2D hit = Physics2D.Raycast(rayOrigin, wallDirection, context.playerMovementConfig.WallHopMaxDistance.x, context.wallLayer);
+        Debug.DrawRay(rayOrigin, wallDirection * context.playerMovementConfig.WallHopMaxDistance.x, Color.blue);
+        if (hit.collider != null)
+        {
+            return hit.point + (Vector2)hit.normal * 0.4f; // Offset to stick to the wall slightly
         }
         return null;
     }
