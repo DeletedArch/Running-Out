@@ -205,9 +205,14 @@ MonoBehaviour:
   playerLayer:
     serializedVersion: 2
     m_Bits: 8
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 0
   edgeCheckForwardOffset: 0.3
   edgeCheckDownOffset: 0.3
   edgeCheckDistance: 0.3
+  obstacleCheckDistance: 0.6
+  obstacleCheckHeight: -0.1
   detectionRadius: 4
 --- !u!114 &3900177997397626082
 MonoBehaviour:
@@ -237,7 +242,7 @@ MonoBehaviour:
   context:
     rb: {fileID: 4493946852299163528}
     animator: {fileID: 7466321175025252993}
-    channel: {fileID: 11400000, guid: d21fb6073e299b34ab9e4a85f949e3e3, type: 2}
+    channel: {fileID: 0}
     perception: {fileID: 4394475439609490097}
     enemyMovement: {fileID: 3900177997397626082}
     playerLayer:
@@ -517,7 +522,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   colliderName: chaseRange
-  channel: {fileID: 11400000, guid: d21fb6073e299b34ab9e4a85f949e3e3, type: 2}
+  channel: {fileID: 0}
 --- !u!1 &9175073671247209378
 GameObject:
   m_ObjectHideFlags: 0

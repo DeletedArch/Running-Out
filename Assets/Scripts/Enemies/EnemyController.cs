@@ -17,8 +17,10 @@ public class EnemyController : MonoBehaviour, IEntity
     private void Awake()
     {
         currentHealth = maxHealth;
+        context.channel = GetComponentInChildren<RangeDetectionHelper>().Channel;
 
-        if (animator == null) animator = context.animator;
+        if (animator == null)
+            animator = context.animator;
     }
 
     public void TakeDamage(float amount)
@@ -34,7 +36,7 @@ public class EnemyController : MonoBehaviour, IEntity
         }
         else
         {
-            animator.SetBool("isHit", true);
+            animator.SetTrigger("isHit");
         }
     }
 

@@ -1,78 +1,63 @@
 using UnityEngine;
-using static UnityEngine.UI.Image;
-
-//Movement Toolbox to control all the movements that enemies can do
-
-/// <summary>
-/// Move in a direction at a speed (Walk, Run, Chase, Retreat).
-/// Apply a sudden burst/impulse (Step Back, Dodge, Knockback).
-/// Face a direction (Flip, Face the player, Turn away from the player).
-/// Stop (Idle, Stun).
-/// </summary>
 
 public class EnemyMovement : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D rb;
-    public int FacingDirection { get; private set; } = 1;
+
+    // Directly derived from scale: 1 for facing right, -1 for facing left
+    public int FacingDirection => transform.localScale.x < 0 ? -1 : 1;
+
     private void Awake()
     {
-        if(rb == null) 
+        if (rb == null)
             rb = GetComponent<Rigidbody2D>();
-        FacingDirection = transform.localScale.x >= 0 ? 1 : -1;
     }
 
-    // Moves forward in the current facing direction at any speed (walk, run, chase).
+    // Moves forward in the current facing direction at given speed
     public void Move(float speed)
     {
         if (rb != null)
-            rb.linearVelocity = new Vector2 (FacingDirection * speed, rb.linearVelocity.y);
+            rb.linearVelocity = new Vector2(FacingDirection * speed, rb.linearVelocity.y);
     }
 
-    // Moves in an explicit direction: +1 for Right, -1 for Left.
-    public void MovementDirection(int direction,float speed)
+    // Moves in an explicit direction: +1 for Right, -1 for Left
+    public void MovementDirection(int direction, float speed)
     {
         if (rb != null)
             rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y);
     }
 
-    // Pushes the enemy backward (opposite of facing direction).
+    // Pushes the enemy backward (opposite of facing direction)
     public void StepBack(float force)
     {
         if (rb != null)
-            rb.linearVelocity = new Vector2( -force * FacingDirection, rb.linearVelocity.y);
+            rb.linearVelocity = new Vector2(-force * FacingDirection, rb.linearVelocity.y);
     }
 
     public void Flip()
     {
-        FacingDirection *= -1;
         transform.localScale = new Vector3(
-            Mathf.Abs(transform.localScale.x) * FacingDirection,
-            transform.localScale.y, 
+            -transform.localScale.x,
+            transform.localScale.y,
             transform.localScale.z
-            );
+        );
     }
 
-    public void FaceTarget( Vector2 targetPos)
+    public void FaceTarget(Vector2 targetPos)
     {
-        Vector2 origin = transform.position;
-        Vector2 direction = (targetPos - origin);
-        float diffX = direction.x;
-        if (diffX < 0 && FacingDirection > 0)
+        float diffX = targetPos.x - transform.position.x;
+        if (diffX < -0.05f && FacingDirection > 0)
             Flip();
-
-        else if (diffX > 0 && FacingDirection < 0)
+        else if (diffX > 0.05f && FacingDirection < 0)
             Flip();
     }
 
-    public void FaceAwayFromTarget( Vector2 targetPos)
+    public void FaceAwayFromTarget(Vector2 targetPos)
     {
-        Vector2 origin = transform.position;
-        Vector2 direction = (targetPos - origin);
-        float diffX = direction.x;
-        if (diffX < 0 && FacingDirection < 0)
+        float diffX = targetPos.x - transform.position.x;
+        if (diffX < -0.05f && FacingDirection < 0)
             Flip();
-
-        else if (diffX > 0 && FacingDirection > 0)
+        else if (diffX > 0.05f && FacingDirection > 0)
             Flip();
     }
 
