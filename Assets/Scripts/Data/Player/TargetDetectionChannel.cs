@@ -10,6 +10,7 @@ public class TargetData
     [Range(-1f, 1f)]
     public float directionDifference; // 1 = directly in front, 0 = perpendicular, -1 = behind
     public Vector2 directionToObject;
+    public bool IsReachable;
 
     public TargetData(GameObject Object)
     {
@@ -21,6 +22,7 @@ public class TargetData
 public class TargetDetectionChannel : ScriptableObject
 {
     [SerializeField] private List<TargetData> targets = new List<TargetData>();
+    [SerializeField] private LayerMask obstacleLayerMask;
     public IReadOnlyList<TargetData> Targets => targets;
 
     public event Action OnTargetsChanged;
@@ -61,10 +63,20 @@ public class TargetDetectionChannel : ScriptableObject
             target.distance = toObject.magnitude;
             target.directionToObject = target.distance > 0.001f ? toObject / target.distance : direction;
             target.directionDifference = Vector2.Dot(target.directionToObject, direction);
+            RaycastHit2D hit = Physics2D.Raycast(origin, target.directionToObject, target.distance, obstacleLayerMask);
+            if (hit.collider != null && hit.collider.gameObject != target.Object)
+            {
+                target.IsReachable = false;
+            } else if (hit.collider == null)
+            {
+                target.IsReachable = true;
+            }
         }
 
         targets.Sort((a, b) =>
         {
+            if (a.IsReachable && !b.IsReachable) return -1;
+            if (!a.IsReachable && b.IsReachable) return 1;
             bool aInFront = a.directionDifference > 0f;
             bool bInFront = b.directionDifference > 0f;
 
@@ -81,7 +93,7 @@ public class TargetDetectionChannel : ScriptableObject
 
         foreach (var target in targets)
         {
-            if (target.directionDifference >= minDirectionDiff && target.distance <= maxDistance)
+            if (target.directionDifference >= minDirectionDiff && target.distance <= maxDistance && target.IsReachable)
             {
                 return target;
             }
