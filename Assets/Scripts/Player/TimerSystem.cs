@@ -13,6 +13,7 @@ public class TimerSystem
     [SerializeField] private float highSoftCap = 30f;
     [SerializeField] private float lowSoftCap = 5f;
     [SerializeField] private float depletionRate = 1f;
+    [SerializeField] private bool debugDoNotDeplete = true;
 
     public float Timer => timer;
     public float NormalizedTimer => Math.Clamp(timer, lowSoftCap, highSoftCap) * normalizationRatio;
@@ -29,6 +30,7 @@ public class TimerSystem
 
     public void Update(float deltaTime)
     {
+        if (debugDoNotDeplete) return;
         DepleteTimer(depletionRate * deltaTime);
         timer = Mathf.Clamp(timer, minTime, maxTime);
         animator.SetFloat("Timer", NormalizedTimer);

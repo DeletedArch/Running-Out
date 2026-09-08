@@ -4,6 +4,13 @@ using Cysharp.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine.UI;
 
+public enum WallTouchDirection
+{
+    Left = -1,
+    None = 0,
+    Right = 1
+}
+
 public class PlayerController : MonoBehaviour, IEntity
 {
     [SerializeField] private PlayerContext context;
@@ -91,7 +98,7 @@ public class PlayerController : MonoBehaviour, IEntity
         AdjustOrientation(context.moveInput.x);
         IsGrounded();
         playerCombat?.Update();
-        IsTouchingWall();
+        context.playerAnimator.SetInteger("TouchingWall", (int)GetWallTouchDirection());
         timerSystem?.Update(Time.deltaTime);
         // SetTimer(); -- Debug Only
     }
@@ -122,7 +129,7 @@ public class PlayerController : MonoBehaviour, IEntity
     {
         // Debug.DrawRay(transform.position, Vector2.down * 1.05f, Color.red);
         RaycastHit2D hit = Physics2D.BoxCast(transform.position, 
-        new Vector2(Mathf.Abs(transform.localScale.x) - 0.1f, transform.localScale.y * 0.5f), 0f, Vector2.down, transform.localScale.y, context.groundLayer);
+        new Vector2(Mathf.Abs(transform.localScale.x) - 0.4f, transform.localScale.y * 0.5f), 0f, Vector2.down, transform.localScale.y, context.groundLayer);
         if (hit.collider != null)
         {
             context.playerAnimator.SetBool("IsGrounded", true);
@@ -134,11 +141,36 @@ public class PlayerController : MonoBehaviour, IEntity
         return hit.collider != null;
     }
 
-    public bool IsTouchingWall()
+    // public bool IsTouchingWall()
+    // {
+    //     Debug.DrawRay(transform.position, Mathf.Sign(transform.localScale.x) * transform.right * 0.75f, Color.blue);
+    //     RaycastHit2D hit = Physics2D.Raycast(transform.position, Mathf.Sign(transform.localScale.x) * transform.right, 0.6f, context.wallLayer);
+    //     return hit.collider != null;
+    // }
+
+    public WallTouchDirection GetWallTouchDirection()
     {
-        Debug.DrawRay(transform.position, Mathf.Sign(transform.localScale.x) * transform.right * 0.75f, Color.blue);
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, Mathf.Sign(transform.localScale.x) * transform.right, 0.6f, context.wallLayer);
-        return hit.collider != null;
+        RaycastHit2D hitRight = Physics2D.Raycast(transform.position, transform.right, 0.6f, context.wallLayer);
+        RaycastHit2D hitLeft = Physics2D.Raycast(transform.position, -transform.right, 0.6f, context.wallLayer);
+        if (hitRight.collider != null && hitLeft.collider != null)
+        {
+            float DistanceToRightWall = hitRight.distance;
+            float DistanceToLeftWall = hitLeft.distance;
+            if (DistanceToLeftWall < DistanceToRightWall)
+            {
+                return WallTouchDirection.Left;
+            } else
+            {
+                return WallTouchDirection.Right;
+            }
+        } else if (hitLeft.collider != null && hitRight.collider == null)
+        {
+            return WallTouchDirection.Left;
+        } else if (hitRight.collider != null && hitLeft.collider == null)
+        {
+            return WallTouchDirection.Right;
+        }
+        return WallTouchDirection.None;
     }
 
     void LimitSpeed()
@@ -190,7 +222,7 @@ public class PlayerController : MonoBehaviour, IEntity
 
     void HandleJumpInput()
     {
-        if (IsTouchingWall())
+        if (GetWallTouchDirection() != WallTouchDirection.None)
         {
             context.playerAnimator.SetBool("WallHopping", true);
             context.playerAnimator.SetTrigger("WallHop");
@@ -311,6 +343,6 @@ public class PlayerController : MonoBehaviour, IEntity
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(transform.position - Vector3.up * transform.localScale.y, transform.localScale - Vector3.up * 0.5f * transform.localScale.y - Vector3.right * 0.1f);
+        Gizmos.DrawWireCube(transform.position - Vector3.up * transform.localScale.y, transform.localScale - Vector3.up * 0.5f * transform.localScale.y - Vector3.right * 0.4f);
     }
 }
