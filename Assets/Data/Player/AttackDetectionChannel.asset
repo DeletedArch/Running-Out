@@ -13,3 +13,6 @@ MonoBehaviour:
   m_Name: AttackDetectionChannel
   m_EditorClassIdentifier: Assembly-CSharp::TargetDetectionChannel
   targets: []
+  obstacleLayerMask:
+    serializedVersion: 2
+    m_Bits: 192
