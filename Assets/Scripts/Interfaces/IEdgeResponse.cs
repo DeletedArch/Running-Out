@@ -2,5 +2,6 @@ using UnityEngine;
 
 public interface IEdgeResponse 
 {
-    void OnEdgeDetected();
+    void HandleChaseEdge(Transform target, float chaseSpeed);
+    void HandleEdge();
 }

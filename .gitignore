@@ -105,3 +105,26 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
+# ==============================================================================
+# BOSS DESIGN & RESEARCH NOTES (SAVED VERBATIM — DO NOT EDIT OR DELETE)
+# ==============================================================================
+# Good news — there's an actual developer quote that confirms exactly the pattern you noticed. Team Cherry hasn't published Hornet's code, but in an ACMI interview, co-director William Pellen said the original Hollow Knight's bosses picked their attacks reactively, based on where the player was standing, and that Silksong deliberately moved away from that toward a more proactive model where the boss also chooses movement, not just attacks. That's your instinct confirmed: Hornet in HK1 is literally reacting to your position when she decides what to do next, which is why it reads as "she pays attention to range." [Military.com](https://www.military.com/off-duty/games/silksong-devs-explain-how-bosses-were-designed-differently-those-hollow-knight.html)
+# Here's how that's actually built — same idea across most 2D action games that do this (not Hollow Knight-specific, this is the standard technique):
+# 1. Distance bands drive the choice, not a script. Instead of "Hornet's turn 3 is always attack X," every decision point checks "how far is the player right now" and picks from whatever's valid at that distance. Too close → back off. Mid-range → needle throw. Far → close the gap. This is exactly what the BossAttackPattern.minRange/maxRange + BossAttackSelectState we already sketched does — we just haven't given it a "retreat" option to pick alongside the attacks.
+# 2. Retreat is a state, not a special case. The behavior you described — "she pays [backs away], then tries to hit me from a distance" — is just another entry in the same pool as her attacks, with a range band like 0–1.5 and a high weight, that runs EnemyMovement.StepBack() instead of an attack trigger. The boss doesn't have a separate "am I too close" system bolted on; it's the same reactive-selection loop treating "get away" as just another valid move for that distance.
+# 3. The pause before she commits is a windup, and it's what makes it fair. "She takes the position, stops for some time, then I can dodge" — that's a deliberate telegraph state: pick the attack, but don't execute it immediately. Enter a fixed-duration "winding up" state (with its own tell animation) first, then fire the actual attack. The dodge window only exists because there's a decision → telegraph → execute split, instead of decision → execute.
+# 4. Getting punished for over-aggression is a poise/stagger counter. Landing hits doesn't just remove HP — it also fills a "poise" value. Cross the threshold and she's forced into a vulnerable state regardless of what she was doing, which is the "hit twice, then back off" rhythm players describe in that fight.
+# None of this requires guessing Team Cherry's internals — it's the same reactive-selection + telegraph + poise combination you'd find analyzed in most souls-like/metroidvania boss postmortems, and it plugs straight into the boss skeleton we already have, not a rebuild.
+# 
+# Searched the web
+# 
+# That's the core loop — everything hangs off "pick a reaction," which is the only place distance actually gets checked. Two things run on top of this but aren't drawn in, because they interrupt from any state rather than following the sequence: enough hits within a short window forces a stagger regardless of what she's doing, and hitting zero health always wins and goes straight to death.
+# 
+# Resources to actually study from, roughly in the order I'd read them:
+# 
+# Mike Stout, "Enemy Attacks and Telegraphing" (gamedeveloper.com / chaoticstupid.com) — the clearest writing on why the windup pause exists at all: a player can't answer a question they weren't asked, so every attack has to announce itself before it lands. Has a direct follow-up piece, "Telegraphs 2: Post-attack vulnerability," about the flip side — the openings a boss gives you after committing to a move, which is your stagger window.
+# gamedesignskills.com, "Combat Design, Mechanics and Systems for Satisfying Game Combat" — a broader reference that covers poise, stagger, super armor, and i-frames side by side, useful for picking vocabulary and comparing approaches before you commit to one.
+# The Silksong developer interview I mentioned earlier (military.com's writeup of the ACMI guidebook interview) — worth reading in full since it's Team Cherry themselves contrasting the reactive, position-based attack selection of the first game against Silksong's more proactive model. Directly relevant to the exact fight you're drawing from.
+# Aztez developer's combat-analysis blog (aztez.com/blog/category/combat-analysis) — technical breakdowns of specific games' combat systems (Metal Gear Rising, Bayonetta, and others), useful once you want to study how a real shipped game structures this rather than just the theory.
+# gameaipro.com — free, GDC-quality article collection on game AI techniques if you want to go deeper into decision-making architectures later; not boss-specific, but a good reference shelf.

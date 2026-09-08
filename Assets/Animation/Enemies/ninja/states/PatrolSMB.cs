@@ -21,31 +21,24 @@ public class PatrolSMB : EnemyStateBehaviour
             turnCooldownTimer -= Time.deltaTime;
 
         // 1. Look for player
-        if (Context.channel != null && Context.channel.GetBestTarget(0f) != null)
+        if (Context.perception != null && Context.perception.TryFindPlayer(out Transform target))
         {
             animator.SetBool("PlayerSpotted", true);
             return;
         }
 
-        // 2. Check for edge / cliff (DOES return to idle to pause at the ledge)
-        if (!Context.perception.HasGroundAhead())
-        {
-            if (Context.edgeResponse != null)
-            {
-                Context.edgeResponse.OnEdgeDetected();
-            }
-            return;
-        }
+        bool atEdge = !Context.perception.HasGroundAhead();
+        bool atWall = Context.perception.HasObstacleOrEnemyAhead();
 
-        // 3. No edge, but detected a wall, higher ground, or another enemy (DOES NOT return to idle, turns around immediately)
-        if (turnCooldownTimer <= 0f && Context.perception.HasObstacleOrEnemyAhead())
+        // 2. No edge, but detected a wall, higher ground, or another enemy (DOES NOT return to idle, turns around immediately)
+        if ((atEdge || atWall) && turnCooldownTimer <= 0f)
         {
             Context.enemyMovement.Flip();
             turnCooldownTimer = turnCooldown;
             return;
         }
 
-        // 4. Move forward in the direction he is facing
+        // 3. Move forward in the direction he is facing
         Context.enemyMovement.Move(patrolSpeed);
     }
 

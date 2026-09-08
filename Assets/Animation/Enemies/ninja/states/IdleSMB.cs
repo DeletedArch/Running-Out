@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class IdleSMB : EnemyStateBehaviour
 {
-    [Header("Patrol Edge Pause")]
-    [SerializeField] private float patrolIdleDuration = 1.5f;
     [Header("Combat Pause")]
     [SerializeField] private float attackCooldown = 1.0f;
     [SerializeField] private float attackRange = 1.3f;
@@ -28,7 +26,7 @@ public class IdleSMB : EnemyStateBehaviour
             {
                 if (timer >= attackCooldown)
                 {
-                    animator.SetBool("Attack", true);
+                    animator.SetTrigger("Attack");
                     animator.SetBool("isIdle", false);
                 }
             }
@@ -37,12 +35,6 @@ public class IdleSMB : EnemyStateBehaviour
                 animator.SetBool("isIdle", false);
             }
             return;
-        }
-        // --- PATROL EDGE CHECK ---
-        if (timer >= patrolIdleDuration)
-        {
-            Context.enemyMovement.Flip();
-            animator.SetBool("isIdle", false); 
         }
     }
 }

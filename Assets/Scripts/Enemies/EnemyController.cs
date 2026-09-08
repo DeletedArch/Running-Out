@@ -17,7 +17,6 @@ public class EnemyController : MonoBehaviour, IEntity
     private void Awake()
     {
         currentHealth = maxHealth;
-        context.channel = GetComponentInChildren<RangeDetectionHelper>().Channel;
 
         if (animator == null)
             animator = context.animator;
