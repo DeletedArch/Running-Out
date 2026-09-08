@@ -1,15 +1,16 @@
 using UnityEngine;
 
-public class OnEdgeResponse : MonoBehaviour, IEdgeResponse
+public class OnEdgeResponse : MonoBehaviour
 {
-    [SerializeField] private Animator animator;
-    private void Awake()
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
     {
-        if (animator == null) animator = GetComponent<Animator>();
+        
     }
-    public void OnEdgeDetected()
+
+    // Update is called once per frame
+    void Update()
     {
-        // When edge is detected, enter Idle to pause!
-        animator.SetBool("isIdle", true);
+        
     }
 }

@@ -4,6 +4,10 @@ public class EnemyMovement : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D rb;
 
+    [Header("Ground & Jump")]
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private float jumpForce = 11f;
+
     // Directly derived from scale: 1 for facing right, -1 for facing left
     public int FacingDirection => transform.localScale.x < 0 ? -1 : 1;
 
@@ -18,13 +22,6 @@ public class EnemyMovement : MonoBehaviour
     {
         if (rb != null)
             rb.linearVelocity = new Vector2(FacingDirection * speed, rb.linearVelocity.y);
-    }
-
-    // Moves in an explicit direction: +1 for Right, -1 for Left
-    public void MovementDirection(int direction, float speed)
-    {
-        if (rb != null)
-            rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y);
     }
 
     // Pushes the enemy backward (opposite of facing direction)
