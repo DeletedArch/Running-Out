@@ -128,3 +128,51 @@ InitTestScene*.unity*
 # The Silksong developer interview I mentioned earlier (military.com's writeup of the ACMI guidebook interview) — worth reading in full since it's Team Cherry themselves contrasting the reactive, position-based attack selection of the first game against Silksong's more proactive model. Directly relevant to the exact fight you're drawing from.
 # Aztez developer's combat-analysis blog (aztez.com/blog/category/combat-analysis) — technical breakdowns of specific games' combat systems (Metal Gear Rising, Bayonetta, and others), useful once you want to study how a real shipped game structures this rather than just the theory.
 # gameaipro.com — free, GDC-quality article collection on game AI techniques if you want to go deeper into decision-making architectures later; not boss-specific, but a good reference shelf.
+
+# ==============================================================================
+# FMOD & AUDIO CACHE IGNORES
+# ==============================================================================
+/Assets/Plugins/FMOD/Cache/
+/Assets/Plugins/FMOD/Resources/fmod_strings*
+*.bank
+*.bank.meta
+
+# ==============================================================================
+# SOUND SYSTEM DESIGN & ARCHITECTURE NOTES (SAVED VERBATIM — DO NOT EDIT OR DELETE)
+# ==============================================================================
+# CORE GOAL:
+# 1. Eliminate the need for Audacity by allowing all volume, pitch variation, clip randomization,
+#    cooldowns, and 2D/3D spatial blend to be tweaked directly in the Unity Inspector.
+# 2. Provide centralized volume & bus control (Master, Music, SFX, UI, Ambience) via Unity AudioMixer.
+# 3. Decouple gameplay code from Unity's AudioSource using a ScriptableObject "SoundData / AudioCue"
+#    pattern so that swapping to FMOD Studio in the future requires ZERO changes to gameplay scripts.
+#
+# ARCHITECTURE BLUEPRINT:
+# 1. SoundData (ScriptableObject):
+#    - AudioClip[] clips (picks random or sequential to prevent fatigue)
+#    - Volume: base slider [0..1] + random variation (+/- range)
+#    - Pitch: base slider [0.5..2.0] + random variation (+/- range)
+#    - SpatialBlend: 0 (2D UI/Music) to 1 (3D in-world positioned SFX)
+#    - Cooldown / Retrigger limit: prevents ear-piercing sound stacking (e.g. multiple rapid hits)
+#    - MixerGroup: routing to Master, SFX, Music, or UI
+#
+# 2. AudioManager (MonoBehaviour Singleton, DontDestroyOnLoad):
+#    - AudioSource Pool for SFX: pre-warmed list of pooled AudioSources so no GameObjects are spawned/destroyed.
+#    - Dedicated Music AudioSources: dual-source setup for smooth crossfading between tracks.
+#    - Public API:
+#        AudioManager.Instance.Play(SoundData data, Vector3 position = default)
+#        AudioManager.Instance.PlayMusic(SoundData musicData, float fadeDuration = 1.0f)
+#        AudioManager.Instance.SetMasterVolume(float 0..1)
+#        AudioManager.Instance.SetSFXVolume(float 0..1)
+#        AudioManager.Instance.SetMusicVolume(float 0..1)
+#
+# 3. FMOD FUTURE TRANSITION ROADMAP:
+#    - Phase 1 (Now): Unity AudioMixer + ScriptableObject SoundData + AudioSource Pooling.
+#    - Phase 2 (Bridge): Wrap audio triggers behind an interface `IAudioService` (e.g. `UnityAudioService` vs `FmodAudioService`).
+#    - Phase 3 (FMOD Migration):
+#        * Install FMOD for Unity package.
+#        * Replace internal play calls with `FMODUnity.RuntimeManager.PlayOneShot(eventReference, position)`.
+#        * Add EventReference field to SoundData (or replace clips with FMOD events).
+#        * Route dynamic music into FMOD Studio parameters (e.g. CombatState, Intensity, Health) with quantized transitions.
+#        * Gameplay code (PlayerCombat, EnemyController, etc.) remains 100% untouched.
+

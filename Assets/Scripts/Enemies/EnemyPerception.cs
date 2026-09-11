@@ -102,4 +102,25 @@ public class EnemyPerception : MonoBehaviour
         Gizmos.color = currentTarget != null ? Color.red : Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
     }
+
+    public bool HasCeilingAbove(float checkDistance = 3.0f)
+    {
+        Vector2 origin = (Vector2)transform.position + Vector2.up * 2f;
+        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.up, checkDistance, groundLayer);
+        Debug.DrawRay(origin, Vector2.up * checkDistance, hit.collider != null ? Color.red : Color.green);
+        return hit.collider != null;
+    }
+
+    public bool TryGetTargetPlatform(Transform targetTransform, out Bounds platformBounds)
+    {
+        platformBounds = default;
+        if (targetTransform == null) return false;
+        RaycastHit2D hit = Physics2D.Raycast(targetTransform.position, Vector2.down, 3.5f, groundLayer);
+        if (hit.collider != null)
+        {
+            platformBounds = hit.collider.bounds;
+            return true;
+        }
+        return false;
+    }
 }

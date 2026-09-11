@@ -20,6 +20,11 @@ public class PlayerCombatConfig : ScriptableObject
     [SerializeField] private AnimationClip[] comboAttackAnimations = new AnimationClip[5];
     [SerializeField] private AnimationClip chargedAttackAnimation;
 
+    [Header("Attack Audio")]
+    [SerializeField] private SoundData attackSound;
+
+    public SoundData AttackSound => attackSound;
+
     public float AttackDuration { get { return attackDuration; } }
     public float BlockDuration { get { return blockDuration; } }
     public float SwiftDashDuration { get { return swiftDashDuration; } }
