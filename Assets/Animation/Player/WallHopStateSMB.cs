@@ -73,7 +73,7 @@ public class WallHopStateSMB : StateMachineBehaviour
     async UniTaskVoid ApplyWallHop(Rigidbody2D rb, Vector2 wallHopPosition, CancellationToken ct)
     {
         int direction = (int)playerController.GetWallTouchDirection();
-        rb.transform.localScale = new Vector3(direction * rb.transform.localScale.x, rb.transform.localScale.y, rb.transform.localScale.z);
+        rb.transform.localScale = new Vector3(-direction * Mathf.Abs(rb.transform.localScale.x), rb.transform.localScale.y, rb.transform.localScale.z);
         Vector2 startPosition = rb.position;
         float elapsedTime = 0f;
         float newWallHopDuration = wallHopDuration * context.playerAnimator.GetFloat("Timer");

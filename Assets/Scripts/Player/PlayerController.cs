@@ -152,6 +152,8 @@ public class PlayerController : MonoBehaviour, IEntity
     {
         RaycastHit2D hitRight = Physics2D.Raycast(transform.position, transform.right, 0.6f, context.wallLayer);
         RaycastHit2D hitLeft = Physics2D.Raycast(transform.position, -transform.right, 0.6f, context.wallLayer);
+        Debug.DrawRay(transform.position, transform.right * 0.6f, Color.blue);
+        Debug.DrawRay(transform.position, -transform.right * 0.6f, Color.blue);
         if (hitRight.collider != null && hitLeft.collider != null)
         {
             float DistanceToRightWall = hitRight.distance;
