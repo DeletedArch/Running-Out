@@ -198,7 +198,7 @@ public class PlayerController : MonoBehaviour, IEntity
 
     void ApplyCustomDrag()
     {
-        if (!context.useDrag || !IsGrounded()) return;
+        if (!context.useDrag) return;
         if (Math.Abs(context.playerRigidbody.linearVelocity.x) < 0.1f)
         {
             context.playerRigidbody.linearVelocity = new Vector2(0, context.playerRigidbody.linearVelocity.y);

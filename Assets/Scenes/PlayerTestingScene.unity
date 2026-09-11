@@ -1329,8 +1329,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6983513700529433199, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
-      propertyPath: timerSystem.debugDoNotDeplete
-      value: 1
+      propertyPath: context.customDrag
+      value: 0.35
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

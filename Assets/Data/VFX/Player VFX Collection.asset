@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::VFXCollection
   allVFX:
   - {fileID: 11400000, guid: 81bcffc421b7ac54eb4826c0ee8b3e5a, type: 2}
+  - {fileID: 11400000, guid: 16982c12bc882715c9e5565851ef65e6, type: 2}

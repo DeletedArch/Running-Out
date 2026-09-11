@@ -8,13 +8,11 @@ public class VFXObject : ScriptableObject
     [SerializeField] private GameObject vfxPrefab;
     [SerializeField] private float duration = 1f;
     [SerializeField] private Vector2 offset = Vector2.zero;
-    [SerializeField] private Quaternion rotation = Quaternion.identity;
 
     public string VFXName => vfxName;
     public GameObject VFXPrefab => vfxPrefab;
     public float Duration => duration;
     public Vector2 Offset => offset;
-    public Quaternion Rotation => rotation;
 
     void OnValidate()
     {
