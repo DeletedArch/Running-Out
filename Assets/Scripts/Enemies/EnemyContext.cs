@@ -2,19 +2,23 @@ using System;
 using UnityEngine;
 
 [Serializable]
-public class EnemyContext 
+public class EnemyContext
 {
     [Header("References")]
-    [SerializeField] internal Rigidbody2D rb;
-    [SerializeField] internal Animator animator;
-    [SerializeField] internal EnemyPerception perception;
-    [SerializeField] internal EnemyMovement enemyMovement;
+    public Rigidbody2D rb;
+    public Animator animator;
+    public EnemyPerception perception;
+    public EnemyMovement enemyMovement;
 
     [Header("Layers")]
-    [SerializeField] internal LayerMask playerLayer;
-    [SerializeField] internal LayerMask groundLayer;
+    public LayerMask playerLayer;
+    public LayerMask groundLayer;
+    public LayerMask enemyLayer;
 
     [Header("Interfaces / Edge")]
-    [SerializeField] internal MonoBehaviour edgeResponseBehaviour;
+    public MonoBehaviour edgeResponseBehaviour;
+    public IEdgeResponse edgeResponse => edgeResponseBehaviour as IEdgeResponse;
 
+    [Header("Dynamic State")]
+    public Transform Target { get; set; }
 }

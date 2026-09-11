@@ -18,8 +18,14 @@ public class EnemyController : MonoBehaviour, IEntity
     {
         currentHealth = maxHealth;
 
-        if (animator == null)
-            animator = context.animator;
+        // Auto-wire context components if not assigned in Inspector
+        if (context.rb == null) context.rb = GetComponent<Rigidbody2D>();
+        if (context.enemyMovement == null) context.enemyMovement = GetComponent<EnemyMovement>();
+        if (context.perception == null) context.perception = GetComponent<EnemyPerception>();
+        if (context.edgeResponseBehaviour == null) context.edgeResponseBehaviour = GetComponent<OnEdgeResponse>();
+        if (context.animator == null) context.animator = GetComponentInChildren<Animator>();
+
+        animator = context.animator;
     }
 
     public void TakeDamage(float amount)

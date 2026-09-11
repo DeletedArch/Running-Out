@@ -34,7 +34,6 @@ public class IdleSMB : EnemyStateBehaviour
             {
                 animator.SetBool("isIdle", false);
             }
-            return;
         }
     }
 }
