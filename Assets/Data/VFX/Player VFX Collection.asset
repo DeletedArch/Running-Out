@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b49c8cb27a7eeeac0b0cae52ebf35b17, type: 3}
+  m_Name: Player VFX Collection
+  m_EditorClassIdentifier: Assembly-CSharp::VFXCollection
+  allVFX:
+  - {fileID: 11400000, guid: 81bcffc421b7ac54eb4826c0ee8b3e5a, type: 2}
