@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a4b0d11c4ea175ca9850352fddf4ee8, type: 3}
   m_Name: PlayerMovementConfig
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovementConfig
-  runSpeed: 12
-  jumpForce: 20
+  runSpeed: 25
+  jumpForce: 25
   dashForce: 50
   dashDistance: 7
   wallHopForce: 2
-  maxSpeed: 15
+  maxSpeed: 25
   maxSwiftDashDistance: 15
   wallHopMaxDistance: {x: 5, y: 4}
