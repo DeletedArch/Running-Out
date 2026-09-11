@@ -521,7 +521,10 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 0
     edgeResponseBehaviour: {fileID: 0}
-  maxHealth: 900
+  maxHealth: 70
+  fleshHitSound: {fileID: 11400000, guid: 44372bf5ae5aa8e458922cb2134f81d9, type: 2}
+  deathSound: {fileID: 11400000, guid: a3d9141b04dc4b442954d538e8bfd491, type: 2}
+  hurtVoiceSound: {fileID: 0}
 --- !u!95 &3955315329479805353
 Animator:
   serializedVersion: 7
@@ -556,8 +559,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9eb75315e7b7a941bbba382c7a51e2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OnEdgeResponse
-  movement: {fileID: 0}
-  perception: {fileID: 0}
+  highJumpForce: 12
+  highJumpForwardSpeed: 3.2
+  highJumpHeightClearance: 2
+  gapJumpHeight: 1.5
+  dropJumpHeight: 0.4
+  dropJumpForwardMultiplier: 0.8
 --- !u!1 &8786165934997440629
 GameObject:
   m_ObjectHideFlags: 0
