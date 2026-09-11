@@ -21,6 +21,7 @@ public class JumpStateSMB : StateMachineBehaviour
         if (animator.GetBool("IsGrounded") && animator.GetBool("Jump"))
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, movementConfig.JumpForce);
+            VFXEvents.TriggerVFX("JumpOff", rb.position, Quaternion.identity, false);
         }
         UniTask.WaitUntil(() =>
         {
