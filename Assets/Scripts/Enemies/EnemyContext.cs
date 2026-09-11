@@ -9,6 +9,7 @@ public class EnemyContext
     public Animator animator;
     public EnemyPerception perception;
     public EnemyMovement enemyMovement;
+    public SpriteRenderer spriteRenderer;
 
     [Header("Layers")]
     public LayerMask playerLayer;

@@ -270,7 +270,7 @@ MonoBehaviour:
   isInvincible: 0
   invincibilityDuration: 0
   hasCancelWindow: 1
-  cancelWindowStart: 0.05
+  cancelWindowStart: 0.6
   cancelBoolean: 1
   booleanName: Attack
 --- !u!114 &-7972049575686151301

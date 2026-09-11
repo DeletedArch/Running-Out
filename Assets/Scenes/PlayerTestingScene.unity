@@ -980,8 +980,8 @@ Transform:
   m_GameObject: {fileID: 1711444204}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 15.5882, y: -4.0679, z: 0}
-  m_LocalScale: {x: 1317.047, y: 2.0163019, z: 1}
+  m_LocalPosition: {x: 15.5882, y: -10.84, z: 0}
+  m_LocalScale: {x: 1317.047, y: 15.36674, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1327,10 +1327,6 @@ PrefabInstance:
     - target: {fileID: 5858320025881666643, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6983513700529433199, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
-      propertyPath: context.customDrag
-      value: 0.35
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

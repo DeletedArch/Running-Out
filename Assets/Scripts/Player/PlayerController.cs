@@ -44,7 +44,6 @@ public class PlayerController : MonoBehaviour, IEntity
         {
             GetPlayerDirection = GetPlayerDirection
         };
-        timerSystem = new TimerSystem(context.playerAnimator, 20f);
     }
 
     void OnEnable()
@@ -59,6 +58,9 @@ public class PlayerController : MonoBehaviour, IEntity
         InputController.OnSwiftDashInput += HandleSwiftDashInput;
         SetStateSMB.OnStateEntered += HandleStateEntered;
         SetStateSMB.OnStateExited += HandleStateExited;
+
+        // Debug
+        InputController.OnDebugInput1 += OnInputDebug1;
     }
 
     void OnDisable()
@@ -73,6 +75,9 @@ public class PlayerController : MonoBehaviour, IEntity
         InputController.OnSwiftDashInput -= HandleSwiftDashInput;
         SetStateSMB.OnStateEntered -= HandleStateEntered;
         SetStateSMB.OnStateExited -= HandleStateExited;
+
+        // Debug
+        InputController.OnDebugInput1 -= OnInputDebug1;
     }
 
     private void HandleStateEntered(string stateTag)
@@ -286,6 +291,16 @@ public class PlayerController : MonoBehaviour, IEntity
         playerCombat.HandleBlockRelease();
     }
 
+    void SpriteColorFlash(Color color, float duration)
+    {
+        if (context.playerSpriteRenderer == null) return;
+        context.playerSpriteRenderer.color = color;
+        UniTask.Delay(TimeSpan.FromSeconds(duration)).ContinueWith(() =>
+        {
+            context.playerSpriteRenderer.color = Color.white;
+        }).Forget();
+    }
+
     public void SetMovement(bool canMove)
     {
         context.canMove = canMove;
@@ -332,6 +347,7 @@ public class PlayerController : MonoBehaviour, IEntity
         };
         timerSystem?.DepleteTimer(amount);
         context.playerAnimator.SetTrigger("Hit");
+        SpriteColorFlash(Color.red, 0.15f);
         // Implement damage logic here
         Debug.Log($"Player took {amount} damage.");
     }
@@ -342,9 +358,17 @@ public class PlayerController : MonoBehaviour, IEntity
         Debug.Log("Player died.");
     }
 
+    // DEBUGGGGGGGG EVERYTHIGNG IS DEBUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
+
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(transform.position - Vector3.up * transform.localScale.y, transform.localScale - Vector3.up * 0.5f * transform.localScale.y - Vector3.right * 0.4f);
+    }
+
+    // Take damage debug
+    void OnInputDebug1()
+    {
+        TakeDamage(0.5f);
     }
 }
