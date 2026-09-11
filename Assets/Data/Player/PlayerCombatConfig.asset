@@ -17,6 +17,9 @@ MonoBehaviour:
   parryTimeWindow: 0.2
   swiftDashDuration: 0.25
   chargedAttackWindUpDuration: 0.5
+  attackDamage: 30
+  chargedAttackDamage: 150
+  swiftDashDamage: 70
   comboResetTime: 1
   comboInputWindow: 0.5
   comboAttackDuration: 0.25
@@ -27,3 +30,4 @@ MonoBehaviour:
   - {fileID: 7400000, guid: 73d9f6d4014189431bbeb948d5df9d6e, type: 2}
   - {fileID: 7400000, guid: 73d9f6d4014189431bbeb948d5df9d6e, type: 2}
   chargedAttackAnimation: {fileID: 7400000, guid: 73d9f6d4014189431bbeb948d5df9d6e, type: 2}
+  attackSound: {fileID: 11400000, guid: 3a1e70073c35b974ebed7513c3504e49, type: 2}

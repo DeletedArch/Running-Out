@@ -51,6 +51,7 @@ public class PlayerCombat
                 context.overrideController["Attack"] = targetClip;
             }
 
+            config.AttackSound?.Play();
             context.playerAnimator.SetInteger("Combo", currentComboCount);
             context.playerAnimator.SetBool("Attack", true);
 
