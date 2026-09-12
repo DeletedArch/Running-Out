@@ -15,3 +15,4 @@ MonoBehaviour:
   allVFX:
   - {fileID: 11400000, guid: 81bcffc421b7ac54eb4826c0ee8b3e5a, type: 2}
   - {fileID: 11400000, guid: 16982c12bc882715c9e5565851ef65e6, type: 2}
+  - {fileID: 11400000, guid: 5c51c8c7efab704f0978147d49785a73, type: 2}

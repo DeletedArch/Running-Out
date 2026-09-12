@@ -12,8 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ee5eb0ee518a2473865eedbdf93d222, type: 3}
   m_Name: DashGround
   m_EditorClassIdentifier: Assembly-CSharp::VFXObject
-  vfxName: JumpOff
-  vfxPrefab: {fileID: 4153282078886895156, guid: 8566ac0f3d11858518c5efc27e6d14bb, type: 3}
-  duration: 0.417
-  offset: {x: 0, y: -0.2}
-  rotation: {x: 0, y: 0, z: 0, w: 1}
+  vfxName: DashGround
+  vfxPrefab: {fileID: 4153282078886895156, guid: 28505e63518bf8722b8085f97112390b, type: 3}
+  duration: 0.5
+  offset: {x: -0.25, y: -0.2}
