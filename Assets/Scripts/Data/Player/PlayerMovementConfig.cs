@@ -3,6 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "PlayerMovementConfig", menuName = "Configs/PlayerMovementConfig")]
 public class PlayerMovementConfig : ScriptableObject
 {
+
     [SerializeField] private float runSpeed = 5f;
     [SerializeField] private float jumpForce = 3f;
     [SerializeField] private float dashForce = 10f;
@@ -11,6 +12,10 @@ public class PlayerMovementConfig : ScriptableObject
     [SerializeField] private float maxSpeed = 7f;
     [SerializeField] private float maxSwiftDashDistance = 15f;
     [SerializeField] private Vector2 wallHopMaxDistance = new Vector2(1f, 1f);
+
+    [Header("Audio")]
+    [SerializeField] private SoundData dashSound;
+    public SoundData DashSound => dashSound;
     public float RunSpeed { get { return runSpeed; } }
     public float JumpForce { get { return jumpForce; } }
     public float DashForce { get { return dashForce; } }

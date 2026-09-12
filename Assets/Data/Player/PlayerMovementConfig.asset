@@ -20,3 +20,4 @@ MonoBehaviour:
   maxSpeed: 25
   maxSwiftDashDistance: 15
   wallHopMaxDistance: {x: 5, y: 4}
+  dashSound: {fileID: 11400000, guid: f69710465442e3b4a86d28ab94b0c1ad, type: 2}
