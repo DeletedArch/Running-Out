@@ -440,6 +440,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 43ba0639330ffb6fa8fe8cc50a3c3c60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  levelMusic: {fileID: 11400000, guid: fc520f3e0e4b7f140960190e512a3b09, type: 2}
 --- !u!4 &382393231
 Transform:
   m_ObjectHideFlags: 0
