@@ -36,6 +36,7 @@ public class DashStateSMB : StateMachineBehaviour, ITimerAccess
         // maxDashDuration = (movementConfig.DashDistance / movementConfig.DashForce) + 0.1f;
         VFXEvents.TriggerVFX("DashGround", rb.position, Quaternion.identity, flipX: dashDirection < 0);
         ITimerAccess.ModifyTimer(-timerUsage); // Deduct timer usage when the dash starts
+        movementConfig.DashSound?.Play();
         rb.linearVelocity = new Vector2(dashDirection * movementConfig.DashForce * animator.GetFloat("Timer"), 0);
     }
 
