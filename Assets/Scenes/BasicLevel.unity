@@ -2930,6 +2930,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player & Camera
       objectReference: {fileID: 0}
+    - target: {fileID: 2801481879268470046, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -6.5161285
+      objectReference: {fileID: 0}
     - target: {fileID: 5858320025881666643, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
       propertyPath: m_LocalPosition.x
       value: -4.43
@@ -2970,9 +2974,37 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6811499191874754739, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -6.5161285
+      objectReference: {fileID: 0}
     - target: {fileID: 6983513700529433199, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
       propertyPath: timerSystem.debugDoNotDeplete
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7850471745736584408, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
+      propertyPath: Damping.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7850471745736584408, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
+      propertyPath: TargetOffset.y
+      value: 6.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7850471745736584408, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
+      propertyPath: Lookahead.IgnoreY
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7850471745736584408, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
+      propertyPath: Composition.ScreenPosition.y
+      value: -0.03
+      objectReference: {fileID: 0}
+    - target: {fileID: 7850471745736584408, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
+      propertyPath: Composition.HardLimits.Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7850471745736584408, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
+      propertyPath: Composition.HardLimits.Offset.y
+      value: 0.26
       objectReference: {fileID: 0}
     - target: {fileID: 8340307229821587388, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
       propertyPath: m_Size.x
