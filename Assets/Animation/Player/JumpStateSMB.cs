@@ -4,7 +4,6 @@ using Cysharp.Threading.Tasks;
 
 public class JumpStateSMB : StateMachineBehaviour
 {
-    private Vector2 startPosition;
     private Rigidbody2D rb;
     private PlayerMovementConfig movementConfig;
     private float originalGravityScale = 1f;
@@ -17,7 +16,6 @@ public class JumpStateSMB : StateMachineBehaviour
         rb = player.Context.playerRigidbody;
         movementConfig = player.Context.playerMovementConfig;
         originalGravityScale = rb.gravityScale;
-        startPosition = rb.position;
         if (animator.GetBool("IsGrounded") && animator.GetBool("Jump"))
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, movementConfig.JumpForce);
@@ -28,7 +26,7 @@ public class JumpStateSMB : StateMachineBehaviour
             return !animator.GetBool("IsGrounded");
         }).ContinueWith(() =>
         {
-            player.Context.playerAnimator.SetBool("Jump", false);
+            animator.SetBool("Jump", false);
         }).Forget();
     }
 
@@ -37,6 +35,10 @@ public class JumpStateSMB : StateMachineBehaviour
         if (rb != null)
         {
             rb.gravityScale = originalGravityScale;
+        }
+        if (animator.GetBool("IsGrounded"))
+        {
+            VFXEvents.TriggerVFX("Land", rb.position, Quaternion.identity, false);
         }
     }
 }

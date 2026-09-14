@@ -8,6 +8,7 @@ public class VFXManager : MonoBehaviour
 {
     [SerializeField] private VFXCollection vfxCollection;
     private readonly Dictionary<string, ObjectPool<GameObject>> _pools = new();
+    private List<(GameObject, Transform, VFXObject)> followerVFX = new List<(GameObject, Transform, VFXObject)>();
 
     private void Awake()
     {
@@ -57,6 +58,10 @@ public class VFXManager : MonoBehaviour
         {
             sr.flipX = flipX;
         }
+        if (follow != null)
+        {
+            followerVFX.Add((vfx, follow, vfxData));
+        }
 
         float duration = vfxData != null ? vfxData.Duration : 1f;
         ReleaseAfterDelay(vfx, duration, pool).Forget();
@@ -71,5 +76,26 @@ public class VFXManager : MonoBehaviour
         }
         await UniTask.Delay(TimeSpan.FromSeconds(delay), cancellationToken: vfx.GetCancellationTokenOnDestroy());
         pool.Release(vfx);
+    }
+
+    void Update()
+    {
+        for (int i = followerVFX.Count - 1; i >= 0; i--)
+        {
+            var vfx = followerVFX[i];
+            if (vfx.Item1 == null || vfx.Item1.activeSelf == false)
+            {
+                followerVFX.RemoveAt(i);
+                continue;
+            }
+
+            var followTransform = vfx.Item2;
+            if (followTransform != null)
+            {
+                vfx.Item1.transform.position = followTransform.position + (vfx.Item3 != null
+            ? (vfx.Item2.transform.right * vfx.Item3.Offset.x) + (vfx.Item2.transform.up * vfx.Item3.Offset.y) // Offset is rotation aware
+            : Vector2.zero);
+            }
+        }
     }
 }

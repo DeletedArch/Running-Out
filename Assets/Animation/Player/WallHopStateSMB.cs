@@ -56,6 +56,7 @@ public class WallHopStateSMB : StateMachineBehaviour
             }
 
             ApplyWallHop(rb, finalHopPosition, stateCts.Token).Forget();
+            context.playerMovementConfig.DashSound?.Play();
         }
     }
 
@@ -85,7 +86,7 @@ public class WallHopStateSMB : StateMachineBehaviour
         rb.transform.localScale = new Vector3(-direction * Mathf.Abs(rb.transform.localScale.x), rb.transform.localScale.y, rb.transform.localScale.z);
         Vector2 startPosition = rb.position;
         float elapsedTime = 0f;
-        float newWallHopDuration = wallHopDuration * context.playerAnimator.GetFloat("Timer");
+        float newWallHopDuration = wallHopDuration / context.playerAnimator.GetFloat("Timer");
         try
         {
             await UniTask.WaitUntil(() =>
