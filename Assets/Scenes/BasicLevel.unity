@@ -1137,14 +1137,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4010535387113769856, guid: 629d1a69de6128a4eac3dd71422ca416, type: 3}
-      propertyPath: maxHealth
-      value: 70
-      objectReference: {fileID: 0}
-    - target: {fileID: 4010535387113769856, guid: 629d1a69de6128a4eac3dd71422ca416, type: 3}
-      propertyPath: context.edgeResponseBehaviour
-      value: 
-      objectReference: {fileID: 1434932596}
     - target: {fileID: 8679909980033673598, guid: 629d1a69de6128a4eac3dd71422ca416, type: 3}
       propertyPath: m_Name
       value: Enemy Ninja
@@ -1297,17 +1289,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8679909980033673598, guid: 629d1a69de6128a4eac3dd71422ca416, type: 3}
   m_PrefabInstance: {fileID: 1018979809}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1434932596 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8166667416176644574, guid: 629d1a69de6128a4eac3dd71422ca416, type: 3}
-  m_PrefabInstance: {fileID: 1018979809}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1434932595}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a9eb75315e7b7a941bbba382c7a51e2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::OnEdgeResponse
 --- !u!1 &1523459907 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8679909980033673598, guid: 629d1a69de6128a4eac3dd71422ca416, type: 3}

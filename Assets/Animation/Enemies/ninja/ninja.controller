@@ -294,9 +294,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ChaseSMB
   chaseSpeed: 8
-  attackRange: 1.3
   takeoffOffset: 2
   jumpCooldown: 0.8
+  attackRange: 1.3
+  attackCooldown: 1.2
 --- !u!114 &-2165628639738842794
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -393,7 +394,7 @@ AnimatorStateMachine:
     m_Position: {x: 70, y: 160, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -8943346705493913968}
-    m_Position: {x: 240, y: 260, z: 0}
+    m_Position: {x: 250, y: 260, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 8252394087279777470}
     m_Position: {x: 520, y: 40, z: 0}
