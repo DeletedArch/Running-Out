@@ -24,10 +24,8 @@ MonoBehaviour:
   comboInputWindow: 0.5
   comboAttackDuration: 0.25
   comboAttackAnimations:
-  - {fileID: 7400000, guid: 73d9f6d4014189431bbeb948d5df9d6e, type: 2}
-  - {fileID: 7400000, guid: 73d9f6d4014189431bbeb948d5df9d6e, type: 2}
-  - {fileID: 7400000, guid: 73d9f6d4014189431bbeb948d5df9d6e, type: 2}
-  - {fileID: 7400000, guid: 73d9f6d4014189431bbeb948d5df9d6e, type: 2}
-  - {fileID: 7400000, guid: 73d9f6d4014189431bbeb948d5df9d6e, type: 2}
+  - {fileID: 7400000, guid: 63be2b381a6d3606aaf542bfb5b4e7ab, type: 2}
+  - {fileID: 7400000, guid: 4bd135dd79f25cdd79b6f47d234dc8e2, type: 2}
+  - {fileID: 7400000, guid: 17b25e3a34b2eec609a9968cc4b9e7fa, type: 2}
   chargedAttackAnimation: {fileID: 7400000, guid: 73d9f6d4014189431bbeb948d5df9d6e, type: 2}
   attackSound: {fileID: 11400000, guid: 3a1e70073c35b974ebed7513c3504e49, type: 2}
