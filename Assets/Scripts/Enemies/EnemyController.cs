@@ -4,6 +4,7 @@ public class EnemyController : MonoBehaviour, IEntity
 {
     [Header("References")]
     [SerializeField] private EnemyContext context;
+    EnemyMovement enemyMovement;
     private Animator animator;
 
     [Header("Stats")]
@@ -14,17 +15,21 @@ public class EnemyController : MonoBehaviour, IEntity
     [SerializeField] private SoundData fleshHitSound;    
     [SerializeField] private SoundData deathSound;
     [SerializeField] private SoundData hurtVoiceSound; 
+
+    
     public EnemyContext Context => context;
+    public EnemyMovement EnemyMovement => enemyMovement;
     public float Health => currentHealth;
     public bool IsDead => currentHealth <= 0;
 
     private void Awake()
     {
         currentHealth = maxHealth;
+        enemyMovement = new EnemyMovement(transform,context);
+        context.enemyMovement = enemyMovement;
 
         // Auto-wire context components if not assigned in Inspector
         if (context.rb == null) context.rb = GetComponent<Rigidbody2D>();
-        if (context.enemyMovement == null) context.enemyMovement = GetComponent<EnemyMovement>();
         if (context.perception == null) context.perception = GetComponent<EnemyPerception>();
         if (context.edgeResponseBehaviour == null) context.edgeResponseBehaviour = GetComponent<OnEdgeResponse>();
         if (context.animator == null) context.animator = GetComponentInChildren<Animator>();

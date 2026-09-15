@@ -295,6 +295,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ChaseSMB
   chaseSpeed: 8
   attackRange: 1.3
+  takeoffOffset: 2
+  jumpCooldown: 0.8
 --- !u!114 &-2165628639738842794
 MonoBehaviour:
   m_ObjectHideFlags: 1

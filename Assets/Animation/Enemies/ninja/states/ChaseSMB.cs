@@ -1,19 +1,22 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class ChaseSMB : EnemyStateBehaviour
 {
     [SerializeField] private float chaseSpeed = 5f;
-    [SerializeField] private float attackRange = 1.5f;
     [SerializeField] private float takeoffOffset = 2.0f;
     [SerializeField] private float jumpCooldown = 0.8f;
+    [Header("attack data")]
+    [SerializeField] private float attackRange = 1.5f;
+    [SerializeField] private float attackCooldown = 1.2f;
+    private float attackCooldownTimer = 0f;
     private float jumpCooldownTimer = 0f;
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
         base.OnStateEnter(animator, stateInfo, layerIndex);
-
         jumpCooldownTimer = jumpCooldown;
-
+        attackCooldownTimer = 0f; // Can attack immediately upon reaching player
         if (Context != null && Context.Target == null && Context.perception != null)
         {
             if (Context.perception.TryFindPlayer(out Transform found))
@@ -30,6 +33,10 @@ public class ChaseSMB : EnemyStateBehaviour
         if (jumpCooldownTimer > 0f)
             jumpCooldownTimer -= Time.deltaTime;
 
+        // Count down attack cooldown
+        if (attackCooldownTimer > 0f)
+            attackCooldownTimer -= Time.deltaTime;
+
         Transform target = Context.Target ?? Context.perception.CurrentTarget;
         if (target == null)
         {
@@ -45,6 +52,19 @@ public class ChaseSMB : EnemyStateBehaviour
         }
 
         float distance = Vector2.Distance(Controller.transform.position, target.position);
+        // If the player is within sword range and at similar height:
+        if (distance <= attackRange && Mathf.Abs(target.position.y - Controller.transform.position.y) < 1.0f)
+        {
+            Context.enemyMovement.Stop();
+            Context.enemyMovement.FaceTarget(target.position);
+            if (attackCooldownTimer <= 0f)
+            {
+                attackCooldownTimer = attackCooldown;
+                animator.SetTrigger("Attack");
+            }
+            return;
+        }
+
         bool playerIsHigher = target.position.y > Controller.transform.position.y + 0.6f;
         if (playerIsHigher)
         {
@@ -86,11 +106,52 @@ public class ChaseSMB : EnemyStateBehaviour
             }
         }
 
-        Context.enemyMovement.FaceTarget(target.position);
+        // 1. Ally check: Stop if another enemy is directly in front
+        if (Context.perception.HasOtherEnemyAhead())
+        {
+            Context.enemyMovement.Stop();
+            return;
+        }
 
+        // 2. Check if player is lower than the enemy
+        bool playerIsLower = target.position.y < Controller.transform.position.y - 0.5f;
+        if(playerIsLower){
+            float gap = 0f;
+            bool haveOwn = Context.perception.TryGetTargetPlatform(Controller.transform, out Bounds ownPlatform);
+            bool haveTarget = Context.perception.TryGetTargetPlatform(target, out Bounds targetPlatform);
+
+            if (haveTarget && haveOwn) {
+                gap = Context.enemyMovement.FacingDirection > 0 ?
+                    targetPlatform.min.x - ownPlatform.max.x : ownPlatform.min.x - targetPlatform.max.x;
+            }
+
+            const float stepThreshold = 0.6f;
+            if (gap <= stepThreshold)
+            {
+                Context.enemyMovement.FaceTarget(target.position);
+                Context.enemyMovement.Move(chaseSpeed);
+                return;
+            }
+
+            if (jumpCooldownTimer <= 0f)
+            {
+                jumpCooldownTimer = jumpCooldown;
+                Context.enemyMovement.FaceTarget(target.position);
+                animator.SetTrigger("isJump");
+            }
+            return;
+        }
+
+        // 3. Level Ground Chase:
+        Context.enemyMovement.FaceTarget(target.position);
         bool dropAhead = !Context.perception.HasGroundAhead();
         bool wallAhead = Context.perception.HasWallOrHigherGroundAhead();
-
+        // If wall is too tall to clear, don't jump into it endlessly
+        if (wallAhead && !Context.perception.CanHopObstacle(1.6f))
+        {
+            Context.enemyMovement.Stop();
+            return;
+        }
         if (jumpCooldownTimer <= 0f && (dropAhead || wallAhead))
         {
             jumpCooldownTimer = jumpCooldown;
@@ -98,15 +159,7 @@ public class ChaseSMB : EnemyStateBehaviour
             return;
         }
 
-        if (distance <= attackRange)
-        {
-            Context.enemyMovement.Stop();
-            animator.SetTrigger("Attack");
-        }
-        else
-        {
-            Context.enemyMovement.Move(chaseSpeed);
-        }
+        Context.enemyMovement.Move(chaseSpeed);
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

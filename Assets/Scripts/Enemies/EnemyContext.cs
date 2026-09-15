@@ -8,8 +8,8 @@ public class EnemyContext
     public Rigidbody2D rb;
     public Animator animator;
     public EnemyPerception perception;
-    public EnemyMovement enemyMovement;
     public SpriteRenderer spriteRenderer;
+    public EnemyMovement enemyMovement;
 
     [Header("Layers")]
     public LayerMask playerLayer;

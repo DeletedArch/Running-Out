@@ -275,7 +275,7 @@ GameObject:
   - component: {fileID: 146297212}
   m_Layer: 7
   m_Name: Wall (2)
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1141,6 +1141,10 @@ PrefabInstance:
       propertyPath: maxHealth
       value: 70
       objectReference: {fileID: 0}
+    - target: {fileID: 4010535387113769856, guid: 629d1a69de6128a4eac3dd71422ca416, type: 3}
+      propertyPath: context.edgeResponseBehaviour
+      value: 
+      objectReference: {fileID: 1434932596}
     - target: {fileID: 8679909980033673598, guid: 629d1a69de6128a4eac3dd71422ca416, type: 3}
       propertyPath: m_Name
       value: Enemy Ninja
@@ -1293,6 +1297,17 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8679909980033673598, guid: 629d1a69de6128a4eac3dd71422ca416, type: 3}
   m_PrefabInstance: {fileID: 1018979809}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1434932596 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8166667416176644574, guid: 629d1a69de6128a4eac3dd71422ca416, type: 3}
+  m_PrefabInstance: {fileID: 1018979809}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1434932595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9eb75315e7b7a941bbba382c7a51e2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::OnEdgeResponse
 --- !u!1 &1523459907 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8679909980033673598, guid: 629d1a69de6128a4eac3dd71422ca416, type: 3}
@@ -1589,7 +1604,7 @@ GameObject:
   - component: {fileID: 1711444207}
   m_Layer: 6
   m_Name: Ground
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1732,7 +1747,7 @@ GameObject:
   - component: {fileID: 1731607175}
   m_Layer: 7
   m_Name: Wall (5)
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1989,8 +2004,8 @@ Transform:
   m_GameObject: {fileID: 1808574507}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 80.84, y: 16.92, z: 0}
-  m_LocalScale: {x: 15.453906, y: 1.4723597, z: 1}
+  m_LocalPosition: {x: 82.3045, y: 16.92, z: 0}
+  m_LocalScale: {x: 18.382421, y: 1.4723597, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -2180,7 +2195,7 @@ GameObject:
   - component: {fileID: 1948170391}
   m_Layer: 7
   m_Name: Wall (4)
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2517,7 +2532,7 @@ GameObject:
   - component: {fileID: 2057165775}
   m_Layer: 7
   m_Name: Wall (3)
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2655,7 +2670,7 @@ GameObject:
   - component: {fileID: 2069539240}
   m_Layer: 7
   m_Name: Wall (1)
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2774,8 +2789,8 @@ Transform:
   m_GameObject: {fileID: 2069539239}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 90.24, y: 9.303, z: 0}
-  m_LocalScale: {x: 3.6228163, y: 16.789124, z: 1}
+  m_LocalPosition: {x: 89.67, y: 8.65, z: 0}
+  m_LocalScale: {x: 3.6228163, y: 15.23613, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -2793,7 +2808,7 @@ GameObject:
   - component: {fileID: 2113222382}
   m_Layer: 7
   m_Name: Wall
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
