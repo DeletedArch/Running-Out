@@ -31,7 +31,7 @@ public class PlayerController : MonoBehaviour, IEntity
         }
         if (context.playerAnimator == null)
         {
-            Debug.LogError("Player Animator is not assigned in the PlayerContext."); 
+            Debug.LogError("Player Animator is not assigned in the PlayerContext.");
         }
     }
 
@@ -44,7 +44,6 @@ public class PlayerController : MonoBehaviour, IEntity
         {
             GetPlayerDirection = GetPlayerDirection
         };
-        timerSystem = new TimerSystem(context.playerAnimator, 20f);
     }
 
     void OnEnable()
@@ -59,6 +58,9 @@ public class PlayerController : MonoBehaviour, IEntity
         InputController.OnSwiftDashInput += HandleSwiftDashInput;
         SetStateSMB.OnStateEntered += HandleStateEntered;
         SetStateSMB.OnStateExited += HandleStateExited;
+
+        // Debug
+        InputController.OnDebugInput1 += OnInputDebug1;
     }
 
     void OnDisable()
@@ -73,6 +75,9 @@ public class PlayerController : MonoBehaviour, IEntity
         InputController.OnSwiftDashInput -= HandleSwiftDashInput;
         SetStateSMB.OnStateEntered -= HandleStateEntered;
         SetStateSMB.OnStateExited -= HandleStateExited;
+
+        // Debug
+        InputController.OnDebugInput1 -= OnInputDebug1;
     }
 
     private void HandleStateEntered(string stateTag)
@@ -128,7 +133,7 @@ public class PlayerController : MonoBehaviour, IEntity
     public bool IsGrounded()
     {
         // Debug.DrawRay(transform.position, Vector2.down * 1.05f, Color.red);
-        RaycastHit2D hit = Physics2D.BoxCast(transform.position, 
+        RaycastHit2D hit = Physics2D.BoxCast(transform.position,
         new Vector2(Mathf.Abs(transform.localScale.x) - 0.4f, transform.localScale.y * 0.5f), 0f, Vector2.down, transform.localScale.y, context.groundLayer);
         if (hit.collider != null)
         {
@@ -161,14 +166,17 @@ public class PlayerController : MonoBehaviour, IEntity
             if (DistanceToLeftWall < DistanceToRightWall)
             {
                 return WallTouchDirection.Left;
-            } else
+            }
+            else
             {
                 return WallTouchDirection.Right;
             }
-        } else if (hitLeft.collider != null && hitRight.collider == null)
+        }
+        else if (hitLeft.collider != null && hitRight.collider == null)
         {
             return WallTouchDirection.Left;
-        } else if (hitRight.collider != null && hitLeft.collider == null)
+        }
+        else if (hitRight.collider != null && hitLeft.collider == null)
         {
             return WallTouchDirection.Right;
         }
@@ -198,7 +206,7 @@ public class PlayerController : MonoBehaviour, IEntity
 
     void ApplyCustomDrag()
     {
-        if (!context.useDrag || !IsGrounded()) return;
+        if (!context.useDrag) return;
         if (Math.Abs(context.playerRigidbody.linearVelocity.x) < 0.1f)
         {
             context.playerRigidbody.linearVelocity = new Vector2(0, context.playerRigidbody.linearVelocity.y);
@@ -233,7 +241,8 @@ public class PlayerController : MonoBehaviour, IEntity
                 context.playerAnimator.Play("WallHop", 0, 0f);
             }
             return;
-        } else
+        }
+        else
         {
             Debug.Log("Player is not touching a wall. Cannot perform wall hop.");
             Debug.Log(context.currentState);
@@ -286,6 +295,16 @@ public class PlayerController : MonoBehaviour, IEntity
         playerCombat.HandleBlockRelease();
     }
 
+    void SpriteColorFlash(Color color, float duration)
+    {
+        if (context.playerSpriteRenderer == null) return;
+        context.playerSpriteRenderer.color = color;
+        UniTask.Delay(TimeSpan.FromSeconds(duration)).ContinueWith(() =>
+        {
+            context.playerSpriteRenderer.color = Color.white;
+        }).Forget();
+    }
+
     public void SetMovement(bool canMove)
     {
         context.canMove = canMove;
@@ -319,19 +338,27 @@ public class PlayerController : MonoBehaviour, IEntity
 
     public void TakeDamage(float amount)
     {
-        if (context.isInvincible) {
-            if (context.currentState == "Block")
-            {
-                timerSystem?.ReplenishTimer(2f);
-            }
-            else if (context.currentState == "Dash")
-            {
-                timerSystem?.ReplenishTimer(3f);
-            }
+        playerCombat.HandleGettingHit();
+        if (context.currentState == "Parry")
+        {
+            timerSystem?.ReplenishTimer(2f);
             return;
-        };
+        }
+        else if (context.currentState == "Dash")
+        {
+            timerSystem?.ReplenishTimer(3f);
+            return;
+        }
+        else if (context.currentState == "Block")
+        {
+            timerSystem?.DepleteTimer(amount * 0.5f);
+            return;
+        }
+        if (context.isInvincible) return;
+
         timerSystem?.DepleteTimer(amount);
         context.playerAnimator.SetTrigger("Hit");
+        SpriteColorFlash(Color.red, 0.15f);
         // Implement damage logic here
         Debug.Log($"Player took {amount} damage.");
     }
@@ -342,9 +369,17 @@ public class PlayerController : MonoBehaviour, IEntity
         Debug.Log("Player died.");
     }
 
+    // DEBUGGGGGGGG EVERYTHIGNG IS DEBUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
+
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(transform.position - Vector3.up * transform.localScale.y, transform.localScale - Vector3.up * 0.5f * transform.localScale.y - Vector3.right * 0.4f);
+    }
+
+    // Take damage debug
+    void OnInputDebug1()
+    {
+        TakeDamage(0.5f);
     }
 }

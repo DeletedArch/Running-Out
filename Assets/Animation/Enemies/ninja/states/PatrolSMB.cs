@@ -23,6 +23,7 @@ public class PatrolSMB : EnemyStateBehaviour
         // 1. Look for player
         if (Context.perception != null && Context.perception.TryFindPlayer(out Transform target))
         {
+            Context.Target = target; // Store in context for Chase & Jump
             animator.SetBool("PlayerSpotted", true);
             return;
         }

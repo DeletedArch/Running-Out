@@ -5,7 +5,7 @@ using UnityEngine.UI;
 [Serializable]
 public class TimerSystem
 {
-    private Animator animator;
+    [SerializeField] private Animator animator;
     [SerializeField] private float timer = 20f;
     [SerializeField] private float normalizationRatio = 1f/20f;
     [SerializeField] private float maxTime = 35f;
@@ -21,10 +21,8 @@ public class TimerSystem
     public static event Action<float> OnTimerUpdated;
     public static event Action OnTimerDepleted;
 
-    public TimerSystem(Animator animator, float initialTime = 20f)
+    public TimerSystem()
     {
-        this.animator = animator;
-        timer = initialTime;
         ITimerAccess.OnTimerChange += HandleTimerChange;
     }
 
@@ -44,16 +42,19 @@ public class TimerSystem
 
     public void DepleteTimer(float amount)
     {
+        if (debugDoNotDeplete) return;
         timer -= amount;
     }
 
     public void ReplenishTimer(float amount)
     {
+        if (debugDoNotDeplete) return;
         timer += amount;
     }
 
     private void HandleTimerChange(float changeAmount)
     {
+        if (debugDoNotDeplete) return;
         Debug.Log($"Timer change event received: {changeAmount}");
         ReplenishTimer(changeAmount);
     }

@@ -1,16 +1,15 @@
 using UnityEngine;
 
-public class StunSMB : MonoBehaviour
+public class StunSMB : EnemyStateBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        
+        base.OnStateEnter(animator, stateInfo, layerIndex);
+        Context.enemyMovement.Stop();
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        
+        animator.SetBool("isIdle", true);
     }
 }

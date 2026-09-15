@@ -6,7 +6,7 @@ public class PlayerCombatConfig : ScriptableObject
     [Header("Combat Settings")]
     [SerializeField] private float attackDuration = 0.33f;
     [SerializeField] private float blockDuration = 0.3f;
-    [SerializeField] private float parryTimeWindow = 0.2f;
+    [SerializeField] private float parryTimeWindow = 0.5f;
     [SerializeField] private float swiftDashDuration = 0.25f;
     [SerializeField] private float chargedAttackWindUpDuration = 0.5f;
     [SerializeField] private float attackDamage = 30f;
@@ -19,6 +19,11 @@ public class PlayerCombatConfig : ScriptableObject
     [SerializeField] private float comboAttackDuration = 0.25f;
     [SerializeField] private AnimationClip[] comboAttackAnimations = new AnimationClip[5];
     [SerializeField] private AnimationClip chargedAttackAnimation;
+
+    [Header("Attack Audio")]
+    [SerializeField] private SoundData attackSound;
+
+    public SoundData AttackSound => attackSound;
 
     public float AttackDuration { get { return attackDuration; } }
     public float BlockDuration { get { return blockDuration; } }

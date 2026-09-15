@@ -22,11 +22,20 @@ public class WallHopStateSMB : StateMachineBehaviour
         PlayerContext context = playerController.Context;
         if (context != null)
         {
-            Vector2 wallHopDirection = playerController.GetWallTouchDirection() == WallTouchDirection.Left ? Vector2.right : Vector2.left;
+            WallTouchDirection walltouchdirection = playerController.GetWallTouchDirection();
+            Vector2 wallHopDirection = walltouchdirection == WallTouchDirection.Left ? Vector2.right : Vector2.left;
             this.context = context;
             rb = context.playerRigidbody;
             originalGravityScale = rb.gravityScale;
             rb.gravityScale = 0f;
+            if (walltouchdirection == WallTouchDirection.Right)
+            {
+                VFXEvents.TriggerVFX("JumpOffWall", rb.position, Quaternion.Euler(0, 0, 90), false);
+            }
+            else if (walltouchdirection == WallTouchDirection.Left)
+            {
+                VFXEvents.TriggerVFX("JumpOffWall", rb.position, Quaternion.Euler(0, 0, -90), false);
+            }
             Vector2? nextWallPosition;
             if (animator.GetBool("IsGrounded"))
             {
@@ -47,6 +56,7 @@ public class WallHopStateSMB : StateMachineBehaviour
             }
 
             ApplyWallHop(rb, finalHopPosition, stateCts.Token).Forget();
+            context.playerMovementConfig.DashSound?.Play();
         }
     }
 
@@ -76,7 +86,7 @@ public class WallHopStateSMB : StateMachineBehaviour
         rb.transform.localScale = new Vector3(-direction * Mathf.Abs(rb.transform.localScale.x), rb.transform.localScale.y, rb.transform.localScale.z);
         Vector2 startPosition = rb.position;
         float elapsedTime = 0f;
-        float newWallHopDuration = wallHopDuration * context.playerAnimator.GetFloat("Timer");
+        float newWallHopDuration = wallHopDuration / context.playerAnimator.GetFloat("Timer");
         try
         {
             await UniTask.WaitUntil(() =>

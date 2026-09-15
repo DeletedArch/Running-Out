@@ -2,29 +2,39 @@ using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
-    [SerializeField] private Rigidbody2D rb;
+    private EnemyContext context;
+    private Rigidbody2D rb => context != null ? context.rb : null;
+    private LayerMask groundLayer => context != null ? context.groundLayer : default;
 
-    [Header("Ground & Jump")]
-    [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private float jumpForce = 11f;
-
-    // Directly derived from scale: 1 for facing right, -1 for facing left
     public int FacingDirection => transform.localScale.x < 0 ? -1 : 1;
 
     private void Awake()
     {
-        if (rb == null)
-            rb = GetComponent<Rigidbody2D>();
+        var controller = GetComponent<EnemyController>();
+        if (controller != null)
+        {
+            context = controller.Context;
+        }
     }
 
-    // Moves forward in the current facing direction at given speed
     public void Move(float speed)
     {
         if (rb != null)
             rb.linearVelocity = new Vector2(FacingDirection * speed, rb.linearVelocity.y);
     }
 
-    // Pushes the enemy backward (opposite of facing direction)
+    public bool IsGrounded()
+    {
+        Vector2 footPos = (Vector2)transform.position + new Vector2(0, -0.5f);
+        return Physics2D.OverlapBox(footPos, new Vector2(0.5f, 0.5f), 0f, groundLayer) != null;
+    }
+
+    public void Jump(float forwardSpeed, float jumpPower)
+    {
+        if (rb != null)
+            rb.linearVelocity = new Vector2(forwardSpeed * FacingDirection, jumpPower);
+    }
+
     public void StepBack(float force)
     {
         if (rb != null)

@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0b0118d6fe03204c8a29238bc4ead8e, type: 3}
+  m_Name: EnemyDied
+  m_EditorClassIdentifier: Assembly-CSharp::SoundData
+  clips:
+  - {fileID: 8300000, guid: d14c998d6540344f89d98403b8d12b97, type: 3}
+  - {fileID: 8300000, guid: 5d72ee7fecf3d4c479e4f2b39d511f96, type: 3}
+  mixerGroup: {fileID: 0}
+  volume: 0.334
+  volumeVariation: 0.05
+  pitch: 1
+  pitchVariation: 0.08
+  spatialBlend: 0
+  minDistance: 1
+  maxDistance: 25
+  loop: 0
+  cooldown: 0.05

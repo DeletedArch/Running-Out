@@ -10,6 +10,7 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
     [SerializeField] private TargetDetectionChannel channel;
     [SerializeField] private float timerUsage = 1f;
     [SerializeField] private float timerRestoration = 2f;
+    [SerializeField] private float hitstopDuration = 0.25f;
 
     public float TimerUsage => timerUsage;
     public float TimerRestoration => timerRestoration;
@@ -115,6 +116,12 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
                 {
                     damageable.TakeDamage(player.Context.playerCombatConfig.SwiftDashDamage);
                     ITimerAccess.ModifyTimer(timerRestoration);
+                    var enemyAnimator = targetedEnemy.GetComponent<Animator>();
+                    if (enemyAnimator != null)
+                    {
+                        enemyAnimator.SetTrigger("Hit");
+                    }
+                    await ActionHelpers.ApplyHitstop(new Animator[] { player.Context.playerAnimator, enemyAnimator }, hitstopDuration);
                 }
             }
             animator.SetBool("SDash", false);
@@ -131,6 +138,8 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
                     {
                         damageable.TakeDamage(player.Context.playerCombatConfig.SwiftDashDamage);
                         ITimerAccess.ModifyTimer(timerRestoration);
+                        var enemyAnimator = targetedEnemy.GetComponent<Animator>();
+                        await ActionHelpers.ApplyHitstop(new Animator[] { player.Context.playerAnimator, enemyAnimator }, hitstopDuration);
                     }
                 }
             }
