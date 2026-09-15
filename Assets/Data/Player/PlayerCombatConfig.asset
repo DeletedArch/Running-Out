@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCombatConfig
   attackDuration: 0.33
   blockDuration: 0.3
-  parryTimeWindow: 0.2
+  parryTimeWindow: 0.6
   swiftDashDuration: 0.25
   chargedAttackWindUpDuration: 0.5
   attackDamage: 30

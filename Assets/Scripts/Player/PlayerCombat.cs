@@ -15,6 +15,7 @@ public class PlayerCombat
 
     public delegate Vector2 GetPlayerDirectionDelegate();
     public GetPlayerDirectionDelegate GetPlayerDirection;
+    public static event Action OnParried;
 
     public PlayerCombat(PlayerContext context, RangeDetectionHelper[] rangeDetectionHelper)
     {
@@ -109,11 +110,13 @@ public class PlayerCombat
         {
             // Restore time and negate damage
             context.playerAnimator.SetTrigger("Parry");
+            OnParried?.Invoke();
+            VFXEvents.TriggerVFX("Parry", context.playerRigidbody.position, Quaternion.identity, false);
+            ActionHelpers.ApplyHitstop(new Animator[] { context.playerAnimator }, 0.05f).Forget();
             Debug.Log("Player parried the attack!");
         }
         else
         {
-            // Negate damage but no timer restoration
             Debug.Log("Player blocked the attack!");
         }
     }
