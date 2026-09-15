@@ -4,13 +4,14 @@ using Cysharp.Threading.Tasks;
 using UnityEngine;
 using System;
 
-public class AttackImpulseSMB : StateMachineBehaviour, ITimerAccess
+public class AttackStateSMB : StateMachineBehaviour, ITimerAccess
 {
     [SerializeField] private float maxLungeDistance = 3f;
     [SerializeField] private float lungeDuration = 0.2f;
     [SerializeField] private TargetDetectionChannel channel;
     [SerializeField] private float timerUsage = 0.5f;
     [SerializeField] private float timerRestoration = 0.75f;
+    [SerializeField] private float hitstopDuration = 0.05f;
 
     public float TimerUsage => timerUsage;
     public float TimerRestoration => timerRestoration;
@@ -118,6 +119,8 @@ public class AttackImpulseSMB : StateMachineBehaviour, ITimerAccess
                     Debug.Log("AttackImpulseSMB: Damaging the enemy.");
                     damageable.TakeDamage(player.Context.playerCombatConfig.AttackDamage);
                     ITimerAccess.ModifyTimer(timerRestoration);
+                    var enemyAnimator = targetedEnemy.GetComponent<Animator>();
+                    await ActionHelpers.ApplyHitstop(new Animator[] { player.Context.playerAnimator, enemyAnimator }, hitstopDuration);
                 }
             }
         }
@@ -135,6 +138,8 @@ public class AttackImpulseSMB : StateMachineBehaviour, ITimerAccess
                         Debug.Log("AttackImpulseSMB: Damaging the enemy after cancellation.");
                         damageable.TakeDamage(player.Context.playerCombatConfig.SwiftDashDamage);
                         ITimerAccess.ModifyTimer(timerRestoration);
+                        var enemyAnimator = targetedEnemy.GetComponent<Animator>();
+                        await ActionHelpers.ApplyHitstop(new Animator[] { player.Context.playerAnimator, enemyAnimator }, hitstopDuration);
                     }
                 }
             }
