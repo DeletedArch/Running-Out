@@ -6,7 +6,7 @@ public class PlayerCombatConfig : ScriptableObject
     [Header("Combat Settings")]
     [SerializeField] private float attackDuration = 0.33f;
     [SerializeField] private float blockDuration = 0.3f;
-    [SerializeField] private float parryTimeWindow = 0.2f;
+    [SerializeField] private float parryTimeWindow = 0.5f;
     [SerializeField] private float swiftDashDuration = 0.25f;
     [SerializeField] private float chargedAttackWindUpDuration = 0.5f;
     [SerializeField] private float attackDamage = 30f;
