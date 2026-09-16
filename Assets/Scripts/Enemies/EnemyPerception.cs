@@ -70,19 +70,20 @@ public class EnemyPerception : MonoBehaviour
     }
     public bool HasOtherEnemyAhead()
     {
-        Vector2 origin = (Vector2)transform.position + new Vector2(0.55f * facingDirection, obstacleCheckHeight);
-        Vector2 direction = Vector2.right * facingDirection;
-        // Checks Enemy layer and Default layer (in case enemy is on Default with "Enemy" tag)
+        // 1. Box in front of the enemy at chest height (Y = 0.4f)
+        Vector2 checkCenter = (Vector2)transform.position + new Vector2(0.8f * facingDirection, 0.4f);
+        Vector2 checkSize = new Vector2(0.9f, 1.2f);
         int mask = (1 << LayerMask.NameToLayer("Enemy")) | (1 << 0);
         if (enemyLayer.value != 0) mask |= enemyLayer.value;
-        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, direction, obstacleCheckDistance, mask);
-        Debug.DrawRay(origin, direction * obstacleCheckDistance, Color.magenta);
-        foreach (var hit in hits)
+        Collider2D[] colliders = Physics2D.OverlapBoxAll(checkCenter, checkSize, 0f, mask);
+        foreach (var col in colliders)
         {
-            if (hit.collider == null || hit.collider.transform.root == transform.root || hit.collider.isTrigger)
+            // 2. Only ignore colliders that belong to THIS enemy (sword, self, triggers)
+            // Even if enemies share the 'ninja enemies' folder, this correctly detects other enemies!
+            if (col == null || col.transform.IsChildOf(transform) || col.isTrigger)
                 continue;
-            // Detects by Tag OR by Layer:
-            if (hit.collider.CompareTag("Enemy") || hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy"))
+            // 3. Detect other enemies by Tag or Layer:
+            if (col.CompareTag("Enemy") || col.gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
                 return true;
             }

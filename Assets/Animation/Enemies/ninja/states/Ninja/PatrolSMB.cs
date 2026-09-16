@@ -31,9 +31,10 @@ public class PatrolSMB : EnemyStateBehaviour
         bool atEdge = !Context.perception.HasGroundAhead();
         bool atWall = Context.perception.HasObstacleOrEnemyAhead();
 
-        // 2. No edge, but detected a wall, higher ground, or another enemy (DOES NOT return to idle, turns around immediately)
+        // 2. Detected a wall, ledge, or another enemy: turn around immediately
         if ((atEdge || atWall) && turnCooldownTimer <= 0f)
         {
+            Context.enemyMovement.Stop(); // Kill forward momentum so they turn cleanly
             Context.enemyMovement.Flip();
             turnCooldownTimer = turnCooldown;
             return;
