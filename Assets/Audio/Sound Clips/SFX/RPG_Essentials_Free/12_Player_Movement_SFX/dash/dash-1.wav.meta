@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 030c5830866dda644b817b335f13a32f
+guid: 4e349dc959014a845b9aa317d1c2b7f0
 AudioImporter:
   externalObjects: {}
   serializedVersion: 6
@@ -25,5 +25,5 @@ AssetOrigin:
   productId: 227708
   packageName: RPG Essentials Sound Effects - FREE!
   packageVersion: 1.0
-  assetPath: Assets/Leohpaz/RPG_Essentials_Free/12_Player_Movement_SFX/03_Step_grass_03.wav
+  assetPath: Assets/Leohpaz/RPG_Essentials_Free/12_Player_Movement_SFX/30_Jump_03.wav
   uploadId: 516368

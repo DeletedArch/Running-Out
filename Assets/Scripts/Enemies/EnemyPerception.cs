@@ -22,7 +22,7 @@ public class EnemyPerception : MonoBehaviour
     private Transform currentTarget;
     public Transform CurrentTarget => currentTarget;
 
-    float facingDirection => Mathf.Sign(transform.localScale.x);
+    float facingDirection => transform.localScale.x < 0 ? 1f : -1f;
 
     private void Awake()
     {

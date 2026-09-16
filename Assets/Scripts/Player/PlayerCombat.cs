@@ -113,6 +113,7 @@ public class PlayerCombat
             OnParried?.Invoke();
             VFXEvents.TriggerVFX("Parry", context.playerRigidbody.position, Quaternion.identity, false);
             ActionHelpers.ApplyHitstop(new Animator[] { context.playerAnimator }, 0.05f).Forget();
+            config.ParrySound?.Play(context.playerRigidbody.position);
             Debug.Log("Player parried the attack!");
         }
         else

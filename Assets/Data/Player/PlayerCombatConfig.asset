@@ -29,3 +29,6 @@ MonoBehaviour:
   - {fileID: 7400000, guid: 17b25e3a34b2eec609a9968cc4b9e7fa, type: 2}
   chargedAttackAnimation: {fileID: 7400000, guid: 73d9f6d4014189431bbeb948d5df9d6e, type: 2}
   attackSound: {fileID: 11400000, guid: 3a1e70073c35b974ebed7513c3504e49, type: 2}
+  parrySound: {fileID: 11400000, guid: 979b1cb3277ce6746b38d87f3afad4c3, type: 2}
+  staggerSound: {fileID: 11400000, guid: cd30efee55171cd48aa6826b238fadfe, type: 2}
+  swiftDashSound: {fileID: 11400000, guid: a5979399a8651c74e8bd5c634c9b95ea, type: 2}

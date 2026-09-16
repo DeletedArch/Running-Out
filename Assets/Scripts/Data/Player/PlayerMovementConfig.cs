@@ -15,7 +15,13 @@ public class PlayerMovementConfig : ScriptableObject
 
     [Header("Audio")]
     [SerializeField] private SoundData dashSound;
+    [SerializeField] private SoundData jumpSound;    
+    [SerializeField] private SoundData wallJumpSound;
+
     public SoundData DashSound => dashSound;
+    public SoundData JumpSound => jumpSound;      
+    public SoundData WallJumpSound => wallJumpSound;
+
     public float RunSpeed { get { return runSpeed; } }
     public float JumpForce { get { return jumpForce; } }
     public float DashForce { get { return dashForce; } }

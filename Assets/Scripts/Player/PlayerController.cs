@@ -359,6 +359,9 @@ public class PlayerController : MonoBehaviour, IEntity
         timerSystem?.DepleteTimer(amount);
         context.playerAnimator.SetTrigger("Hit");
         SpriteColorFlash(Color.red, 0.15f);
+
+        context.playerCombatConfig.StaggerSound?.Play(transform.position);
+
         // Implement damage logic here
         Debug.Log($"Player took {amount} damage.");
     }

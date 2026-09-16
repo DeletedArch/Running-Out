@@ -20,6 +20,7 @@ public class JumpStateSMB : StateMachineBehaviour
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, movementConfig.JumpForce);
             VFXEvents.TriggerVFX("JumpOff", rb.position, Quaternion.identity, false);
+            movementConfig.JumpSound?.Play(rb.position);
         }
         UniTask.WaitUntil(() =>
         {

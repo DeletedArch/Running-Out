@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c0b0118d6fe03204c8a29238bc4ead8e, type: 3}
-  m_Name: PlayerAttackData
+  m_Name: SD_PlayerGetHit
   m_EditorClassIdentifier: Assembly-CSharp::SoundData
   clips:
-  - {fileID: 8300000, guid: c266e86e5ec11e344bf66dede26cbc46, type: 3}
-  - {fileID: 8300000, guid: 90fb91c5d9f18df4183363d36d921429, type: 3}
+  - {fileID: 8300000, guid: 2a295373a10441545bcaf619b61bea94, type: 3}
+  - {fileID: 8300000, guid: 05d0536a3eefc80438f95f9662331f52, type: 3}
   mixerGroup: {fileID: 1837053954460380460, guid: ac46e029a2030dd4c9f2688338f0db07, type: 2}
-  volume: 0.265
-  volumeVariation: 0.042
-  pitch: 1.08
-  pitchVariation: 0.051
+  volume: 1
+  volumeVariation: 0.05
+  pitch: 1.05
+  pitchVariation: 0.083
   spatialBlend: 0
   minDistance: 1
   maxDistance: 25

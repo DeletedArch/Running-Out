@@ -7,7 +7,6 @@ public class OnEdgeResponse : MonoBehaviour, IEdgeResponse
     [SerializeField] private float highJumpHeightClearance = 2.0f;
     [SerializeField] private float gapJumpHeight = 1.5f;
     [SerializeField] private float dropJumpHeight = 0.4f;
-    [SerializeField] private float dropJumpForwardMultiplier = 0.8f;
 
     private EnemyController enemyController;
     private EnemyPerception perception;

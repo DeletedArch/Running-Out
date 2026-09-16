@@ -56,7 +56,7 @@ public class WallHopStateSMB : StateMachineBehaviour
             }
 
             ApplyWallHop(rb, finalHopPosition, stateCts.Token).Forget();
-            context.playerMovementConfig.DashSound?.Play();
+            (context.playerMovementConfig.WallJumpSound ?? context.playerMovementConfig.DashSound)?.Play(rb.position);
         }
     }
 

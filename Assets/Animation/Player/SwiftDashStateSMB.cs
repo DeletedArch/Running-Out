@@ -36,6 +36,8 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
         isSuspended = false;
         ITimerAccess.ModifyTimer(-timerUsage); // Deduct timer usage when the dash starts
         ApplyTargetedImpulse(player, animator);
+
+        player.Context.playerCombatConfig.SwiftDashSound?.Play(rb.position);
     }
 
     override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

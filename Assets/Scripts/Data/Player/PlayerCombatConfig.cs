@@ -22,8 +22,14 @@ public class PlayerCombatConfig : ScriptableObject
 
     [Header("Attack Audio")]
     [SerializeField] private SoundData attackSound;
+    [SerializeField] private SoundData parrySound;    
+    [SerializeField] private SoundData staggerSound;   
+    [SerializeField] private SoundData swiftDashSound; 
 
     public SoundData AttackSound => attackSound;
+    public SoundData ParrySound => parrySound;         
+    public SoundData StaggerSound => staggerSound; 
+    public SoundData SwiftDashSound => swiftDashSound;
 
     public float AttackDuration { get { return attackDuration; } }
     public float BlockDuration { get { return blockDuration; } }

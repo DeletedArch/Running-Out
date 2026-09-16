@@ -16,7 +16,6 @@ public class EnemyController : MonoBehaviour, IEntity
     [SerializeField] private SoundData deathSound;
     [SerializeField] private SoundData hurtVoiceSound; 
 
-    
     public EnemyContext Context => context;
     public EnemyMovement EnemyMovement => enemyMovement;
     public float Health => currentHealth;
@@ -36,7 +35,6 @@ public class EnemyController : MonoBehaviour, IEntity
 
         animator = context.animator;
     }
-
 
     public void TakeDamage(float amount)
     {

@@ -7,7 +7,7 @@ public class EnemyMovement
     private Rigidbody2D rb => context != null ? context.rb : null;
     private LayerMask groundLayer => context != null ? context.groundLayer : default;
 
-    public int FacingDirection => transform.localScale.x < 0 ? -1 : 1;
+    public int FacingDirection => transform.localScale.x < 0 ? 1 : -1;
 
     Transform transform;
     public EnemyMovement(Transform enemyTransform, EnemyContext enemyContext )
@@ -52,18 +52,18 @@ public class EnemyMovement
     public void FaceTarget(Vector2 targetPos)
     {
         float diffX = targetPos.x - transform.position.x;
-        if (diffX < -0.5f && FacingDirection > 0)
+        if (diffX < -0.05f && FacingDirection > 0)
             Flip();
-        else if (diffX > 0.5f && FacingDirection < 0)
+        else if (diffX > 0.05f && FacingDirection < 0)
             Flip();
     }
 
     public void FaceAwayFromTarget(Vector2 targetPos)
     {
         float diffX = targetPos.x - transform.position.x;
-        if (diffX < -0.5f && FacingDirection < 0)
+        if (diffX < -0.05f && FacingDirection < 0)
             Flip();
-        else if (diffX > 0.5f && FacingDirection > 0)
+        else if (diffX > 0.05f && FacingDirection > 0)
             Flip();
     }
 
