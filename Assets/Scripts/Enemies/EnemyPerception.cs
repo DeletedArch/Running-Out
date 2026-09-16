@@ -46,33 +46,43 @@ public class EnemyPerception : MonoBehaviour
 
     public bool HasWallOrHigherGroundAhead()
     {
-        Vector2 origin = (Vector2)transform.position + new Vector2(0.2f * facingDirection, obstacleCheckHeight);
+        Vector2 origin = (Vector2)transform.position + new Vector2(0.55f * facingDirection, obstacleCheckHeight);
         Vector2 direction = Vector2.right * facingDirection;
-
-        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, direction, obstacleCheckDistance, groundLayer);
+        // Checks Ground, Wall, and Default layers (in case your wall is on Default with a "Wall" tag)
+        int wallMask = (1 << LayerMask.NameToLayer("Ground")) |
+                       (1 << LayerMask.NameToLayer("Wall")) |
+                       (1 << 0); // Default layer
+        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, direction, obstacleCheckDistance, wallMask);
         Debug.DrawRay(origin, direction * obstacleCheckDistance, Color.cyan);
-
         foreach (var hit in hits)
         {
-            if (hit.collider != null && hit.collider.transform.root != transform.root)
+            if (hit.collider == null || hit.collider.transform.root == transform.root || hit.collider.isTrigger)
+                continue;
+            // Detects by Tag OR by Layer:
+            bool isWall = hit.collider.CompareTag("Wall") || hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall");
+            bool isGround = hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground") || hit.collider.CompareTag("Ground");
+            if (isWall || isGround)
             {
                 return true;
             }
         }
         return false;
     }
-
     public bool HasOtherEnemyAhead()
     {
-        Vector2 origin = (Vector2)transform.position + new Vector2(0.2f * facingDirection, obstacleCheckHeight);
+        Vector2 origin = (Vector2)transform.position + new Vector2(0.55f * facingDirection, obstacleCheckHeight);
         Vector2 direction = Vector2.right * facingDirection;
-
-        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, direction, obstacleCheckDistance, enemyLayer);
+        // Checks Enemy layer and Default layer (in case enemy is on Default with "Enemy" tag)
+        int mask = (1 << LayerMask.NameToLayer("Enemy")) | (1 << 0);
+        if (enemyLayer.value != 0) mask |= enemyLayer.value;
+        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, direction, obstacleCheckDistance, mask);
         Debug.DrawRay(origin, direction * obstacleCheckDistance, Color.magenta);
-
         foreach (var hit in hits)
         {
-            if (hit.collider != null && hit.collider.transform.root != transform.root)
+            if (hit.collider == null || hit.collider.transform.root == transform.root || hit.collider.isTrigger)
+                continue;
+            // Detects by Tag OR by Layer:
+            if (hit.collider.CompareTag("Enemy") || hit.collider.gameObject.layer == LayerMask.NameToLayer("Enemy"))
             {
                 return true;
             }
@@ -92,6 +102,19 @@ public class EnemyPerception : MonoBehaviour
         if (playerCollider == null)
             return false;
 
+        // 1. Line-of-sight check: cast a line from enemy eye to player center
+        Vector2 eyePosition = (Vector2)transform.position + Vector2.up * 0.2f;
+        Vector2 playerCenter = playerCollider.bounds.center;
+        int obstacleMask = (1 << LayerMask.NameToLayer("Ground")) | (1 << LayerMask.NameToLayer("Wall"));
+        RaycastHit2D blockHit = Physics2D.Linecast(eyePosition, playerCenter, obstacleMask);
+        if (blockHit.collider != null)
+        {
+            // Line of sight is blocked by a wall or floor!
+            Debug.DrawLine(eyePosition, blockHit.point, Color.red);
+            return false;
+        }
+        // Line of sight is clear:
+        Debug.DrawLine(eyePosition, playerCenter, Color.green);
         playerTransform = playerCollider.transform;
         currentTarget = playerCollider.transform;
         return true;
@@ -103,6 +126,16 @@ public class EnemyPerception : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
     }
 
+    // if the enemy is upper
+    public bool CanHopObstacle(float maxHopHeight = 1.6f)
+    {
+        Vector2 highOrigin = (Vector2)transform.position + new Vector2(0.2f * facingDirection, maxHopHeight);
+        RaycastHit2D highHit = Physics2D.Raycast(highOrigin, Vector2.right * facingDirection, obstacleCheckDistance, groundLayer);
+        Debug.DrawRay(highOrigin, Vector2.right * facingDirection * obstacleCheckDistance, highHit.collider == null ? Color.green : Color.red);
+        return highHit.collider == null; // Returns true if the space above is clear
+    }
+
+    // if the enemy is lower
     public bool HasCeilingAbove(float checkDistance = 3.0f)
     {
         Vector2 origin = (Vector2)transform.position + Vector2.up * 2f;

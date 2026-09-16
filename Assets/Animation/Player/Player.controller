@@ -271,7 +271,7 @@ MonoBehaviour:
   isInvincible: 0
   invincibilityDuration: 0
   hasCancelWindow: 1
-  cancelWindowStart: 0.6
+  cancelWindowStart: 0.5
   cancelBoolean: 1
   booleanName: Attack
 --- !u!114 &-7972049575686151301
@@ -287,6 +287,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SetStateSMB
   stateTag: SwiftDash
+--- !u!1102 &-7892511158031295445
+AnimatorState:
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Combo3
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 7400000, guid: 17b25e3a34b2eec609a9968cc4b9e7fa, type: 2}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
 --- !u!114 &-7706662667541733019
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1317,7 +1343,7 @@ AnimatorController:
   m_AnimatorParameters:
   - m_Name: Timer
     m_Type: 1
-    m_DefaultFloat: 1
+    m_DefaultFloat: 1.65
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
@@ -1518,6 +1544,32 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!1102 &326314470223445617
+AnimatorState:
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Combo2
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 7400000, guid: 4bd135dd79f25cdd79b6f47d234dc8e2, type: 2}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
 --- !u!114 &447718751329233640
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -1530,7 +1582,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38dfa3eb33ed377dc99701807d4fc08b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AttackImpulseSMB
-  maxLungeDistance: 3
+  maxLungeDistance: 5
   lungeDuration: 0.05
   channel: {fileID: 11400000, guid: 8fec81f173080644fabf2b1a7694471d, type: 2}
   timerUsage: 0.5
@@ -1561,6 +1613,32 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!1102 &534676733019706257
+AnimatorState:
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Combo1
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 7400000, guid: 63be2b381a6d3606aaf542bfb5b4e7ab, type: 2}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
 --- !u!1101 &596907186204952505
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -1928,7 +2006,7 @@ AnimatorStateMachine:
     m_Position: {x: 210, y: 420, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 6150445329629687356}
-    m_Position: {x: 500, y: -480, z: 0}
+    m_Position: {x: 420, y: -430, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7196334450622960727}
     m_Position: {x: -20, y: 240, z: 0}
@@ -1940,7 +2018,16 @@ AnimatorStateMachine:
     m_Position: {x: -50, y: -290, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -9100703201841995188}
-    m_Position: {x: 190, y: -460, z: 0}
+    m_Position: {x: 170, y: -420, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: 534676733019706257}
+    m_Position: {x: -750, y: 230, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: 326314470223445617}
+    m_Position: {x: -750, y: 270, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: -7892511158031295445}
+    m_Position: {x: -750, y: 310, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions:
   - {fileID: 2677130689751672452}

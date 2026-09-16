@@ -1,6 +1,7 @@
+using System;
 using UnityEngine;
 
-public class EnemyMovement : MonoBehaviour
+public class EnemyMovement
 {
     private EnemyContext context;
     private Rigidbody2D rb => context != null ? context.rb : null;
@@ -8,13 +9,11 @@ public class EnemyMovement : MonoBehaviour
 
     public int FacingDirection => transform.localScale.x < 0 ? -1 : 1;
 
-    private void Awake()
+    Transform transform;
+    public EnemyMovement(Transform enemyTransform, EnemyContext enemyContext )
     {
-        var controller = GetComponent<EnemyController>();
-        if (controller != null)
-        {
-            context = controller.Context;
-        }
+        this.transform = enemyTransform;
+        this.context = enemyContext;
     }
 
     public void Move(float speed)
@@ -53,18 +52,18 @@ public class EnemyMovement : MonoBehaviour
     public void FaceTarget(Vector2 targetPos)
     {
         float diffX = targetPos.x - transform.position.x;
-        if (diffX < -0.05f && FacingDirection > 0)
+        if (diffX < -0.5f && FacingDirection > 0)
             Flip();
-        else if (diffX > 0.05f && FacingDirection < 0)
+        else if (diffX > 0.5f && FacingDirection < 0)
             Flip();
     }
 
     public void FaceAwayFromTarget(Vector2 targetPos)
     {
         float diffX = targetPos.x - transform.position.x;
-        if (diffX < -0.05f && FacingDirection < 0)
+        if (diffX < -0.5f && FacingDirection < 0)
             Flip();
-        else if (diffX > 0.05f && FacingDirection > 0)
+        else if (diffX > 0.5f && FacingDirection > 0)
             Flip();
     }
 

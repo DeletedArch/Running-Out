@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.WSA;
 
 public class JumpSMB : EnemyStateBehaviour
 {
@@ -7,6 +8,9 @@ public class JumpSMB : EnemyStateBehaviour
     private float airTime;
     private const float TakeoffGraceDuration = 0.2f;
     private const float MaxAirTime = 1.2f;
+    private float launchX;
+    private const float MinTravelDistance = 0.4f;
+
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
@@ -14,6 +18,8 @@ public class JumpSMB : EnemyStateBehaviour
         if (Controller == null) return;
 
         animator.ResetTrigger("isJump");
+
+        launchX = Controller.transform.position.x;
 
         rb = Controller.GetComponent<Rigidbody2D>();
         takeoffTimer = TakeoffGraceDuration;
@@ -41,11 +47,11 @@ public class JumpSMB : EnemyStateBehaviour
             return;
         }
 
+        bool traveled = Mathf.Abs(Controller.transform.position.x - launchX) >= MinTravelDistance;
         bool isFalling = rb.linearVelocity.y <= 0.1f;
         bool isGrounded = Context.enemyMovement.IsGrounded();
         bool timedOut = airTime >= MaxAirTime;
-
-        if ((isFalling && isGrounded) || timedOut)
+        if ((traveled && isFalling && isGrounded) || timedOut)
         {
             animator.ResetTrigger("isJump");
             animator.Play("chase");
