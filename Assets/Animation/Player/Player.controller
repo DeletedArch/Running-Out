@@ -1241,7 +1241,7 @@ MonoBehaviour:
   lockMovement: 1
   isInvincible: 0
   invincibilityDuration: 0.655
-  hasCancelWindow: 0
+  hasCancelWindow: 1
   cancelWindowStart: 0.5
   cancelBoolean: 0
   booleanName: 

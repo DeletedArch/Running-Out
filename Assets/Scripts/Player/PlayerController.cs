@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour, IEntity
     [SerializeField] private PlayerCombat playerCombat;
     [SerializeField] private RangeDetectionHelper[] rangeDetectionHelper;
     [SerializeField] private TimerSystem timerSystem;
+    [SerializeField] private CooldownSystem cooldownSystem;
     public PlayerContext Context => context;
     public float Health => new float(); // TODO: Add timer and include it as health property
     void Validate()
@@ -44,6 +45,11 @@ public class PlayerController : MonoBehaviour, IEntity
         {
             GetPlayerDirection = GetPlayerDirection
         };
+    }
+
+    void Start()
+    {
+        cooldownSystem?.Initialize();
     }
 
     void OnEnable()
@@ -105,6 +111,7 @@ public class PlayerController : MonoBehaviour, IEntity
         playerCombat?.Update();
         context.playerAnimator.SetInteger("TouchingWall", (int)GetWallTouchDirection());
         timerSystem?.Update(Time.deltaTime);
+        cooldownSystem?.UpdateCooldowns();
         // SetTimer(); -- Debug Only
     }
 
@@ -257,7 +264,7 @@ public class PlayerController : MonoBehaviour, IEntity
 
     void HandleDashInput()
     {
-        if (context.currentState == "Dash") return;
+        if (context.currentState == "Dash" || cooldownSystem.IsOnCooldown("Dash")) return;
         context.playerAnimator.SetBool("Dash", true);
         if (context.canCancel)
         {
@@ -267,7 +274,7 @@ public class PlayerController : MonoBehaviour, IEntity
 
     void HandleSwiftDashInput()
     {
-        if (context.currentState == "SwiftDash") return;
+        if (context.currentState == "SwiftDash" || cooldownSystem.IsOnCooldown("SwiftDash")) return;
         if (context.swiftDashChannel.GetBestTarget() == null) return;
         context.playerAnimator.SetBool("SDash", true);
         if (context.canCancel)
@@ -303,6 +310,18 @@ public class PlayerController : MonoBehaviour, IEntity
         {
             context.playerSpriteRenderer.color = Color.white;
         }).Forget();
+    }
+
+    public void UseCooldown(string key)
+    {
+        if (cooldownSystem.UseCooldown(key))
+        {
+            Debug.Log($"Cooldown used for key: {key}");
+        }
+        else
+        {
+            Debug.Log($"Cooldown not available for key: {key}");
+        }
     }
 
     public void SetMovement(bool canMove)

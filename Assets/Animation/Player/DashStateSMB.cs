@@ -26,7 +26,7 @@ public class DashStateSMB : StateMachineBehaviour, ITimerAccess
         rb = player.Context.playerRigidbody;
         playerCollider = player.GetComponent<Collider2D>();
         movementConfig = player.Context.playerMovementConfig;
-
+        player.UseCooldown("Dash");
         startPosition = rb.position;
         Vector2 direction = player.GetPlayerDirection();
         dashDirection = direction.x != 0 ? Mathf.Sign(direction.x) : Mathf.Sign(player.transform.localScale.x);
