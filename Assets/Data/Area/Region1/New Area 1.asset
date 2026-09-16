@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e5a328c7b0173b07885b02956168a30, type: 3}
+  m_Name: New Area 1
+  m_EditorClassIdentifier: Assembly-CSharp::Area
+  areaName: Area2
+  areaID: 1
+  areaLevel: 0
+  enemyCount: 0
+  areaPrefab: {fileID: 3938862867696870682, guid: e0900f81bc76ebf81b282551e1e75b55, type: 3}
