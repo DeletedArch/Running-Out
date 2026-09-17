@@ -2,14 +2,15 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-// This is a runtime object that generates multiple areas and stores them
-// Chunks are meant to ease generation stutters by generating multiple areas at once and storing them in a single object
-
-public class Chunk : ScriptableObject
+[Serializable]
+public class Chunk
 {
     [SerializeField] private List<Area> areas = new List<Area>();
+    [SerializeField] private List<GameObject> spawnedInstances = new List<GameObject>();
 
     public List<Area> Areas { get => areas; }
+    public float StartX { get; set; }
+    public float EndX { get; set; }
 
     public Area GetLastArea()
     {
@@ -35,13 +36,37 @@ public class Chunk : ScriptableObject
         }
     }
 
+    public void AddSpawnedInstance(GameObject instance)
+    {
+        spawnedInstances.Add(instance);
+    }
+
     public void UnloadArea(int index)
     {
         if (index >= 0 && index < areas.Count)
         {
-            Area area = areas[index];
-            Destroy(area);
             areas.RemoveAt(index);
         }
+        if (index >= 0 && index < spawnedInstances.Count)
+        {
+            if (spawnedInstances[index] != null)
+            {
+                UnityEngine.Object.Destroy(spawnedInstances[index]);
+            }
+            spawnedInstances.RemoveAt(index);
+        }
+    }
+
+    public void UnloadAllAreas()
+    {
+        foreach (var instance in spawnedInstances)
+        {
+            if (instance != null)
+            {
+                UnityEngine.Object.Destroy(instance);
+            }
+        }
+        spawnedInstances.Clear();
+        areas.Clear();
     }
 }

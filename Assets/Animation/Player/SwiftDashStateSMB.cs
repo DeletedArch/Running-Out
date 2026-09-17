@@ -31,7 +31,7 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
         if (player == null) return;
         this.player = player;
         rb = player.Context.playerRigidbody;
-
+        player.UseCooldown("SwiftDash");
         originalGravityScale = rb.gravityScale;
         isSuspended = false;
         ITimerAccess.ModifyTimer(-timerUsage); // Deduct timer usage when the dash starts

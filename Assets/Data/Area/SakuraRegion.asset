@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e43322cdf95dda055addbc93a02ee368, type: 3}
+  m_Name: SakuraRegion
+  m_EditorClassIdentifier: Assembly-CSharp::Region
+  regionName: Sakura Tree
+  regionID: 1
+  regionLevel: 0
+  availableAreas:
+  - {fileID: 11400000, guid: 3be0a9b26b4a01f68893a0dbca8e7779, type: 2}
+  - {fileID: 11400000, guid: cf925d368212de1c9809cbc35387ed9a, type: 2}
+  - {fileID: 11400000, guid: fa11013765dd0277aa6d7ff39291f00a, type: 2}
+  - {fileID: 11400000, guid: b49b5cb70fd62a83bb824379726d9cb5, type: 2}
+  regionStart: 0
+  regionEnd: 2000

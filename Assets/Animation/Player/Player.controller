@@ -1241,7 +1241,7 @@ MonoBehaviour:
   lockMovement: 1
   isInvincible: 0
   invincibilityDuration: 0.655
-  hasCancelWindow: 0
+  hasCancelWindow: 1
   cancelWindowStart: 0.5
   cancelBoolean: 0
   booleanName: 
@@ -2006,10 +2006,10 @@ AnimatorStateMachine:
     m_Position: {x: 210, y: 420, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 6150445329629687356}
-    m_Position: {x: 420, y: -430, z: 0}
+    m_Position: {x: 490, y: -450, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 7196334450622960727}
-    m_Position: {x: -20, y: 240, z: 0}
+    m_Position: {x: 140, y: 200, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -683512277641795417}
     m_Position: {x: 410, y: 640, z: 0}
