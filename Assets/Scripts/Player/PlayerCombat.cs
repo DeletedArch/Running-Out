@@ -16,8 +16,8 @@ public class PlayerCombat
 
     public delegate Vector2 GetPlayerDirectionDelegate();
     public GetPlayerDirectionDelegate GetPlayerDirection;
-    public event Action OnParried;
-    public event Action<float> OnBlocked;
+    public event Action<GameObject> OnParried;
+    public event Action<float, GameObject> OnBlocked;
 
     public PlayerCombat(PlayerContext context, RangeDetectionHelper[] rangeDetectionHelper)
     {
@@ -105,7 +105,7 @@ public class PlayerCombat
         hasParried = false;
     }
 
-    public void HandleGettingHit(float amount)
+    public void HandleGettingHit(float amount, GameObject source = null)
     {
         var animatorState = context.playerAnimator.GetCurrentAnimatorStateInfo(0);
         float elapsedBlockTime = animatorState.normalizedTime * animatorState.length;
@@ -113,7 +113,7 @@ public class PlayerCombat
         {
             // Restore time and negate damage
             context.playerAnimator.SetTrigger("Parry");
-            OnParried?.Invoke();
+            OnParried?.Invoke(source);
             VFXEvents.TriggerVFX("Parry", context.playerRigidbody.position, Quaternion.identity, flipX: context.playerRigidbody.transform.localScale.x < 0);
             ActionHelpers.ApplyGlobalHitstop(0.25f).Forget();
             config.ParrySound?.Play(context.playerRigidbody.position);
@@ -123,7 +123,7 @@ public class PlayerCombat
         else if (animatorState.IsName("Block") && elapsedBlockTime > config.ParryTimeWindow)
         {
             // Block the attack and reduce damage
-            OnBlocked?.Invoke(amount);
+            OnBlocked?.Invoke(amount, source);
             Debug.Log("Player blocked the attack!");
         }
     }

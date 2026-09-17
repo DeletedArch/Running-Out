@@ -11,7 +11,7 @@ public class EnemyAttackHitbox : MonoBehaviour
         var isPlayer = collision.GetComponent<PlayerController>();
         if ( damageable != null && isPlayer != null)
         {
-            damageable.TakeDamage(damage);
+            isPlayer.TakeDamage(damage, gameObject);
             Debug.Log($"Enemy sword hit {collision.name} for {damage} damage!");
         }
     }

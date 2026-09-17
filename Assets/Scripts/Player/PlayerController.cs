@@ -399,17 +399,55 @@ public class PlayerController : MonoBehaviour, IEntity
         Debug.Log($"Player took {amount} damage.");
     }
 
-    public void HandleOnParried()
+    public void TakeDamage(float amount, GameObject source)
+    {
+        playerCombat.HandleGettingHit(amount, source);
+        if (context.currentState == "Dash")
+        {
+            timerSystem?.ReplenishTimer(3f);
+            return;
+        }
+        if (context.isInvincible || context.currentState == "Block" || cooldownSystem.IsOnCooldown("Damage")) return;
+        cooldownSystem.UseCooldown("Damage");
+        timerSystem?.DepleteTimer(amount);
+        context.playerAnimator.SetTrigger("Hit");
+        // SpriteColorFlash(Color.red, 0.15f);
+        SpriteWhiteFlash(0.15f);
+        impulseSource?.GenerateImpulse();
+        ActionHelpers.ApplyGlobalHitstop(0.05f).Forget();
+        context.playerCombatConfig.StaggerSound?.Play(transform.position);
+
+        // Implement damage logic here
+        Debug.Log($"Player took {amount} damage from {source.name}.");
+    }
+
+    public void HandleOnParried(GameObject source)
     {
         timerSystem?.ReplenishTimer(3f);
         context.playerRigidbody.AddForce(-Vector2.right * GetPlayerDirection().normalized.x * 15f, ForceMode2D.Impulse);
+        if (source != null)
+        {
+            var enemyRb = source.GetComponent<Rigidbody2D>();
+            if (enemyRb != null)
+            {
+                enemyRb.AddForce(Vector2.right * GetPlayerDirection().normalized.x * 15f, ForceMode2D.Impulse);
+            }
+        }
     }
 
-    public void HandleOnBlocked(float amount)
+    public void HandleOnBlocked(float amount, GameObject source)
     {
         timerSystem?.DepleteTimer(amount / 2f);
         context.playerRigidbody.AddForce(-Vector2.right * GetPlayerDirection().normalized.x * 5f, ForceMode2D.Impulse);
-        SpriteColorFlash(Color.yellow, 0.15f);
+        SpriteColorFlash(new Color(0f, 0.9f, 1f), 0.15f);
+        if (source != null)
+        {
+            var enemyRb = source.GetComponent<Rigidbody2D>();
+            if (enemyRb != null)
+            {
+                enemyRb.AddForce(Vector2.right * GetPlayerDirection().normalized.x * 5f, ForceMode2D.Impulse);
+            }
+        }
     }
 
     public void Die()
