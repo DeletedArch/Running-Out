@@ -187,7 +187,7 @@ MonoBehaviour:
     maxTime: 35
     minTime: 0
     highSoftCap: 30
-    lowSoftCap: 5
+    lowSoftCap: 12
     depletionRate: 1
     debugDoNotDeplete: 0
   cooldownSystem:
