@@ -3,6 +3,7 @@ using System;
 using Cysharp.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine.UI;
+using Unity.Cinemachine;
 
 public enum WallTouchDirection
 {
@@ -18,6 +19,7 @@ public class PlayerController : MonoBehaviour, IEntity
     [SerializeField] private RangeDetectionHelper[] rangeDetectionHelper;
     [SerializeField] private TimerSystem timerSystem;
     [SerializeField] private CooldownSystem cooldownSystem;
+    public CinemachineImpulseSource impulseSource;
     public PlayerContext Context => context;
     public float Health => new float(); // TODO: Add timer and include it as health property
     void Validate()
@@ -312,6 +314,18 @@ public class PlayerController : MonoBehaviour, IEntity
         }).Forget();
     }
 
+    void SpriteWhiteFlash(float duration)
+    {
+        if (context.playerSpriteRenderer == null) return;
+        context.playerSpriteRenderer.material = context.spriteFlashMaterial;
+        context.playerSpriteRenderer.color = Color.white;
+        UniTask.Delay(TimeSpan.FromSeconds(duration)).ContinueWith(() =>
+        {
+            context.playerSpriteRenderer.material = context.originalMaterial;
+            context.playerSpriteRenderer.color = Color.white;
+        }).Forget();
+    }
+
     public void UseCooldown(string key)
     {
         if (cooldownSystem.UseCooldown(key))
@@ -377,8 +391,10 @@ public class PlayerController : MonoBehaviour, IEntity
 
         timerSystem?.DepleteTimer(amount);
         context.playerAnimator.SetTrigger("Hit");
-        SpriteColorFlash(Color.red, 0.15f);
-
+        // SpriteColorFlash(Color.red, 0.15f);
+        SpriteWhiteFlash(0.15f);
+        impulseSource?.GenerateImpulse();
+        ActionHelpers.ApplyGlobalHitstop(0.05f).Forget();
         context.playerCombatConfig.StaggerSound?.Play(transform.position);
 
         // Implement damage logic here

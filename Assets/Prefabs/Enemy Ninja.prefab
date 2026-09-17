@@ -498,6 +498,8 @@ MonoBehaviour:
     animator: {fileID: 3955315329479805353}
     perception: {fileID: 6955346548231328456}
     spriteRenderer: {fileID: 2469042571197027262}
+    FlashMaterial: {fileID: 2100000, guid: 66c7ffc0875123bf794b3a7184b7c4ec, type: 2}
+    originalMaterial: {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
     playerLayer:
       serializedVersion: 2
       m_Bits: 8
@@ -551,7 +553,6 @@ MonoBehaviour:
   highJumpHeightClearance: 2
   gapJumpHeight: 1.5
   dropJumpHeight: 0.4
-  dropJumpForwardMultiplier: 0.8
 --- !u!70 &228949071277781294
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

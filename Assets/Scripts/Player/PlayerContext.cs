@@ -12,6 +12,8 @@ public class PlayerContext
     [SerializeField] internal AnimatorOverrideController overrideController;
     [SerializeField] internal PlayerMovementConfig playerMovementConfig;
     [SerializeField] internal PlayerCombatConfig playerCombatConfig;
+    [SerializeField] internal Material originalMaterial;
+    [SerializeField] internal Material spriteFlashMaterial;
 
     [Header("Layers")]
     [SerializeField] internal LayerMask groundLayer;
