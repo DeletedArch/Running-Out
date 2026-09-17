@@ -7,6 +7,9 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     InputController inputController;
+    [Header("Performance")]
+    [SerializeField] private bool enableVSync = false;
+    [SerializeField] private int targetFrameRate = 60;
 
     [Header("Audio")]
     [SerializeField] private SoundData levelMusic;
@@ -14,6 +17,9 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         inputController = GetComponent<InputController>();
+
+        QualitySettings.vSyncCount = enableVSync ? 1 : 0;
+        Application.targetFrameRate = targetFrameRate;
     }
     // Start is called before the first frame update
     void Start()
