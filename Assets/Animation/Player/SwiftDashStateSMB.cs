@@ -191,7 +191,16 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
         var targetCh = channel != null ? channel : player.Context.swiftDashChannel;
         if (targetCh != null)
         {
-            return targetCh.GetBestTarget(0f, maxLungeDistance);
+            var best = targetCh.GetBestTarget(0f, maxLungeDistance);
+            if (best != null && best.Object != null)
+            {
+                return best;
+            }
+            var secondBest = targetCh.GetBestTarget(-1f, maxLungeDistance / 2);
+            if (secondBest != null && secondBest.Object != null)
+            {
+                return secondBest;
+            }
         }
         return null;
     }

@@ -36,6 +36,10 @@ public class PlayerController : MonoBehaviour, IEntity
         {
             Debug.LogError("Player Animator is not assigned in the PlayerContext.");
         }
+        if (context.playerSpriteRenderer == null)
+        {
+            Debug.LogError("Player Sprite Renderer is not assigned in the PlayerContext.");
+        }
     }
 
     void Awake()
@@ -66,6 +70,8 @@ public class PlayerController : MonoBehaviour, IEntity
         InputController.OnSwiftDashInput += HandleSwiftDashInput;
         SetStateSMB.OnStateEntered += HandleStateEntered;
         SetStateSMB.OnStateExited += HandleStateExited;
+        playerCombat.OnParried += HandleOnParried;
+        playerCombat.OnBlocked += HandleOnBlocked;
 
         // Debug
         InputController.OnDebugInput1 += OnInputDebug1;
@@ -83,6 +89,8 @@ public class PlayerController : MonoBehaviour, IEntity
         InputController.OnSwiftDashInput -= HandleSwiftDashInput;
         SetStateSMB.OnStateEntered -= HandleStateEntered;
         SetStateSMB.OnStateExited -= HandleStateExited;
+        playerCombat.OnParried -= HandleOnParried;
+        playerCombat.OnBlocked -= HandleOnBlocked;
 
         // Debug
         InputController.OnDebugInput1 -= OnInputDebug1;
@@ -371,24 +379,14 @@ public class PlayerController : MonoBehaviour, IEntity
 
     public void TakeDamage(float amount)
     {
-        playerCombat.HandleGettingHit();
-        if (context.currentState == "Parry")
-        {
-            timerSystem?.ReplenishTimer(2f);
-            return;
-        }
-        else if (context.currentState == "Dash")
+        playerCombat.HandleGettingHit(amount);
+        if (context.currentState == "Dash")
         {
             timerSystem?.ReplenishTimer(3f);
             return;
         }
-        else if (context.currentState == "Block")
-        {
-            timerSystem?.DepleteTimer(amount * 0.5f);
-            return;
-        }
-        if (context.isInvincible) return;
-
+        if (context.isInvincible || context.currentState == "Block" || cooldownSystem.IsOnCooldown("Damage")) return;
+        cooldownSystem.UseCooldown("Damage");
         timerSystem?.DepleteTimer(amount);
         context.playerAnimator.SetTrigger("Hit");
         // SpriteColorFlash(Color.red, 0.15f);
@@ -399,6 +397,19 @@ public class PlayerController : MonoBehaviour, IEntity
 
         // Implement damage logic here
         Debug.Log($"Player took {amount} damage.");
+    }
+
+    public void HandleOnParried()
+    {
+        timerSystem?.ReplenishTimer(3f);
+        context.playerRigidbody.AddForce(-Vector2.right * GetPlayerDirection().normalized.x * 15f, ForceMode2D.Impulse);
+    }
+
+    public void HandleOnBlocked(float amount)
+    {
+        timerSystem?.DepleteTimer(amount / 2f);
+        context.playerRigidbody.AddForce(-Vector2.right * GetPlayerDirection().normalized.x * 5f, ForceMode2D.Impulse);
+        SpriteColorFlash(Color.yellow, 0.15f);
     }
 
     public void Die()

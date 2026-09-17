@@ -174,6 +174,11 @@ public class AttackStateSMB : StateMachineBehaviour, ITimerAccess
             {
                 return (Vector2)best.Object.transform.position;
             }
+            var secondBest = targetCh.GetBestTarget(-1f, maxLungeDistance/2);
+            if (secondBest != null && secondBest.Object != null)
+            {
+                return (Vector2)secondBest.Object.transform.position;
+            }
             return null;
         }
         return null;

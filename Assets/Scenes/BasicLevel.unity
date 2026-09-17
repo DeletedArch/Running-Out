@@ -3810,6 +3810,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player & Camera
       objectReference: {fileID: 0}
+    - target: {fileID: 2801481879268470046, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -18.00253
+      objectReference: {fileID: 0}
     - target: {fileID: 5858320025881666643, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
       propertyPath: m_LocalPosition.x
       value: -4.43
@@ -3854,6 +3858,14 @@ PrefabInstance:
       propertyPath: timerSystem.timer
       value: 20
       objectReference: {fileID: 0}
+    - target: {fileID: 6983513700529433199, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
+      propertyPath: cooldownSystem.cooldowns.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6983513700529433199, guid: 11ea3ed2fe43dffca9de24d2a4356cc9, type: 3}
+      propertyPath: 'cooldownSystem.cooldowns.Array.data[2]'
+      value: 
+      objectReference: {fileID: 11400000, guid: cec9c753011a625269566f869a811528, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
