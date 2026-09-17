@@ -20,6 +20,7 @@ public class TimerSystem
 
     public static event Action<float> OnTimerUpdated;
     public static event Action OnTimerDepleted;
+    public static event Action<TimerAction, float> OnTimerChange;
 
     public TimerSystem()
     {
@@ -29,7 +30,7 @@ public class TimerSystem
     public void Update(float deltaTime)
     {
         if (debugDoNotDeplete) return;
-        DepleteTimer(depletionRate * deltaTime);
+        LoopDepleteTimer(depletionRate * deltaTime);
         timer = Mathf.Clamp(timer, minTime, maxTime);
         animator.SetFloat("Timer", NormalizedTimer);
         if (timer <= 0)
@@ -40,23 +41,38 @@ public class TimerSystem
         // timerUI.UpdateUI(timer/maxTime);
     }
 
-    public void DepleteTimer(float amount)
+    void LoopDepleteTimer(float amount)
     {
         if (debugDoNotDeplete) return;
         timer -= amount;
     }
 
-    public void ReplenishTimer(float amount)
+    public void DepleteTimer(float amount, TimerAction action = TimerAction.DepleteAttack)
+    {
+        if (debugDoNotDeplete) return;
+        timer -= amount;
+        OnTimerChange?.Invoke(action, amount);
+    }
+
+    public void ReplenishTimer(float amount, TimerAction action = TimerAction.Replenish)
     {
         if (debugDoNotDeplete) return;
         timer += amount;
+        OnTimerChange?.Invoke(action, amount);
     }
 
     private void HandleTimerChange(float changeAmount)
     {
         if (debugDoNotDeplete) return;
         Debug.Log($"Timer change event received: {changeAmount}");
-        ReplenishTimer(changeAmount);
+        if (changeAmount < 0)
+        {
+            DepleteTimer(-changeAmount, TimerAction.DepleteAttack);
+        }
+        else
+        {
+            ReplenishTimer(changeAmount);
+        }
     }
 }
 

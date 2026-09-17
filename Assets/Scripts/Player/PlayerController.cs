@@ -387,7 +387,7 @@ public class PlayerController : MonoBehaviour, IEntity
         }
         if (context.isInvincible || context.currentState == "Block" || cooldownSystem.IsOnCooldown("Damage")) return;
         cooldownSystem.UseCooldown("Damage");
-        timerSystem?.DepleteTimer(amount);
+        timerSystem?.DepleteTimer(amount, TimerAction.DepleteHit);
         context.playerAnimator.SetTrigger("Hit");
         // SpriteColorFlash(Color.red, 0.15f);
         SpriteWhiteFlash(0.15f);
@@ -409,7 +409,7 @@ public class PlayerController : MonoBehaviour, IEntity
         }
         if (context.isInvincible || context.currentState == "Block" || cooldownSystem.IsOnCooldown("Damage")) return;
         cooldownSystem.UseCooldown("Damage");
-        timerSystem?.DepleteTimer(amount);
+        timerSystem?.DepleteTimer(amount, TimerAction.DepleteHit);
         context.playerAnimator.SetTrigger("Hit");
         // SpriteColorFlash(Color.red, 0.15f);
         SpriteWhiteFlash(0.15f);
@@ -437,7 +437,7 @@ public class PlayerController : MonoBehaviour, IEntity
 
     public void HandleOnBlocked(float amount, GameObject source)
     {
-        timerSystem?.DepleteTimer(amount / 2f);
+        timerSystem?.DepleteTimer(amount / 2f, TimerAction.DepleteBlock);
         context.playerRigidbody.AddForce(-Vector2.right * GetPlayerDirection().normalized.x * 5f, ForceMode2D.Impulse);
         SpriteColorFlash(new Color(0f, 0.9f, 1f), 0.15f);
         if (source != null)
