@@ -11,6 +11,7 @@ public class EnemyPerception : MonoBehaviour
     [SerializeField] private float edgeCheckForwardOffset = 0.3f;
     [SerializeField] private float edgeCheckDownOffset = 0.3f;
     [SerializeField] private float edgeCheckDistance = 0.3f;
+    [SerializeField] private float edgeCheckBackwardOffset = 0.5f;
 
     [Header("Obstacle & Enemy Check Settings")]
     [SerializeField] private float obstacleCheckDistance = 0.6f;
@@ -36,11 +37,21 @@ public class EnemyPerception : MonoBehaviour
     public bool HasGroundAhead()
     {
         Vector2 frontOrigin = (Vector2)transform.position +
-            new Vector2(edgeCheckForwardOffset * facingDirection, -edgeCheckDownOffset);
+            new Vector2(edgeCheckForwardOffset * facingDirection, - edgeCheckDownOffset);
 
         RaycastHit2D hit = Physics2D.Raycast(frontOrigin, Vector2.down, edgeCheckDistance, groundLayer);
         Debug.DrawRay(frontOrigin, Vector2.down * edgeCheckDistance, hit.collider != null ? Color.green : Color.red);
 
+        return hit.collider != null;
+    }
+    public bool HasGroundBehind()
+    {
+        // Notice the minus sign (-) before edgeCheckForwardOffset:
+        // This shoots the ray behind him instead of in front of him!
+        Vector2 backOrigin = (Vector2)transform.position +
+            new Vector2(-edgeCheckForwardOffset * facingDirection, -edgeCheckDownOffset);
+        RaycastHit2D hit = Physics2D.Raycast(backOrigin, Vector2.down, edgeCheckDistance, groundLayer);
+        Debug.DrawRay(backOrigin, Vector2.down * edgeCheckDistance, hit.collider != null ? Color.green : Color.red);
         return hit.collider != null;
     }
 
@@ -120,6 +131,8 @@ public class EnemyPerception : MonoBehaviour
         currentTarget = playerCollider.transform;
         return true;
     }
+
+
 
     private void OnDrawGizmosSelected()
     {

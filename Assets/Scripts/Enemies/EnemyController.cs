@@ -14,7 +14,6 @@ public class EnemyController : MonoBehaviour, IEntity
     [Header("Audio")]
     [SerializeField] private SoundData fleshHitSound;    
     [SerializeField] private SoundData deathSound;
-    [SerializeField] private SoundData hurtVoiceSound; 
 
     public EnemyContext Context => context;
     public EnemyMovement EnemyMovement => enemyMovement;
