@@ -12,6 +12,7 @@ public class AttackStateSMB : StateMachineBehaviour, ITimerAccess
     [SerializeField] private float timerUsage = 0.5f;
     [SerializeField] private float timerRestoration = 0.75f;
     [SerializeField] private float hitstopDuration = 0.05f;
+    [SerializeField] private float shakeIntensity = 0.5f;
 
     public float TimerUsage => timerUsage;
     public float TimerRestoration => timerRestoration;
@@ -67,23 +68,23 @@ public class AttackStateSMB : StateMachineBehaviour, ITimerAccess
                 rb.linearVelocity = Vector2.zero;
             }
 
-            float enemyX = targetedEnemyPosition.Value.x;                                                                
-            float playerX = player.transform.position.x;                                                                 
-            float diffX = enemyX - playerX;                                                                              
-                                                                                                                         
+            float enemyX = targetedEnemyPosition.Value.x;
+            float playerX = player.transform.position.x;
+            float diffX = enemyX - playerX;
+
             // 1. ALWAYS face the enemy directly (only if not on the exact same X)                                       
-            if (Mathf.Abs(diffX) > 0.05f)                                                                                
-            {                                                                                                            
-                float facingDir = Mathf.Sign(diffX);                                                                     
-                player.transform.localScale = new Vector3(                                                               
-                    facingDir * Mathf.Abs(player.transform.localScale.x),                                                
-                    player.transform.localScale.y,                                                                       
-                    player.transform.localScale.z                                                                        
-                );                                                                                                       
-            }                                                                                                            
-            float currentDistance = Mathf.Abs(diffX);                                                                    
-            float stoppingGap = Mathf.Min(1.0f, currentDistance * 0.5f);    
-            float targetX = enemyX - (Mathf.Sign(diffX) * stoppingGap);                                                  
+            if (Mathf.Abs(diffX) > 0.05f)
+            {
+                float facingDir = Mathf.Sign(diffX);
+                player.transform.localScale = new Vector3(
+                    facingDir * Mathf.Abs(player.transform.localScale.x),
+                    player.transform.localScale.y,
+                    player.transform.localScale.z
+                );
+            }
+            float currentDistance = Mathf.Abs(diffX);
+            float stoppingGap = Mathf.Min(1.0f, currentDistance * 0.5f);
+            float targetX = enemyX - (Mathf.Sign(diffX) * stoppingGap);
             Vector2 adjustedTargetPosition = new Vector2(targetX, targetedEnemyPosition.Value.y);
             GameObject targetedEnemy = GetTargetedEnemyObject(player);
             ApplyAlphaImpulse(playerRb, player.transform, adjustedTargetPosition, lungeDuration, player.Context.playerAnimator, player, stateCts.Token, targetedEnemy).Forget();
@@ -120,6 +121,7 @@ public class AttackStateSMB : StateMachineBehaviour, ITimerAccess
                     damageable.TakeDamage(player.Context.playerCombatConfig.AttackDamage);
                     ITimerAccess.ModifyTimer(timerRestoration);
                     var enemyAnimator = targetedEnemy.GetComponent<Animator>();
+                    player.impulseSource?.GenerateImpulseWithVelocity(Vector3.one * shakeIntensity);
                     await ActionHelpers.ApplyHitstop(new Animator[] { player.Context.playerAnimator, enemyAnimator }, hitstopDuration);
                 }
             }
@@ -139,6 +141,7 @@ public class AttackStateSMB : StateMachineBehaviour, ITimerAccess
                         damageable.TakeDamage(player.Context.playerCombatConfig.SwiftDashDamage);
                         ITimerAccess.ModifyTimer(timerRestoration);
                         var enemyAnimator = targetedEnemy.GetComponent<Animator>();
+                        player.impulseSource?.GenerateImpulseWithVelocity(Vector3.one * shakeIntensity);
                         await ActionHelpers.ApplyHitstop(new Animator[] { player.Context.playerAnimator, enemyAnimator }, hitstopDuration);
                     }
                 }

@@ -49,6 +49,7 @@ GameObject:
   - component: {fileID: 1934990625514394782}
   - component: {fileID: 6933980337102640787}
   - component: {fileID: 3541264775458267347}
+  - component: {fileID: 6142515285548762961}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -181,7 +182,7 @@ MonoBehaviour:
   - {fileID: 6964587028707841411}
   timerSystem:
     animator: {fileID: 6933980337102640787}
-    timer: 20
+    timer: 470
     normalizationRatio: 0.05
     maxTime: 35
     minTime: 0
@@ -193,6 +194,7 @@ MonoBehaviour:
     cooldowns:
     - {fileID: 11400000, guid: 5dda27ce66e6809238645d0dee2e91ad, type: 2}
     - {fileID: 11400000, guid: 8dfb7cb806d3fc1098fd7eb6149cb324, type: 2}
+  impulseSource: {fileID: 6142515285548762961}
 --- !u!50 &4346579772661709285
 Rigidbody2D:
   serializedVersion: 5
@@ -325,6 +327,59 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 0.39649892}
   m_EdgeRadius: 0
+--- !u!114 &6142515285548762961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1468087833360254074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180ecf9b41d478f468eb3e9083753217, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineImpulseSource
+  ImpulseDefinition:
+    ImpulseChannel: 1
+    ImpulseShape: 2
+    CustomImpulseShape:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    ImpulseDuration: 0.2
+    ImpulseType: 3
+    DissipationRate: 0.25
+    RawSignal: {fileID: 11400000, guid: 20a705aea2d80e0478fb89b6f43d8530, type: 2}
+    AmplitudeGain: 0.25
+    FrequencyGain: 100
+    RepeatMode: 0
+    Randomize: 0
+    TimeEnvelope:
+      AttackShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      DecayShape:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 2
+        m_PostInfinity: 2
+        m_RotationOrder: 4
+      AttackTime: 0
+      SustainTime: 0.15
+      DecayTime: 0
+      ScaleWithImpact: 1
+      HoldForever: 0
+    ImpactRadius: 100
+    DirectionMode: 0
+    DissipationMode: 2
+    DissipationDistance: 100
+    PropagationSpeed: 343
+  DefaultVelocity: {x: 1, y: 1, z: 1}
 --- !u!1 &3300486192480527656
 GameObject:
   m_ObjectHideFlags: 0
@@ -686,6 +741,7 @@ GameObject:
   - component: {fileID: 152123468280932642}
   - component: {fileID: 7850471745736584408}
   - component: {fileID: 1908627470133519092}
+  - component: {fileID: 7587060186372344557}
   m_Layer: 0
   m_Name: CinemachineCamera
   m_TagString: Untagged
@@ -812,6 +868,30 @@ MonoBehaviour:
       m_Bits: 64
     MaximumRaycast: 10
     Damping: 0.5
+--- !u!114 &7587060186372344557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4194511865797258914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00b2d199b96b516448144ab30fb26aed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineImpulseListener
+  ApplyAfter: 2
+  ChannelMask: 1
+  Gain: 1
+  Use2DDistance: 1
+  UseCameraSpace: 1
+  SignalCombinationMode: 0
+  ReactionSettings:
+    m_SecondaryNoise: {fileID: 11400000, guid: 20a705aea2d80e0478fb89b6f43d8530, type: 2}
+    AmplitudeGain: 0.25
+    FrequencyGain: 100
+    Duration: 0.15
+    m_NoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!1 &6151994569881956726
 GameObject:
   m_ObjectHideFlags: 0
