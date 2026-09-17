@@ -182,7 +182,7 @@ MonoBehaviour:
   - {fileID: 6964587028707841411}
   timerSystem:
     animator: {fileID: 6933980337102640787}
-    timer: 470
+    timer: 20
     normalizationRatio: 0.05
     maxTime: 35
     minTime: 0
@@ -533,7 +533,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineBrain
   ShowDebugText: 0
   ShowCameraFrustum: 1
-  IgnoreTimeScale: 0
+  IgnoreTimeScale: 1
   WorldUpOverride: {fileID: 0}
   ChannelMask: -1
   UpdateMethod: 2
