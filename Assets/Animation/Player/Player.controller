@@ -1588,7 +1588,7 @@ MonoBehaviour:
   timerUsage: 0.5
   timerRestoration: 5
   hitstopDuration: 0.05
-  shakeIntensity: 0.25
+  shakeIntensity: 0.1
 --- !u!1101 &503821251308552006
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -2182,8 +2182,8 @@ MonoBehaviour:
   channel: {fileID: 11400000, guid: 45f35a5120b6ed6cd9ccb1f3ffb783fe, type: 2}
   timerUsage: 1
   timerRestoration: 5
-  hitstopDuration: 0.1
-  shakeIntensity: 0.5
+  hitstopDuration: 0.12
+  shakeIntensity: 0.7
 --- !u!114 &6963598843553636599
 MonoBehaviour:
   m_ObjectHideFlags: 1

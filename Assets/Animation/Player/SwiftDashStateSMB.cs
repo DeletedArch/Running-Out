@@ -113,12 +113,17 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
 
             // Ensure the final position is set to the exact end position
             // playerTransform.position = endPosition;
+            Quaternion rotation = Quaternion.LookRotation(hitPosition - startPosition, Vector3.up);
+            rotation.y = 0f; // Ensure the rotation is only around the Y-axis
+            rotation.x = 0f;
+            VFXEvents.TriggerVFX("SwiftDash", hitPosition, rotation);
 
             if (targetedEnemy != null || !hasHitEnemy)
             {
                 var damageable = targetedEnemy.GetComponent<IEntity>();
                 if (damageable != null)
                 {
+                    VFXEvents.TriggerVFX("Hit", hitPosition, Quaternion.identity);
                     damageable.TakeDamage(player.Context.playerCombatConfig.SwiftDashDamage);
                     hasHitEnemy = true;
                     ITimerAccess.ModifyTimer(timerRestoration);
@@ -141,10 +146,15 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
         {
             if (hasHitEnemy) return; // Already hit the enemy, no need to apply damage again
             // Interrupted early (e.g. damaged, staggered, or transitioned out)
+            Quaternion rotation = Quaternion.LookRotation(hitPosition - startPosition, Vector3.up);
+            rotation.x = 0f;
+            rotation.z = 0f;
+            VFXEvents.TriggerVFX("SwiftDash", hitPosition, rotation);
             if (Vector2.Distance(playerTransform.position, endPosition) < 0.5f || Vector2.Distance(playerTransform.position, hitPosition) < 0.5f)
             {
                 if (targetedEnemy != null)
                 {
+                    VFXEvents.TriggerVFX("Hit", hitPosition, Quaternion.identity);
                     var damageable = targetedEnemy.GetComponent<IEntity>();
                     if (damageable != null)
                     {

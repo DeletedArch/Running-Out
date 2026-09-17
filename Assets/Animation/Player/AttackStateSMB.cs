@@ -118,6 +118,7 @@ public class AttackStateSMB : StateMachineBehaviour, ITimerAccess
                 if (damageable != null)
                 {
                     Debug.Log("AttackImpulseSMB: Damaging the enemy.");
+                    VFXEvents.TriggerVFX("Hit", targetedEnemy.transform.position, Quaternion.identity, flipX: playerTransform.localScale.x > 0);
                     damageable.TakeDamage(player.Context.playerCombatConfig.AttackDamage);
                     ITimerAccess.ModifyTimer(timerRestoration);
                     var enemyAnimator = targetedEnemy.GetComponent<Animator>();
@@ -137,6 +138,7 @@ public class AttackStateSMB : StateMachineBehaviour, ITimerAccess
                     var damageable = targetedEnemy.GetComponent<IEntity>();
                     if (damageable != null)
                     {
+                        VFXEvents.TriggerVFX("Hit", targetedEnemy.transform.position, Quaternion.identity, flipX: playerTransform.localScale.x > 0);
                         Debug.Log("AttackImpulseSMB: Damaging the enemy after cancellation.");
                         damageable.TakeDamage(player.Context.playerCombatConfig.SwiftDashDamage);
                         ITimerAccess.ModifyTimer(timerRestoration);
