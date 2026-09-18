@@ -456,6 +456,18 @@ public class PlayerController : MonoBehaviour, IEntity
         Debug.Log("Player died.");
     }
 
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Breakable"))
+        {
+            Breakable breakable = other.GetComponent<Breakable>();
+            if (breakable != null)
+            {
+                impulseSource?.GenerateImpulseWithForce(0.5f);
+            }
+        }
+    }
+
     // DEBUGGGGGGGG EVERYTHIGNG IS DEBUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 
     void OnDrawGizmos()

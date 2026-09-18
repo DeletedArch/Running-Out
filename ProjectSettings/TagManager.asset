@@ -7,6 +7,7 @@ TagManager:
   - Enemy
   - Ground
   - Wall
+  - Breakable
   layers:
   - Default
   - TransparentFX
@@ -18,7 +19,7 @@ TagManager:
   - Wall
   - WallHop
   - Enemy
-  - 
+  - Breakable
   - 
   - 
   - 

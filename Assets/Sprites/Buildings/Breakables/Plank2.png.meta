@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: bae73fd9c1ba6b693b0224d526bd16e5
+guid: a8816f81e74d40f28881a36f11865b51
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1208040086343421634
-    second: image_0
+      213: 7053161014982691469
+    second: Plank2_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: image_0
+      name: Plank2_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 1024
-        height: 434
+        x: 7
+        y: 29
+        width: 17
+        height: 45
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2ce8eecde02d3c010800000000000000
-      internalID: 1208040086343421634
+      spriteID: d8a4da9e29cd1e160800000000000000
+      internalID: 7053161014982691469
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      image_0: 1208040086343421634
+      Plank2_0: 7053161014982691469
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
