@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: f164424cf75069f4299d3866e755a18a
+guid: c6f25defbe8c48d4bb7ce0311eb65293
 AudioImporter:
   externalObjects: {}
   serializedVersion: 8
@@ -21,10 +21,3 @@ AudioImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 397104
-  packageName: Combat Fantasy Free Pack
-  packageVersion: 1.0
-  assetPath: Assets/Audio/Music/Combat Fantasy Free Pack/10. Blood for Blood -STINGER-.wav
-  uploadId: 964762

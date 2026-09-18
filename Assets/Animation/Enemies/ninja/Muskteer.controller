@@ -675,7 +675,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AimSMB
   normalAimDuration: 1
-  panicAimDuration: 0.45
+  panicAimDuration: 0.4
   lockLeadTime: 0.15
 --- !u!114 &5410056444370183905
 MonoBehaviour:
@@ -759,6 +759,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EvadeSMB
   evadeSpeed: 20
   maxEvadeDistance: 5
+  maxEvadeDuration: 0.35
 --- !u!1101 &7897397942285765114
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
