@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: SD_PlayerParry
   m_EditorClassIdentifier: Assembly-CSharp::SoundData
   clips:
-  - {fileID: 8300000, guid: c2dade153431323449798d5d5fd92ee4, type: 3}
   - {fileID: 8300000, guid: c5955b1ca51d47245ae5e5e10395d910, type: 3}
+  - {fileID: 8300000, guid: a7736c1763bd76c4eb0d52aaad581deb, type: 3}
   mixerGroup: {fileID: 1837053954460380460, guid: ac46e029a2030dd4c9f2688338f0db07, type: 2}
   volume: 1
   volumeVariation: 0.05

@@ -21,6 +21,7 @@ public class EnemyContext
     public IEdgeResponse edgeResponse => edgeResponseBehaviour as IEdgeResponse;
 
     [Header("Dynamic State")]
+    public Vector2 AimLockedPosition { get; set; }
     public Vector2 EvadeStartPos { get; set; }
     public Transform Target { get; set; }
 }

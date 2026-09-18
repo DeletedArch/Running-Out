@@ -478,6 +478,7 @@ MonoBehaviour:
   edgeCheckForwardOffset: 0.3
   edgeCheckDownOffset: 0.3
   edgeCheckDistance: 0.3
+  edgeCheckBackwardOffset: 0.5
   obstacleCheckDistance: 0.6
   obstacleCheckHeight: -0.1
   detectionRadius: 10.51
@@ -511,7 +512,6 @@ MonoBehaviour:
   maxHealth: 70
   fleshHitSound: {fileID: 11400000, guid: 44372bf5ae5aa8e458922cb2134f81d9, type: 2}
   deathSound: {fileID: 11400000, guid: a3d9141b04dc4b442954d538e8bfd491, type: 2}
-  hurtVoiceSound: {fileID: 0}
 --- !u!95 &3955315329479805353
 Animator:
   serializedVersion: 7
@@ -551,7 +551,6 @@ MonoBehaviour:
   highJumpHeightClearance: 2
   gapJumpHeight: 1.5
   dropJumpHeight: 0.4
-  dropJumpForwardMultiplier: 0.8
 --- !u!70 &228949071277781294
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -575,7 +574,7 @@ CapsuleCollider2D:
     m_Bits: 4294967295
   m_ForceReceiveLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1015
   m_ContactCaptureLayers:
     serializedVersion: 2
     m_Bits: 4294967295

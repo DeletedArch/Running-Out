@@ -11,7 +11,6 @@ public class EnemyPerception : MonoBehaviour
     [SerializeField] private float edgeCheckForwardOffset = 0.3f;
     [SerializeField] private float edgeCheckDownOffset = 0.3f;
     [SerializeField] private float edgeCheckDistance = 0.3f;
-    [SerializeField] private float edgeCheckBackwardOffset = 0.5f;
 
     [Header("Obstacle & Enemy Check Settings")]
     [SerializeField] private float obstacleCheckDistance = 0.6f;
