@@ -14,6 +14,7 @@ public class TimerSystem
     [SerializeField] private float lowSoftCap = 5f;
     [SerializeField] private float depletionRate = 1f;
     [SerializeField] private bool debugDoNotDeplete = true;
+    private bool hasHitZero = false;
 
     public float Timer => timer;
     public float NormalizedTimer => Math.Clamp(timer, lowSoftCap, highSoftCap) * normalizationRatio;
@@ -29,34 +30,36 @@ public class TimerSystem
 
     public void Update(float deltaTime)
     {
-        if (debugDoNotDeplete) return;
+        if (debugDoNotDeplete || hasHitZero) return;
         LoopDepleteTimer(depletionRate * deltaTime);
         timer = Mathf.Clamp(timer, minTime, maxTime);
         animator.SetFloat("Timer", NormalizedTimer);
-        if (timer <= 0)
-        {
-            OnTimerDepleted?.Invoke();
-        }
         OnTimerUpdated?.Invoke(timer/maxTime);
         // timerUI.UpdateUI(timer/maxTime);
     }
 
     void LoopDepleteTimer(float amount)
     {
-        if (debugDoNotDeplete) return;
+        if (debugDoNotDeplete || hasHitZero) return;
         timer -= amount;
+        if (timer <= 0)
+        {
+            timer = 0;
+            hasHitZero = true;
+            OnTimerDepleted?.Invoke();
+        }
     }
 
     public void DepleteTimer(float amount, TimerAction action = TimerAction.DepleteAttack)
     {
-        if (debugDoNotDeplete) return;
+        if (debugDoNotDeplete || hasHitZero) return;
         timer -= amount;
         OnTimerChange?.Invoke(action, amount);
     }
 
     public void ReplenishTimer(float amount, TimerAction action = TimerAction.Replenish)
     {
-        if (debugDoNotDeplete) return;
+        if (debugDoNotDeplete || hasHitZero) return;
         timer += amount;
         OnTimerChange?.Invoke(action, amount);
     }

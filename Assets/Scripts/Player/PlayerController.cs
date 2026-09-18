@@ -72,6 +72,7 @@ public class PlayerController : MonoBehaviour, IEntity
         SetStateSMB.OnStateExited += HandleStateExited;
         playerCombat.OnParried += HandleOnParried;
         playerCombat.OnBlocked += HandleOnBlocked;
+        TimerSystem.OnTimerDepleted += Die;
 
         // Debug
         InputController.OnDebugInput1 += OnInputDebug1;
@@ -91,6 +92,7 @@ public class PlayerController : MonoBehaviour, IEntity
         SetStateSMB.OnStateExited -= HandleStateExited;
         playerCombat.OnParried -= HandleOnParried;
         playerCombat.OnBlocked -= HandleOnBlocked;
+        TimerSystem.OnTimerDepleted -= Die;
 
         // Debug
         InputController.OnDebugInput1 -= OnInputDebug1;
@@ -379,6 +381,7 @@ public class PlayerController : MonoBehaviour, IEntity
 
     public void TakeDamage(float amount)
     {
+        if (context.currentState == "Death") return;
         playerCombat.HandleGettingHit(amount);
         if (context.currentState == "Dash")
         {
@@ -401,6 +404,7 @@ public class PlayerController : MonoBehaviour, IEntity
 
     public void TakeDamage(float amount, GameObject source)
     {
+        if (context.currentState == "Death") return;
         playerCombat.HandleGettingHit(amount, source);
         if (context.currentState == "Dash")
         {
@@ -454,6 +458,9 @@ public class PlayerController : MonoBehaviour, IEntity
     {
         // Implement death logic here
         Debug.Log("Player died.");
+        context.playerAnimator.SetTrigger("Die");
+        ActionHelpers.ApplyGlobalHitstop(0.15f).Forget();
+        impulseSource?.GenerateImpulseWithForce(1f);
     }
 
     void OnTriggerEnter2D(Collider2D other)
