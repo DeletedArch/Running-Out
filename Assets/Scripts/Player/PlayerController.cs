@@ -22,6 +22,15 @@ public class PlayerController : MonoBehaviour, IEntity
     public CinemachineImpulseSource impulseSource;
     public PlayerContext Context => context;
     public float Health => new float(); // TODO: Add timer and include it as health property
+
+    [Header("Ledge Grab Settings")]
+    [SerializeField] private float ledgeWallCheckDistance = 0.75f;
+    [SerializeField] private float ledgeWallCheckOffsetY = 0.2f;
+    [SerializeField] private float ledgeCheckHeight = 1.1f;
+    [SerializeField] private float ledgeDownwardDistance = 1.2f;
+    [SerializeField] private float ceilingCheckDistance = 1.6f;
+    [SerializeField] private Vector2 ledgePushForce = new Vector2(6f, 20f);
+    [SerializeField] private string ledgeGrabCooldownKey = "LedgeGrab";
     void Validate()
     {
         if (context == null)
@@ -120,6 +129,10 @@ public class PlayerController : MonoBehaviour, IEntity
     {
         AdjustOrientation(context.moveInput.x);
         IsGrounded();
+        if (context.moveInput != Vector2.zero)
+        {
+            LedgeGrab();
+        }
         playerCombat?.Update();
         context.playerAnimator.SetInteger("TouchingWall", (int)GetWallTouchDirection());
         timerSystem?.Update(Time.deltaTime);
@@ -165,12 +178,101 @@ public class PlayerController : MonoBehaviour, IEntity
         return hit.collider != null;
     }
 
-    // public bool IsTouchingWall()
-    // {
-    //     Debug.DrawRay(transform.position, Mathf.Sign(transform.localScale.x) * transform.right * 0.75f, Color.blue);
-    //     RaycastHit2D hit = Physics2D.Raycast(transform.position, Mathf.Sign(transform.localScale.x) * transform.right, 0.6f, context.wallLayer);
-    //     return hit.collider != null;
-    // }
+    public bool CheckWallAndGround(Vector2 origin, Vector2 direction, float distance, out RaycastHit2D hit)
+    {
+        LayerMask wallAndGround = context.wallLayer | context.groundLayer;
+        hit = Physics2D.Raycast(origin, direction, distance, wallAndGround);
+        return hit.collider != null;
+    }
+
+    public bool IsTouchingWall()
+    {
+        float facingDir = Mathf.Sign(transform.localScale.x);
+        Debug.DrawRay(transform.position, facingDir * transform.right * ledgeWallCheckDistance, Color.blue);
+        return CheckWallAndGround(transform.position, Vector2.right * facingDir, ledgeWallCheckDistance, out _);
+    }
+
+    public bool CheckWallAndGround(out Vector2 targetLedgePosition)
+    {
+        targetLedgePosition = Vector2.zero;
+
+        float facingDir = Mathf.Sign(transform.localScale.x);
+        Vector2 facingVector = new Vector2(facingDir, 0f);
+        LayerMask wallAndGround = context.wallLayer | context.groundLayer;
+
+        Vector2 waistOrigin = (Vector2)transform.position + Vector2.up * ledgeWallCheckOffsetY;
+        RaycastHit2D wallHit;
+        if (!CheckWallAndGround(waistOrigin, facingVector, ledgeWallCheckDistance, out wallHit))
+        {
+            return false;
+        }
+
+        Vector2 aboveOrigin = (Vector2)transform.position + Vector2.up * ledgeCheckHeight;
+        RaycastHit2D highHit;
+        if (CheckWallAndGround(aboveOrigin, facingVector, ledgeWallCheckDistance + 0.15f, out highHit))
+        {
+            return false;
+        }
+
+        Vector2 downOrigin = new Vector2(wallHit.point.x + facingDir * 0.2f, transform.position.y + ledgeCheckHeight);
+        RaycastHit2D groundHit = Physics2D.Raycast(downOrigin, Vector2.down, ledgeDownwardDistance, wallAndGround);
+        Debug.DrawRay(downOrigin, Vector2.down * ledgeDownwardDistance, Color.green);
+
+        if (groundHit.collider == null)
+        {
+            return false;
+        }
+
+        if (groundHit.point.y < transform.position.y - 0.2f)
+        {
+            return false;
+        }
+
+        targetLedgePosition = groundHit.point;
+        return true;
+    }
+
+    public bool CheckCeiling(Vector2 origin, float distance)
+    {
+        LayerMask wallAndGround = context.wallLayer | context.groundLayer;
+        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.up, distance, wallAndGround);
+        Debug.DrawRay(origin, Vector2.up * distance, Color.magenta);
+        return hit.collider != null;
+    }
+
+    public bool LedgeGrab()
+    {
+        if (cooldownSystem != null && cooldownSystem.IsOnCooldown(ledgeGrabCooldownKey)) return false;
+        if (IsGrounded()) return false;
+        if (context.currentState == "Death" || context.currentState == "Die" || context.currentState == "SwiftDash" || context.currentState == "WallHop") return false;
+
+        float facingDir = Mathf.Sign(transform.localScale.x);
+
+        if (context.moveInput.x != 0 && Mathf.Sign(context.moveInput.x) != facingDir)
+            return false;
+
+        if (!CheckWallAndGround(out Vector2 targetLedgePosition))
+            return false;
+
+        if (CheckCeiling(transform.position, ceilingCheckDistance))
+        {
+            return false;
+        }
+
+        Vector2 ledgeLandingTarget = new Vector2(targetLedgePosition.x + facingDir * 0.3f, targetLedgePosition.y + 0.1f);
+        if (CheckCeiling(ledgeLandingTarget, ceilingCheckDistance))
+        {
+            return false;
+        }
+
+        // Push the player towards up the ledge
+        context.playerRigidbody.linearVelocity = new Vector2(facingDir * ledgePushForce.x, ledgePushForce.y);
+        cooldownSystem?.UseCooldown(ledgeGrabCooldownKey);
+
+        (context.playerMovementConfig?.WallJumpSound ?? context.playerMovementConfig?.JumpSound)?.Play(transform.position);
+
+        return true;
+    }
 
     public WallTouchDirection GetWallTouchDirection()
     {
@@ -481,6 +583,31 @@ public class PlayerController : MonoBehaviour, IEntity
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(transform.position - Vector3.up * transform.localScale.y, transform.localScale - Vector3.up * 0.5f * transform.localScale.y - Vector3.right * 0.4f);
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        float facingDir = Mathf.Sign(transform.localScale.x);
+        Vector2 facingVector = new Vector2(facingDir, 0f);
+
+        // Wall check ray (cyan)
+        Gizmos.color = Color.cyan;
+        Vector2 waistOrigin = (Vector2)transform.position + Vector2.up * ledgeWallCheckOffsetY;
+        Gizmos.DrawLine(waistOrigin, waistOrigin + facingVector * ledgeWallCheckDistance);
+
+        // Clearance ray above ledge (blue)
+        Gizmos.color = Color.blue;
+        Vector2 aboveOrigin = (Vector2)transform.position + Vector2.up * ledgeCheckHeight;
+        Gizmos.DrawLine(aboveOrigin, aboveOrigin + facingVector * (ledgeWallCheckDistance + 0.15f));
+
+        // Ground top surface downward ray (green)
+        Gizmos.color = Color.green;
+        Vector2 downOrigin = aboveOrigin + facingVector * (ledgeWallCheckDistance + 0.15f);
+        Gizmos.DrawLine(downOrigin, downOrigin + Vector2.down * ledgeDownwardDistance);
+
+        // Ceiling check ray (magenta)
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawLine(transform.position, (Vector2)transform.position + Vector2.up * ceilingCheckDistance);
     }
 
     // Take damage debug
