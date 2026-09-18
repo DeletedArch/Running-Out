@@ -11,8 +11,11 @@ public class UIManager : MonoBehaviour
     
     void Start()
     {
+        if (buttons == null) return;
+
         for (int i = 0; i < buttons.Length; i++)
         {
+            if (buttons[i] == null) continue;
             int index = i; // Capture the current index for the closure
             buttons[i].onClick.AddListener(() => HandleButtonClick(buttons[index], true));
         }

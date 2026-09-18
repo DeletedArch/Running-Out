@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: c584e723453d3bc4d9912cdcd89fa056
+guid: db50a8c708259d5478f359aa15a944e2
 AudioImporter:
   externalObjects: {}
   serializedVersion: 8
@@ -21,10 +21,3 @@ AudioImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 397104
-  packageName: Combat Fantasy Free Pack
-  packageVersion: 1.0
-  assetPath: Assets/Audio/Music/Combat Fantasy Free Pack/3. Beast Hunting -LOOP-.wav
-  uploadId: 964762

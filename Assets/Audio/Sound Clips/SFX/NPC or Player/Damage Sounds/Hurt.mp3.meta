@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 95325f21ac7220d4ab78f145db665ed7
+guid: af253c938819e334b886a56991ed017f
 AudioImporter:
   externalObjects: {}
   serializedVersion: 8
@@ -21,11 +21,3 @@ AudioImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 397104
-  packageName: Combat Fantasy Free Pack
-  packageVersion: 1.0
-  assetPath: Assets/Audio/Music/Combat Fantasy Free Pack/9. The Messenger of Chaos
-    -LOOP-.wav
-  uploadId: 964762

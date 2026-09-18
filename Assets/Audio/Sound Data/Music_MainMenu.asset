@@ -10,17 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c0b0118d6fe03204c8a29238bc4ead8e, type: 3}
-  m_Name: SD_PlayerGetHit
+  m_Name: Music_MainMenu
   m_EditorClassIdentifier: Assembly-CSharp::SoundData
   clips:
-  - {fileID: 8300000, guid: 63f61e5d76bcc3d44833ff7da7201aed, type: 3}
-  mixerGroup: {fileID: 1837053954460380460, guid: ac46e029a2030dd4c9f2688338f0db07, type: 2}
-  volume: 0.351
-  volumeVariation: 0.069
-  pitch: 1.02
-  pitchVariation: 0.044
+  - {fileID: 8300000, guid: 3793498d5eee8ee49aad4fdfda122fd7, type: 3}
+  mixerGroup: {fileID: -3345613004934629886, guid: ac46e029a2030dd4c9f2688338f0db07, type: 2}
+  volume: 0.09
+  volumeVariation: 0.009
+  pitch: 0.93
+  pitchVariation: 0.08
   spatialBlend: 0
   minDistance: 1
   maxDistance: 25
-  loop: 0
+  loop: 1
   cooldown: 0.05
