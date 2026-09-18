@@ -7,7 +7,7 @@ public class EnemyMovement
     private Rigidbody2D rb => context != null ? context.rb : null;
     private LayerMask groundLayer => context != null ? context.groundLayer : default;
 
-    public int FacingDirection => transform.localScale.x < 0 ? 1 : -1;
+    public int FacingDirection => transform.localScale.x > 0 ? 1 : -1;
 
     Transform transform;
     public EnemyMovement(Transform enemyTransform, EnemyContext enemyContext )

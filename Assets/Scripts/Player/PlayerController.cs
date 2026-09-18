@@ -463,17 +463,17 @@ public class PlayerController : MonoBehaviour, IEntity
         impulseSource?.GenerateImpulseWithForce(1f);
     }
 
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Breakable"))
-        {
-            Breakable breakable = other.GetComponent<Breakable>();
-            if (breakable != null)
-            {
-                impulseSource?.GenerateImpulseWithForce(0.5f);
-            }
-        }
-    }
+    // void OnTriggerEnter2D(Collider2D other)
+    // {
+    //     if (other.CompareTag("Breakable"))
+    //     {
+    //         Breakable breakable = other.GetComponent<Breakable>();
+    //         if (breakable != null)
+    //         {
+    //             impulseSource?.GenerateImpulseWithForce(0.5f);
+    //         }
+    //     }
+    // }
 
     // DEBUGGGGGGGG EVERYTHIGNG IS DEBUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 
