@@ -104,9 +104,9 @@ public class GenerationController : MonoBehaviour
             {
                 if (area.AreaPrefab != null)
                 {
-                    GameObject instance = Instantiate(area.AreaPrefab, placePoint + areaOffset, Quaternion.identity);
+                    GameObject instance = Instantiate(area.AreaPrefab, placePoint + areaOffset + (area.AreaPrefab.transform.localScale.x * Vector2.right * 0.5f), Quaternion.identity);
                     chunk.AddSpawnedInstance(instance);
-                    placePoint += area.AreaPrefab.transform.localScale.x * Vector2.right;
+                    placePoint = (area.AreaPrefab.transform.localScale.x * Vector2.right * 0.5f) + instance.transform.position.x * Vector2.right;
                 }
             }
 

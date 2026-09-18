@@ -13,12 +13,9 @@ MonoBehaviour:
   m_Name: SakuraRegion
   m_EditorClassIdentifier: Assembly-CSharp::Region
   regionName: Sakura Tree
-  regionID: 1
+  regionID: 382938
   regionLevel: 0
   availableAreas:
   - {fileID: 11400000, guid: 3be0a9b26b4a01f68893a0dbca8e7779, type: 2}
-  - {fileID: 11400000, guid: cf925d368212de1c9809cbc35387ed9a, type: 2}
-  - {fileID: 11400000, guid: fa11013765dd0277aa6d7ff39291f00a, type: 2}
-  - {fileID: 11400000, guid: b49b5cb70fd62a83bb824379726d9cb5, type: 2}
   regionStart: 0
   regionEnd: 2000
