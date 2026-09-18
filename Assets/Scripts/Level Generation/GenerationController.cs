@@ -6,6 +6,7 @@ public class GenerationController : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private Transform playerTransform;
+    [SerializeField] private GameObject ground;
     [SerializeField] private Vector2 chunkOffset = new Vector2(50, 0);
     [SerializeField] private Vector2 areaOffset = new Vector2(10, 0);
     [SerializeField] private Vector2 placePoint = new Vector2(0, 0);
@@ -48,6 +49,10 @@ public class GenerationController : MonoBehaviour
             {
                 Debug.LogWarning("PlayerController not found in the scene. Please assign the playerTransform manually.");
             }
+        }
+        if (ground == null)
+        {
+            Debug.LogError("Ground not found in the scene. Please assign the ground manually.");
         }
         GenerateChunk();
         RenderChunk();
@@ -144,7 +149,7 @@ public class GenerationController : MonoBehaviour
         if (playerTransform != null)
         {
             distanceInCurrentLevel = playerTransform.position.x;
-
+            ground.transform.position = new Vector3(distanceInCurrentLevel, ground.transform.position.y, ground.transform.position.z);
             if (distanceInCurrentLevel >= chunkGenerationDistance)
             {
                 GenerateChunk();
