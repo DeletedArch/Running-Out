@@ -9,7 +9,8 @@ public class GetHitSMB : EnemyStateBehaviour
     {
         base.OnStateEnter(animator, stateInfo, layerIndex);
         if (Context != null) Context.enemyMovement.Stop();
-        SpriteColorFlash(Color.red, flashDuration);
+        // SpriteColorFlash(Color.red, flashDuration);
+        SpriteWhiteFlash(flashDuration);
     }
 
     void SpriteColorFlash(Color color, float duration)
@@ -18,6 +19,18 @@ public class GetHitSMB : EnemyStateBehaviour
         Context.spriteRenderer.color = color;
         UniTask.Delay(TimeSpan.FromSeconds(duration)).ContinueWith(() =>
         {
+            Context.spriteRenderer.color = Color.white;
+        }).Forget();
+    }
+
+    void SpriteWhiteFlash(float duration)
+    {
+        if (Context == null || Context.spriteRenderer == null) return;
+        Context.spriteRenderer.material = Context.FlashMaterial;
+        Context.spriteRenderer.color = Color.white;
+        UniTask.Delay(TimeSpan.FromSeconds(duration)).ContinueWith(() =>
+        {
+            Context.spriteRenderer.material = Context.originalMaterial;
             Context.spriteRenderer.color = Color.white;
         }).Forget();
     }

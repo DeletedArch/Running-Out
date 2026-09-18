@@ -14,12 +14,14 @@ public class TimerSystem
     [SerializeField] private float lowSoftCap = 5f;
     [SerializeField] private float depletionRate = 1f;
     [SerializeField] private bool debugDoNotDeplete = true;
+    private bool hasHitZero = false;
 
     public float Timer => timer;
     public float NormalizedTimer => Math.Clamp(timer, lowSoftCap, highSoftCap) * normalizationRatio;
 
     public static event Action<float> OnTimerUpdated;
     public static event Action OnTimerDepleted;
+    public static event Action<TimerAction, float> OnTimerChange;
 
     public TimerSystem()
     {
@@ -28,35 +30,52 @@ public class TimerSystem
 
     public void Update(float deltaTime)
     {
-        if (debugDoNotDeplete) return;
-        DepleteTimer(depletionRate * deltaTime);
+        if (debugDoNotDeplete || hasHitZero) return;
+        LoopDepleteTimer(depletionRate * deltaTime);
         timer = Mathf.Clamp(timer, minTime, maxTime);
         animator.SetFloat("Timer", NormalizedTimer);
-        if (timer <= 0)
-        {
-            OnTimerDepleted?.Invoke();
-        }
         OnTimerUpdated?.Invoke(timer/maxTime);
         // timerUI.UpdateUI(timer/maxTime);
     }
 
-    public void DepleteTimer(float amount)
+    void LoopDepleteTimer(float amount)
     {
-        if (debugDoNotDeplete) return;
+        if (debugDoNotDeplete || hasHitZero) return;
         timer -= amount;
+        if (timer <= 0)
+        {
+            timer = 0;
+            hasHitZero = true;
+            OnTimerDepleted?.Invoke();
+        }
     }
 
-    public void ReplenishTimer(float amount)
+    public void DepleteTimer(float amount, TimerAction action = TimerAction.DepleteAttack)
     {
-        if (debugDoNotDeplete) return;
+        if (debugDoNotDeplete || hasHitZero) return;
+        timer -= amount;
+        OnTimerChange?.Invoke(action, amount);
+    }
+
+    public void ReplenishTimer(float amount, TimerAction action = TimerAction.Replenish)
+    {
+        if (debugDoNotDeplete || hasHitZero) return;
         timer += amount;
+        OnTimerChange?.Invoke(action, amount);
     }
 
     private void HandleTimerChange(float changeAmount)
     {
         if (debugDoNotDeplete) return;
         Debug.Log($"Timer change event received: {changeAmount}");
-        ReplenishTimer(changeAmount);
+        if (changeAmount < 0)
+        {
+            DepleteTimer(-changeAmount, TimerAction.DepleteAttack);
+        }
+        else
+        {
+            ReplenishTimer(changeAmount);
+        }
     }
 }
 

@@ -11,6 +11,7 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
     [SerializeField] private float timerUsage = 1f;
     [SerializeField] private float timerRestoration = 2f;
     [SerializeField] private float hitstopDuration = 0.25f;
+    [SerializeField] private float shakeIntensity = 0.5f;
 
     public float TimerUsage => timerUsage;
     public float TimerRestoration => timerRestoration;
@@ -36,7 +37,7 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
         isSuspended = false;
         ITimerAccess.ModifyTimer(-timerUsage); // Deduct timer usage when the dash starts
         ApplyTargetedImpulse(player, animator);
-
+        rb.excludeLayers = player.Context.enemyLayer;
         player.Context.playerCombatConfig.SwiftDashSound?.Play(rb.position);
     }
 
@@ -67,6 +68,7 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
             float enemyX = targetedEnemyPosition.x;
             float playerX = player.transform.position.x;
             float diffX = enemyX - playerX;
+            Vector2 direction = targetedEnemyPosition - (Vector2)player.transform.position;
 
             if (Mathf.Abs(diffX) > 0.05f)
             {
@@ -80,8 +82,9 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
             float currentDistance = Mathf.Abs(diffX);
             float stoppingGap = Mathf.Min(1.0f, currentDistance * 0.5f);
             float targetX = enemyX - (Mathf.Sign(diffX) * stoppingGap);
-            Vector2 adjustedTargetPosition = new Vector2(targetX, targetedEnemyPosition.y);
-            ApplyAlphaImpulse(playerRb, player.transform, adjustedTargetPosition, lungeDuration, animator, targetData.Object, stateCts.Token).Forget();
+            Vector2 adjustedTargetPosition = new Vector2(targetX, targetedEnemyPosition.y) + direction.normalized * 5f;
+            Vector2 hitTargetPosition = new Vector2(targetX, targetedEnemyPosition.y);
+            ApplyAlphaImpulse(playerRb, player.transform, adjustedTargetPosition, hitTargetPosition, lungeDuration, animator, targetData.Object, stateCts.Token).Forget();
         }
         else
         {
@@ -89,12 +92,13 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
         }
     }
 
-    private async UniTaskVoid ApplyAlphaImpulse(Rigidbody2D targetRb, Transform playerTransform, Vector2 endPosition, float duration, Animator animator, GameObject targetedEnemy, CancellationToken ct)
+    private async UniTaskVoid ApplyAlphaImpulse(Rigidbody2D targetRb, Transform playerTransform, Vector2 endPosition, Vector2 hitPosition, float duration, Animator animator, GameObject targetedEnemy, CancellationToken ct)
     {
         Vector2 startPosition = playerTransform.position;
         float elapsedTime = 0f;
         float timer = Mathf.Max(0.1f, animator.GetFloat("Timer"));
-        duration = lungeDuration / timer;
+        duration = lungeDuration / timer / 2f;
+        bool hasHitEnemy = false;
 
         try
         {
@@ -102,46 +106,63 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
             {
                 elapsedTime += Time.fixedDeltaTime;
                 float t = Mathf.Clamp01(elapsedTime / duration);
-                Vector2 newPosition = Vector2.Lerp(startPosition, endPosition, t);
+                Vector2 newPosition = Vector2.Lerp(startPosition, hitPosition, t);
                 targetRb.MovePosition(newPosition);
                 return elapsedTime >= duration;
             }, PlayerLoopTiming.FixedUpdate, ct);
 
             // Ensure the final position is set to the exact end position
-            // targetRb.MovePosition(endPosition);
             // playerTransform.position = endPosition;
+            Quaternion rotation = Quaternion.LookRotation(hitPosition - startPosition, Vector3.up);
+            rotation.y = 0f; // Ensure the rotation is only around the Y-axis
+            rotation.x = 0f;
+            VFXEvents.TriggerVFX("SwiftDash", hitPosition, rotation);
 
-            if (targetedEnemy != null)
+            if (targetedEnemy != null || !hasHitEnemy)
             {
                 var damageable = targetedEnemy.GetComponent<IEntity>();
                 if (damageable != null)
                 {
+                    VFXEvents.TriggerVFX("Hit", hitPosition, Quaternion.identity);
                     damageable.TakeDamage(player.Context.playerCombatConfig.SwiftDashDamage);
+                    hasHitEnemy = true;
                     ITimerAccess.ModifyTimer(timerRestoration);
                     var enemyAnimator = targetedEnemy.GetComponent<Animator>();
-                    if (enemyAnimator != null)
-                    {
-                        enemyAnimator.SetTrigger("Hit");
-                    }
-                    await ActionHelpers.ApplyHitstop(new Animator[] { player.Context.playerAnimator, enemyAnimator }, hitstopDuration);
+                    player.impulseSource?.GenerateImpulseWithVelocity(Vector3.one * shakeIntensity);
+                    await ActionHelpers.ApplyGlobalHitstop(hitstopDuration);
                 }
             }
+            await UniTask.WaitUntil(() =>
+            {
+                elapsedTime += Time.fixedDeltaTime;
+                float t = Mathf.Clamp01(elapsedTime / duration);
+                Vector2 newPosition = Vector2.Lerp(hitPosition, endPosition, t);
+                targetRb.MovePosition(newPosition);
+                return elapsedTime >= duration;
+            }, PlayerLoopTiming.FixedUpdate, ct);
             animator.SetBool("SDash", false);
         }
         catch (System.OperationCanceledException)
         {
+            if (hasHitEnemy) return; // Already hit the enemy, no need to apply damage again
             // Interrupted early (e.g. damaged, staggered, or transitioned out)
-            if (Vector2.Distance(playerTransform.position, endPosition) < 0.5f)
+            Quaternion rotation = Quaternion.LookRotation(hitPosition - startPosition, Vector3.up);
+            rotation.x = 0f;
+            rotation.z = 0f;
+            VFXEvents.TriggerVFX("SwiftDash", hitPosition, rotation);
+            if (Vector2.Distance(playerTransform.position, endPosition) < 0.5f || Vector2.Distance(playerTransform.position, hitPosition) < 0.5f)
             {
                 if (targetedEnemy != null)
                 {
+                    VFXEvents.TriggerVFX("Hit", hitPosition, Quaternion.identity);
                     var damageable = targetedEnemy.GetComponent<IEntity>();
                     if (damageable != null)
                     {
                         damageable.TakeDamage(player.Context.playerCombatConfig.SwiftDashDamage);
                         ITimerAccess.ModifyTimer(timerRestoration);
                         var enemyAnimator = targetedEnemy.GetComponent<Animator>();
-                        await ActionHelpers.ApplyHitstop(new Animator[] { player.Context.playerAnimator, enemyAnimator }, hitstopDuration);
+                        player.impulseSource?.GenerateImpulseWithVelocity(Vector3.one * shakeIntensity);
+                        await ActionHelpers.ApplyGlobalHitstop(hitstopDuration);
                     }
                 }
             }
@@ -159,6 +180,10 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
             rb.gravityScale = originalGravityScale;
             isSuspended = false;
         }
+        if (rb != null)
+        {
+            rb.excludeLayers = 0;
+        }
     }
 
     private TargetData GetTargetedEnemyData(PlayerController player)
@@ -166,7 +191,16 @@ public class SwiftDashSMB : StateMachineBehaviour, ITimerAccess
         var targetCh = channel != null ? channel : player.Context.swiftDashChannel;
         if (targetCh != null)
         {
-            return targetCh.GetBestTarget(0f, maxLungeDistance);
+            var best = targetCh.GetBestTarget(0f, maxLungeDistance);
+            if (best != null && best.Object != null)
+            {
+                return best;
+            }
+            var secondBest = targetCh.GetBestTarget(-1f, maxLungeDistance / 2);
+            if (secondBest != null && secondBest.Object != null)
+            {
+                return secondBest;
+            }
         }
         return null;
     }

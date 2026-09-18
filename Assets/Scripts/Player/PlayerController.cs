@@ -3,6 +3,7 @@ using System;
 using Cysharp.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine.UI;
+using Unity.Cinemachine;
 
 public enum WallTouchDirection
 {
@@ -18,6 +19,7 @@ public class PlayerController : MonoBehaviour, IEntity
     [SerializeField] private RangeDetectionHelper[] rangeDetectionHelper;
     [SerializeField] private TimerSystem timerSystem;
     [SerializeField] private CooldownSystem cooldownSystem;
+    public CinemachineImpulseSource impulseSource;
     public PlayerContext Context => context;
     public float Health => new float(); // TODO: Add timer and include it as health property
     void Validate()
@@ -33,6 +35,10 @@ public class PlayerController : MonoBehaviour, IEntity
         if (context.playerAnimator == null)
         {
             Debug.LogError("Player Animator is not assigned in the PlayerContext.");
+        }
+        if (context.playerSpriteRenderer == null)
+        {
+            Debug.LogError("Player Sprite Renderer is not assigned in the PlayerContext.");
         }
     }
 
@@ -64,6 +70,9 @@ public class PlayerController : MonoBehaviour, IEntity
         InputController.OnSwiftDashInput += HandleSwiftDashInput;
         SetStateSMB.OnStateEntered += HandleStateEntered;
         SetStateSMB.OnStateExited += HandleStateExited;
+        playerCombat.OnParried += HandleOnParried;
+        playerCombat.OnBlocked += HandleOnBlocked;
+        TimerSystem.OnTimerDepleted += Die;
 
         // Debug
         InputController.OnDebugInput1 += OnInputDebug1;
@@ -81,6 +90,9 @@ public class PlayerController : MonoBehaviour, IEntity
         InputController.OnSwiftDashInput -= HandleSwiftDashInput;
         SetStateSMB.OnStateEntered -= HandleStateEntered;
         SetStateSMB.OnStateExited -= HandleStateExited;
+        playerCombat.OnParried -= HandleOnParried;
+        playerCombat.OnBlocked -= HandleOnBlocked;
+        TimerSystem.OnTimerDepleted -= Die;
 
         // Debug
         InputController.OnDebugInput1 -= OnInputDebug1;
@@ -312,6 +324,18 @@ public class PlayerController : MonoBehaviour, IEntity
         }).Forget();
     }
 
+    void SpriteWhiteFlash(float duration)
+    {
+        if (context.playerSpriteRenderer == null) return;
+        context.playerSpriteRenderer.material = context.spriteFlashMaterial;
+        context.playerSpriteRenderer.color = Color.white;
+        UniTask.Delay(TimeSpan.FromSeconds(duration)).ContinueWith(() =>
+        {
+            context.playerSpriteRenderer.material = context.originalMaterial;
+            context.playerSpriteRenderer.color = Color.white;
+        }).Forget();
+    }
+
     public void UseCooldown(string key)
     {
         if (cooldownSystem.UseCooldown(key))
@@ -357,38 +381,98 @@ public class PlayerController : MonoBehaviour, IEntity
 
     public void TakeDamage(float amount)
     {
-        playerCombat.HandleGettingHit();
-        if (context.currentState == "Parry")
-        {
-            timerSystem?.ReplenishTimer(2f);
-            return;
-        }
-        else if (context.currentState == "Dash")
+        if (context.currentState == "Death") return;
+        playerCombat.HandleGettingHit(amount);
+        if (context.currentState == "Dash")
         {
             timerSystem?.ReplenishTimer(3f);
             return;
         }
-        else if (context.currentState == "Block")
-        {
-            timerSystem?.DepleteTimer(amount * 0.5f);
-            return;
-        }
-        if (context.isInvincible) return;
-
-        timerSystem?.DepleteTimer(amount);
+        if (context.isInvincible || context.currentState == "Block" || cooldownSystem.IsOnCooldown("Damage")) return;
+        cooldownSystem.UseCooldown("Damage");
+        timerSystem?.DepleteTimer(amount, TimerAction.DepleteHit);
         context.playerAnimator.SetTrigger("Hit");
-        SpriteColorFlash(Color.red, 0.15f);
-
+        // SpriteColorFlash(Color.red, 0.15f);
+        SpriteWhiteFlash(0.15f);
+        impulseSource?.GenerateImpulse();
+        ActionHelpers.ApplyGlobalHitstop(0.05f).Forget();
         context.playerCombatConfig.StaggerSound?.Play(transform.position);
 
         // Implement damage logic here
         Debug.Log($"Player took {amount} damage.");
     }
 
+    public void TakeDamage(float amount, GameObject source)
+    {
+        if (context.currentState == "Death") return;
+        playerCombat.HandleGettingHit(amount, source);
+        if (context.currentState == "Dash")
+        {
+            timerSystem?.ReplenishTimer(3f);
+            return;
+        }
+        if (context.isInvincible || context.currentState == "Block" || cooldownSystem.IsOnCooldown("Damage")) return;
+        cooldownSystem.UseCooldown("Damage");
+        timerSystem?.DepleteTimer(amount, TimerAction.DepleteHit);
+        context.playerAnimator.SetTrigger("Hit");
+        // SpriteColorFlash(Color.red, 0.15f);
+        SpriteWhiteFlash(0.15f);
+        impulseSource?.GenerateImpulse();
+        ActionHelpers.ApplyGlobalHitstop(0.05f).Forget();
+        context.playerCombatConfig.StaggerSound?.Play(transform.position);
+
+        // Implement damage logic here
+        Debug.Log($"Player took {amount} damage from {source.name}.");
+    }
+
+    public void HandleOnParried(GameObject source)
+    {
+        timerSystem?.ReplenishTimer(3f);
+        context.playerRigidbody.AddForce(-Vector2.right * GetPlayerDirection().normalized.x * 15f, ForceMode2D.Impulse);
+        if (source != null)
+        {
+            var enemyRb = source.GetComponent<Rigidbody2D>();
+            if (enemyRb != null)
+            {
+                enemyRb.AddForce(Vector2.right * GetPlayerDirection().normalized.x * 15f, ForceMode2D.Impulse);
+            }
+        }
+    }
+
+    public void HandleOnBlocked(float amount, GameObject source)
+    {
+        timerSystem?.DepleteTimer(amount / 2f, TimerAction.DepleteBlock);
+        context.playerRigidbody.AddForce(-Vector2.right * GetPlayerDirection().normalized.x * 5f, ForceMode2D.Impulse);
+        SpriteColorFlash(new Color(0f, 0.9f, 1f), 0.15f);
+        if (source != null)
+        {
+            var enemyRb = source.GetComponent<Rigidbody2D>();
+            if (enemyRb != null)
+            {
+                enemyRb.AddForce(Vector2.right * GetPlayerDirection().normalized.x * 5f, ForceMode2D.Impulse);
+            }
+        }
+    }
+
     public void Die()
     {
         // Implement death logic here
         Debug.Log("Player died.");
+        context.playerAnimator.SetTrigger("Die");
+        ActionHelpers.ApplyGlobalHitstop(0.15f).Forget();
+        impulseSource?.GenerateImpulseWithForce(1f);
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Breakable"))
+        {
+            Breakable breakable = other.GetComponent<Breakable>();
+            if (breakable != null)
+            {
+                impulseSource?.GenerateImpulseWithForce(0.5f);
+            }
+        }
     }
 
     // DEBUGGGGGGGG EVERYTHIGNG IS DEBUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG

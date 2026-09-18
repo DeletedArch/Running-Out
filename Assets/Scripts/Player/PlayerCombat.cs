@@ -11,11 +11,13 @@ public class PlayerCombat
     private int currentComboCount = 0;
     private float lastAttackTime = 0f;
     private float attackHoldTime = 0f;
+    private bool hasParried = false;
     private RangeDetectionHelper[] rangeDetectionHelper;
 
     public delegate Vector2 GetPlayerDirectionDelegate();
     public GetPlayerDirectionDelegate GetPlayerDirection;
-    public static event Action OnParried;
+    public event Action<GameObject> OnParried;
+    public event Action<float, GameObject> OnBlocked;
 
     public PlayerCombat(PlayerContext context, RangeDetectionHelper[] rangeDetectionHelper)
     {
@@ -100,9 +102,10 @@ public class PlayerCombat
     public void HandleBlockRelease()
     {
         context.playerAnimator.SetBool("Block", false);
+        hasParried = false;
     }
 
-    public void HandleGettingHit()
+    public void HandleGettingHit(float amount, GameObject source = null)
     {
         var animatorState = context.playerAnimator.GetCurrentAnimatorStateInfo(0);
         float elapsedBlockTime = animatorState.normalizedTime * animatorState.length;
@@ -110,14 +113,17 @@ public class PlayerCombat
         {
             // Restore time and negate damage
             context.playerAnimator.SetTrigger("Parry");
-            OnParried?.Invoke();
-            VFXEvents.TriggerVFX("Parry", context.playerRigidbody.position, Quaternion.identity, false);
-            ActionHelpers.ApplyHitstop(new Animator[] { context.playerAnimator }, 0.05f).Forget();
+            OnParried?.Invoke(source);
+            VFXEvents.TriggerVFX("Parry", context.playerRigidbody.position, Quaternion.identity, flipX: context.playerRigidbody.transform.localScale.x < 0);
+            ActionHelpers.ApplyGlobalHitstop(0.25f).Forget();
             config.ParrySound?.Play(context.playerRigidbody.position);
+            hasParried = true;
             Debug.Log("Player parried the attack!");
         }
-        else
+        else if (animatorState.IsName("Block") && elapsedBlockTime > config.ParryTimeWindow)
         {
+            // Block the attack and reduce damage
+            OnBlocked?.Invoke(amount, source);
             Debug.Log("Player blocked the attack!");
         }
     }

@@ -10,6 +10,8 @@ public class EnemyContext
     public EnemyPerception perception;
     public SpriteRenderer spriteRenderer;
     public EnemyMovement enemyMovement;
+    public Material FlashMaterial;
+    public Material originalMaterial;
 
     [Header("Layers")]
     public LayerMask playerLayer;
@@ -18,6 +20,7 @@ public class EnemyContext
 
     [Header("Interfaces / Edge")]
     public MonoBehaviour edgeResponseBehaviour;
+
     public IEdgeResponse edgeResponse => edgeResponseBehaviour as IEdgeResponse;
 
     [Header("Dynamic State")]

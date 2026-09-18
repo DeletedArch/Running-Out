@@ -32,7 +32,7 @@ public class DashStateSMB : StateMachineBehaviour, ITimerAccess
         dashDirection = direction.x != 0 ? Mathf.Sign(direction.x) : Mathf.Sign(player.transform.localScale.x);
         player.transform.localScale = new Vector3(Mathf.Sign(dashDirection) * Mathf.Abs(player.transform.localScale.x), player.transform.localScale.y, player.transform.localScale.z);
         elapsedTime = 0f;
-
+        rb.excludeLayers = player.Context.enemyLayer;
         // maxDashDuration = (movementConfig.DashDistance / movementConfig.DashForce) + 0.1f;
         VFXEvents.TriggerVFX("DashGround", rb.position, Quaternion.identity, flipX: dashDirection < 0);
         ITimerAccess.ModifyTimer(-timerUsage); // Deduct timer usage when the dash starts
@@ -77,6 +77,7 @@ public class DashStateSMB : StateMachineBehaviour, ITimerAccess
         if (rb != null)
         {
             rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
+            rb.excludeLayers = 0;
         }
     }
 }
