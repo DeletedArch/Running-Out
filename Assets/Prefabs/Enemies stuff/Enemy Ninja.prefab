@@ -478,8 +478,8 @@ MonoBehaviour:
   edgeCheckForwardOffset: 0.3
   edgeCheckDownOffset: 0.3
   edgeCheckDistance: 0.3
-  obstacleCheckDistance: 0.6
-  obstacleCheckHeight: -0.1
+  obstacleCheckDistance: 0.8
+  obstacleCheckHeight: 1
   detectionRadius: 10.51
 --- !u!114 &4010535387113769856
 MonoBehaviour:
