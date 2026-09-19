@@ -2203,7 +2203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff1bda27922999d85a9b29c94c205e96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallHopStateSMB
-  wallHopDuration: 0.4
+  wallHopDuration: 0.25
 --- !u!1101 &6149113591527491814
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
