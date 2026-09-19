@@ -32,7 +32,13 @@ public class TutorialCollider : MonoBehaviour
             {
                 TutorialManager.RestoreTimer(restoreTimerAmount);
             }
+            SwitchSceneToMenu();
         }
+    }
+
+    void SwitchSceneToMenu()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
 }
 
