@@ -260,9 +260,9 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingLayerID: 1375167941
+  m_SortingLayer: 3
+  m_SortingOrder: 10
   m_MaskInteraction: 0
   m_Sprite: {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -321,7 +321,7 @@ MonoBehaviour:
   - {fileID: 6964587028707841411}
   timerSystem:
     animator: {fileID: 6933980337102640787}
-    timer: 20
+    timer: 13.5
     normalizationRatio: 0.05
     maxTime: 35
     minTime: 0
@@ -1138,9 +1138,9 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 1375167941
+  m_SortingLayer: 3
+  m_SortingOrder: 10
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: 240a86c4ccc75bf40b7947dec857b788, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1520,5 +1520,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   cameraTransform: {fileID: 2801481879268470046}
-  backgroundMaterial: {fileID: 2594261284121761797}
-  parallaxEffect: 0.0001
+  parallaxLayers: []
