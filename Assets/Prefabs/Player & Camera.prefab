@@ -328,12 +328,13 @@ MonoBehaviour:
     highSoftCap: 30
     lowSoftCap: 12
     depletionRate: 1
-    debugDoNotDeplete: 1
+    debugDoNotDeplete: 0
   cooldownSystem:
     cooldowns:
     - {fileID: 11400000, guid: 5dda27ce66e6809238645d0dee2e91ad, type: 2}
     - {fileID: 11400000, guid: 8dfb7cb806d3fc1098fd7eb6149cb324, type: 2}
     - {fileID: 11400000, guid: e623e32fcaac4365883401363e7cdb0d, type: 2}
+    - {fileID: 11400000, guid: cec9c753011a625269566f869a811528, type: 2}
   impulseSource: {fileID: 6142515285548762961}
   ledgeWallCheckDistance: 0.75
   ledgeWallCheckOffsetY: 0.2
