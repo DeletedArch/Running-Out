@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: New Area 1
   m_EditorClassIdentifier: Assembly-CSharp::Area
   areaName: Area2
-  areaID: 1
+  areaID: 484904
   areaLevel: 0
-  enemyCount: 0
+  enemyCount: 12
   areaPrefab: {fileID: 3938862867696870682, guid: e0900f81bc76ebf81b282551e1e75b55, type: 3}

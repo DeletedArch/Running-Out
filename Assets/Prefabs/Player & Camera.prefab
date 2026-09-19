@@ -126,7 +126,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 1.1482944}
+  m_Offset: {x: 0, y: 1.2679296}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -136,7 +136,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.99999994, y: 2.2088413}
+  m_Size: {x: 0.99999994, y: 2.448111}
   m_EdgeRadius: 0
 --- !u!1 &310266519814128809
 GameObject:
@@ -262,7 +262,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: -9095717837082945937, guid: 207ee8102dd4143d288186ef0be518ee, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -328,12 +328,21 @@ MonoBehaviour:
     highSoftCap: 30
     lowSoftCap: 12
     depletionRate: 1
-    debugDoNotDeplete: 1
+    debugDoNotDeplete: 0
   cooldownSystem:
     cooldowns:
     - {fileID: 11400000, guid: 5dda27ce66e6809238645d0dee2e91ad, type: 2}
     - {fileID: 11400000, guid: 8dfb7cb806d3fc1098fd7eb6149cb324, type: 2}
+    - {fileID: 11400000, guid: e623e32fcaac4365883401363e7cdb0d, type: 2}
+    - {fileID: 11400000, guid: cec9c753011a625269566f869a811528, type: 2}
   impulseSource: {fileID: 6142515285548762961}
+  ledgeWallCheckDistance: 0.75
+  ledgeWallCheckOffsetY: 0.2
+  ledgeCheckHeight: 1.5
+  ledgeDownwardDistance: 1.2
+  ceilingCheckDistance: 1.6
+  ledgePushForce: {x: 6, y: 20}
+  ledgeGrabCooldownKey: LedgeGrab
 --- !u!50 &4346579772661709285
 Rigidbody2D:
   serializedVersion: 5
@@ -359,7 +368,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!70 &1934990625514394782
 CapsuleCollider2D:
@@ -548,7 +557,7 @@ Transform:
   m_GameObject: {fileID: 3300486192480527656}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -18.002535, y: -6.2461357, z: -10}
+  m_LocalPosition: {x: -18.002535, y: -6.2461395, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -898,7 +907,7 @@ Transform:
   m_GameObject: {fileID: 4194511865797258914}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -18.00253, y: -6.5161285, z: -10}
+  m_LocalPosition: {x: -18.00253, y: -10.016129, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -971,7 +980,7 @@ MonoBehaviour:
       Size: {x: 0.8, y: 0.8}
       Offset: {x: 0, y: 0.26}
   CenterOnActivate: 1
-  TargetOffset: {x: 0, y: 6.5, z: 0}
+  TargetOffset: {x: 0, y: 3, z: 0}
   Damping: {x: 1, y: 1, z: 1}
   Lookahead:
     Enabled: 1

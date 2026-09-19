@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6e5a328c7b0173b07885b02956168a30, type: 3}
-  m_Name: New Area
+  m_Name: New Area 5
   m_EditorClassIdentifier: Assembly-CSharp::Area
-  areaName: Area1
-  areaID: 62789
+  areaName: Area6
+  areaID: 944354
   areaLevel: 0
-  enemyCount: 9
-  areaPrefab: {fileID: 441630077084375252, guid: 9d909c299bbb557eb98bcdecca38b3d8, type: 3}
+  enemyCount: 6
+  areaPrefab: {fileID: 5420407815001494378, guid: 0683959c75b948e0ba41afa0352e434f, type: 3}
