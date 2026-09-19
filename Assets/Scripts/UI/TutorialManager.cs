@@ -2,15 +2,42 @@ using UnityEngine;
 
 public class TutorialManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public static void EnableTimer()
     {
-        
+        var Player = GameObject.FindGameObjectWithTag("Player");
+        if (Player != null)
+        {
+            var playerController = Player.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                ITimerAccess.SwitchTimer(true);
+            }
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public static void DisableTimer()
     {
-        
+        var Player = GameObject.FindGameObjectWithTag("Player");
+        if (Player != null)
+        {
+            var playerController = Player.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                ITimerAccess.SwitchTimer(false);
+            }
+        }
+    }
+
+    public static void RestoreTimer(float amount)
+    {
+        var Player = GameObject.FindGameObjectWithTag("Player");
+        if (Player != null)
+        {
+            var playerController = Player.GetComponent<PlayerController>();
+            if (playerController != null)
+            {
+                ITimerAccess.ModifyTimer(amount);
+            }
+        }
     }
 }
