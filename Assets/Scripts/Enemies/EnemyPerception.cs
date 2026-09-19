@@ -56,28 +56,24 @@ public class EnemyPerception : MonoBehaviour
 
     public bool HasWallOrHigherGroundAhead()
     {
-        Vector2 origin = (Vector2)transform.position + new Vector2(0.55f * facingDirection, obstacleCheckHeight);
+        // Center the check at torso height (Y = 0.5f)
+        Vector2 boxCenter = (Vector2)transform.position + new Vector2(0.4f * facingDirection, 0.5f);
+        Vector2 boxSize = new Vector2(0.2f, 1.2f); // Width and full body height of the check
         Vector2 direction = Vector2.right * facingDirection;
-        // Checks Ground, Wall, and Default layers (in case your wall is on Default with a "Wall" tag)
-        int wallMask = (1 << LayerMask.NameToLayer("Ground")) |
-                       (1 << LayerMask.NameToLayer("Wall")) |
-                       (1 << 0); // Default layer
-        RaycastHit2D[] hits = Physics2D.RaycastAll(origin, direction, obstacleCheckDistance, wallMask);
-        Debug.DrawRay(origin, direction * obstacleCheckDistance, Color.cyan);
-        foreach (var hit in hits)
+        float checkDistance = 0.5f;
+        int mask = (1 << LayerMask.NameToLayer("Ground")) |
+                   (1 << LayerMask.NameToLayer("Wall"));
+        RaycastHit2D hit = Physics2D.BoxCast(boxCenter, boxSize, 0f, direction, checkDistance, mask);
+
+        // Visual debug box in Scene view
+        Debug.DrawRay(boxCenter, direction * checkDistance, hit.collider != null ? Color.red : Color.cyan);
+        if (hit.collider != null && hit.collider.transform.root != transform.root && !hit.collider.isTrigger)
         {
-            if (hit.collider == null || hit.collider.transform.root == transform.root || hit.collider.isTrigger)
-                continue;
-            // Detects by Tag OR by Layer:
-            bool isWall = hit.collider.CompareTag("Wall") || hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall");
-            bool isGround = hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground") || hit.collider.CompareTag("Ground");
-            if (isWall || isGround)
-            {
-                return true;
-            }
+            return true;
         }
         return false;
     }
+
     public bool HasOtherEnemyAhead()
     {
         // 1. Box in front of the enemy at chest height (Y = 0.4f)
