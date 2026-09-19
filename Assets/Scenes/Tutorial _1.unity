@@ -596,7 +596,7 @@ PrefabInstance:
       value: '"In life, you loved the thrill of killing. You laughed while others
         bled.
 
-        
+
 
         Now, your sins have become your curse.'
       objectReference: {fileID: 0}
@@ -892,11 +892,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8776334280449841565, guid: 25fa5e42824a80a429e1fc613ba9b8db, type: 3}
       propertyPath: m_fontSize
-      value: 0.64
+      value: 0.77
       objectReference: {fileID: 0}
     - target: {fileID: 8776334280449841565, guid: 25fa5e42824a80a429e1fc613ba9b8db, type: 3}
       propertyPath: m_fontSizeBase
-      value: 0.64
+      value: 0.77
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1673,16 +1673,16 @@ PrefabInstance:
       propertyPath: m_text
       value: "<b>PARKOUR SYSTEM</b>\r\nYou can leap from wall to wall!\r\nTouch a
         wall in mid-air and press <b>[SPACE]</b> to kick across to the opposite wall.
-        \r\n<i>(You can only jump from wall to wall\u2014you cannot climb a single
-        wall!)</i> :)"
+        \r\n(You can only jump from wall to wall\u2014you cannot climb a single wall!)
+        :)"
       objectReference: {fileID: 0}
     - target: {fileID: 8776334280449841565, guid: 25fa5e42824a80a429e1fc613ba9b8db, type: 3}
       propertyPath: m_fontSize
-      value: 0.64
+      value: 0.73
       objectReference: {fileID: 0}
     - target: {fileID: 8776334280449841565, guid: 25fa5e42824a80a429e1fc613ba9b8db, type: 3}
       propertyPath: m_fontSizeBase
-      value: 0.64
+      value: 0.73
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
