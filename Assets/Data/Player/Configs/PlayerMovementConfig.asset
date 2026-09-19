@@ -19,7 +19,7 @@ MonoBehaviour:
   wallHopForce: 2
   maxSpeed: 25
   maxSwiftDashDistance: 15
-  wallHopMaxDistance: {x: 7, y: 4}
+  wallHopMaxDistance: {x: 9, y: 4}
   dashSound: {fileID: 11400000, guid: f69710465442e3b4a86d28ab94b0c1ad, type: 2}
   jumpSound: {fileID: 11400000, guid: f69710465442e3b4a86d28ab94b0c1ad, type: 2}
   wallJumpSound: {fileID: 11400000, guid: f69710465442e3b4a86d28ab94b0c1ad, type: 2}

@@ -2203,7 +2203,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff1bda27922999d85a9b29c94c205e96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WallHopStateSMB
-  wallHopDuration: 0.15
+  wallHopDuration: 0.4
 --- !u!1101 &6149113591527491814
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -2544,7 +2544,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a1bda243b7e2da37b7b569f232af851, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  reductionFactor: 0.5
+  reductionFactor: 0.25
 --- !u!1101 &8104265509225524257
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
