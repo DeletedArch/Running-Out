@@ -6,7 +6,7 @@ public class ShootSMB : EnemyStateBehaviour
 {
     [Header("Projectile Settings")]
     [SerializeField] private GameObject bulletPrefab;
-    [SerializeField] Vector2 fireOffset = new Vector2(0.8f, 0.2f);
+    [SerializeField] Vector2 fireOffset = new Vector2(0.8f, 0.8f);
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {

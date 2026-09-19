@@ -21,12 +21,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void HandleButtonClick(Button button, bool isClicked)
     {
         if (button != null)
