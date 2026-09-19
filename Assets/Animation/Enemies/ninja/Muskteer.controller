@@ -393,7 +393,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShootSMB
   bulletPrefab: {fileID: 2394095530983791130, guid: 4b1ea62e7d488554cb7ed33794f08792, type: 3}
-  fireOffset: {x: 0.8, y: 0.2}
+  fireOffset: {x: 1.3, y: 0.8}
 --- !u!91 &9100000
 AnimatorController:
   m_ObjectHideFlags: 0
