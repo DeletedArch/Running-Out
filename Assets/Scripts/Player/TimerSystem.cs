@@ -26,6 +26,7 @@ public class TimerSystem
     public TimerSystem()
     {
         ITimerAccess.OnTimerChange += HandleTimerChange;
+        ITimerAccess.OnTimerSwitch += HandleTimerSwitch;
     }
 
     public void Update(float deltaTime)
@@ -62,6 +63,10 @@ public class TimerSystem
         if (debugDoNotDeplete || hasHitZero) return;
         timer += amount;
         OnTimerChange?.Invoke(action, amount);
+    }
+    private void HandleTimerSwitch(bool isEnabled)
+    {
+        debugDoNotDeplete = !isEnabled;
     }
 
     private void HandleTimerChange(float changeAmount)
