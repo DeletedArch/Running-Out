@@ -28,6 +28,7 @@ public class WallHopStateSMB : StateMachineBehaviour
             rb = context.playerRigidbody;
             originalGravityScale = rb.gravityScale;
             rb.gravityScale = 0f;
+            float playerDirection = context.moveInput.x;
             if (walltouchdirection == WallTouchDirection.Right)
             {
                 VFXEvents.TriggerVFX("JumpOffWall", rb.position, Quaternion.Euler(0, 0, 90), false);
@@ -43,7 +44,14 @@ public class WallHopStateSMB : StateMachineBehaviour
                 nextWallPosition += Vector2.up * context.playerMovementConfig.WallHopMaxDistance.y / 1.5f; // Add vertical offset to hop up
             } else
             {
-                nextWallPosition = FindNextWall(wallHopDirection);
+                if (playerDirection != 0 && Mathf.Sign(playerDirection) != Mathf.Sign(wallHopDirection.x))
+                {
+                    nextWallPosition = FindNextWall(-wallHopDirection);
+                }
+                else
+                {
+                    nextWallPosition = FindNextWall(wallHopDirection);
+                }
             }
             Vector2 finalHopPosition;
             if (nextWallPosition.HasValue)
@@ -52,7 +60,8 @@ public class WallHopStateSMB : StateMachineBehaviour
             }
             else
             {
-                finalHopPosition = rb.position + wallHopDirection * context.playerMovementConfig.WallHopMaxDistance.x + Vector2.up * context.playerMovementConfig.WallHopMaxDistance.y * 1.5f;
+                float inputOffset = playerDirection == 0f ? 0.5f : Mathf.Round(playerDirection) == (int)walltouchdirection ? 0.25f : 1f;
+                finalHopPosition = rb.position + wallHopDirection * context.playerMovementConfig.WallHopMaxDistance.x * inputOffset + Vector2.up * context.playerMovementConfig.WallHopMaxDistance.y * 1.5f;
             }
 
             ApplyWallHop(rb, finalHopPosition, stateCts.Token).Forget();
